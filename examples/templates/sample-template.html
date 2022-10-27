@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="{{_locale}}">
+<head>
+    <title>{{__ Sample_invoice_title}}</title>
+    <meta charset="UTF-8">
+    <style>
+        /* Tags
+           ---------------------------------------- */
+        * {  box-sizing: border-box;  }
+        body {
+            margin: 0 9mm 0 18mm;
+            width: 129.3mm;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 2.75mm;
+            line-height: 130%;
+        }
+        h1 {
+            clear: both;
+            font-size: 2.75mm;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .1mm;
+            margin: 3mm 0 4mm 0;
+        }
+        p {  margin: 2mm 0 2mm 0;  }
+        table {
+            font-size: 2.25mm;
+            border-spacing: 0;
+            width: 100%;
+        }
+        thead {  color: #005D83;  }
+        th, td {
+            vertical-align: top;
+            border-width: 0;
+        }
+        th {  padding: 0.5mm 1.5mm 1mm 0;  }
+        td {  padding: 0.5mm 1.5mm 2mm 0;  }
+        strong {  font-weight: 600;  }
+    </style>
+</head>
+<body>
+    <!-- Address sender line (small) -->
+    <div class="sender">
+        <span>{{__ Company_slogan}}</span><br>
+        {{#each sender.adressLines}}
+            <span>{{this}}</span> 
+            {{#unless @last}} · {{/unless}}
+        {{/each}}
+    </div>
+
+    <div class="clearfix">
+        <!-- Address recipient block -->
+        <div class="recipient">
+            <div class="recipient-deliveryAddress">
+                {{#unless (empty recipient.isMale)}}
+                    <span>
+                    {{#if recipient.isMale}} {{__ "Mr"}} {{else}} {{__ "Ms"}} {{/if}}
+                    {{recipient.firstname}} {{recipient.lastname}}
+                    </span>
+                {{/unless}}
+                <br>
+                {{#each recipient.addressLines}}
+                    {{this}}
+                    {{#unless @last}} <br> {{/unless}}
+                {{/each}}
+            </div>
+
+            {{#each recipient.deliveryAddress}}
+            {{#if @first}}
+            <span class="underlined">  {{__ "Confirmation.Delivery_Address"}}: <br> </span>
+            {{/if}}
+            {{this}}
+            {{#unless @last}} <br> {{/unless}}
+            {{/each}}
+        </div>
+
+        <!-- Project block (right) -->
+        <div class="project clearfix">
+            <div>{{__ "Project_no"}}</div><div><strong>{{info.projectId}}</strong></div>
+            <div>{{__ "Receipt_no"}}</div><div>{{info.letterId}}</div>
+            <div>{{__ "Your_customer_no"}}</div><div>{{recipient.id}}</div>
+            <div>{{__ "Contact_partner"}}</div><div>{{sender.contact}}</div>
+            <div>{{__ "Telephone"}}</div><div><a href="{{sender.telHref}}" class="black">{{sender.phone}}</a></div>
+            <div class="mb-1">{{__ "E-mail"}}</div><div class="mb-1"><a href="mailto:{{sender.email}}" class="orange">{{sender.email}}</a></div>
+
+            <div class="mb-1">{{__ "Date_accepted"}}</div><div class="mb-1">{{info.confirmationDate}}</div>
+
+
+            {{#if recipient.requestId}}
+                <div>{{__ "Your_enquiry_no"}}</div><div>{{recipient.requestId}}</div>
+            {{/if}}
+            {{#if recipient.vendorId}}
+                <div>{{__ "Supplier_no"}}</div><div>{{recipient.vendorId}}</div>
+            {{/if}}
+            {{#if recipient.orderNo}}
+            <div>{{__ "Order_no"}}</div><div>{{recipient.orderNo}}</div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Salutation -->
+    <h1>{{__ "Confirmation.Order_confirmation"}}</h1>
+    <p>
+        {{#if (empty recipient.isMale)}}
+            {{__ "Dear_Ladies_and_Gentlemen"}}
+        {{else}}
+            {{#if recipient.isMale}} {{__ "Dear_Mr"}} {{else}} {{__ "Dear_Ms"}} {{/if}}
+            {{recipient.lastname}},
+        {{/if}}
+    </p>
+    <p>
+        {{__ "Confirmation.Intro_statement" refLetterId=info.referenceLetterId refLetterDate=info.referenceLetterDate }}
+    </p>
+
+    <!-- Main Table -->
+    <table role="container">
+
+        <!-- Header -->
+        <thead role="header" class="header">
+            <tr>
+                <th class="id">{{__ "Item"}}</th>
+                <th class="project-no">{{__ "Description"}}</th>
+                <th class="description">{{__ "Material"}}</th>
+                <th class="total-amount">{{__ "Quantity"}}</th>
+                <th class="single-price">{{__ "UnitPrice"}}</th>
+                <th class="total">{{__ "Total"}}</th>
+            </tr>
+        </thead>
+
+        <!-- Body -->
+
+        <!-- Items -->
+        {{#each items}}
+
+        <!-- Item Carry -->
+        {{#unless @first}}
+        <thead role="header">
+            <!-- Main Header Repeat -->
+            <tr>
+                <th class="id">{{__ "Item"}}</th>
+                <th class="project-no">{{__ "Description"}}</th>
+                <th class="description">{{__ "Material"}}</th>
+                <th class="total-amount">{{__ "Quantity"}}</th>
+                <th class="single-price">{{__ "UnitPrice"}}</th>
+                <th class="total">{{__ "Total"}}</th>
+            </tr>
+            <!-- Carry -->
+            <tr class="carry">
+                <th colspan="2" class="id">{{__ "Carry"}}</th>
+                <th colspan="3">&nbsp;</th>
+                <th class="total">{{#elemBefore ../items @index "subtotalWithCurrency"}}{{/elemBefore}}</th>
+            </tr>
+        </thead>
+        {{/unless}}
+
+        <!-- Item Entry -->
+        <tbody role="content">
+            <tr class="items">
+                <td class="id">{{id}}</td>
+                <td class="project-no">{{name}}</td>
+                <td class="description">
+                    {{#each descriptionLines}}
+                    <span>{{this}}</span><br>
+                    {{/each}}
+                </td>
+                <td class="total-amount">{{quantity}}</td>
+                <td class="single-price">{{itemPriceWithCurrency}}</td>
+                <td class="total">{{totalPriceWithCurrency}}</td>
+            </tr>
+        </tbody>
+
+        <!-- Item Subtotal -->
+        {{#unless @last}}
+        <tbody role="footer">
+            <tr class="subtotal pagebreak">
+                <td colspan="5" class="id">{{__ "Subtotal"}}</td>
+                <td class="total">{{subtotalWithCurrency}}</td>
+            </tr>
+        </tbody>
+        {{/unless}}
+
+        {{/each}}
+
+        <!-- Extra Costs -->
+        {{#each extraCosts}}
+
+            <!-- Extra Cost Carry -->
+            {{#unless @first}}
+            <thead role="header">
+                <!-- Main Header Repeat -->
+                <tr>
+                    <th class="id">{{__ "Item"}}</th>
+                    <th class="project-no">{{__ "Description"}}</th>
+                    <th class="description">{{__ "Material"}}</th>
+                    <th class="total-amount">{{__ "Quantity"}}</th>
+                    <th class="single-price">{{__ "UnitPrice"}}</th>
+                    <th class="total">{{__ "Total"}}</th>
+                </tr>
+                <!-- Carry -->
+                <tr class="carry">
+                    <th colspan="2" class="id">{{__ "Carry"}}</th>
+                    <th colspan="3">&nbsp;</th>
+                    <th class="total">{{#elemBefore ../extraCosts @index "subtotalWithCurrency"}}{{/elemBefore}}</th>
+                </tr>
+            </thead>
+            {{/unless}}
+
+            <!-- Extra Cost Entry -->
+            <tbody role="content">
+                <tr class="extra-costs">
+                    <td class="id">{{id}}</td>
+                    <td class="project-no">{{#if description}} {{description}} {{else}} {{__ "Surcharge"}} {{/if}}</td>
+                    <td colspan="3"></td>
+                    <td class="total">{{extraCost}}</td>
+                </tr>
+            </tbody>
+
+            <!-- Extra Cost Subtotal -->
+            {{#unless @last}}
+            <tbody role="footer">
+                <tr class="subtotal pagebreak">
+                    <td colspan="5" class="id">{{__ "Subtotal"}}</td>
+                    <td class="total">{{ subtotalWithCurrency }}</td>
+                </tr>
+            </tbody>
+            {{/unless}}
+
+        {{/each}}
+
+        <!-- Discounts -->
+        {{#each discounts}}
+
+            <!-- Discounts Carry -->
+            {{#unless @first}}
+            <thead role="header">
+                <!-- Main Header Repeat -->
+                <tr>
+                    <th class="id">{{__ "Item"}}</th>
+                    <th class="project-no">{{__ "Description"}}</th>
+                    <th class="description">{{__ "Material"}}</th>
+                    <th class="total-amount">{{__ "Quantity"}}</th>
+                    <th class="single-price">{{__ "UnitPrice"}}</th>
+                    <th class="total">{{__ "Total"}}</th>
+                </tr>
+                <!-- Carry -->
+                <tr class="carry">
+                    <th colspan="2" class="id">{{__ "Carry"}}</th>
+                    <th colspan="3">&nbsp;</th>
+                    <th class="total">{{#elemBefore ../discounts @index "subtotalWithCurrency"}}{{/elemBefore}}</th>
+                </tr>
+            </thead>
+            {{/unless}}
+
+            <!-- Discounts Entry -->
+            <tbody role="content">
+                <tr class="discounts">
+                    <td class="id">{{id}}</td>
+                    <td class="project-no">{{#if description}} {{description}} {{else}} {{__ "Discount"}} {{/if}}</td>
+                    <td colspan="3"></td>
+                    <td class="total">{{discount}}</td>
+                </tr>
+            </tbody>
+
+            <!-- Discounts Subtotal -->
+            {{#unless @last}}
+            <tbody role="footer">
+                <tr class="subtotal pagebreak">
+                    <td colspan="5" class="id">{{__ "Subtotal"}}</td>
+                    <td class="total">{{ subtotalWithCurrency }}</td>
+                </tr>
+            </tbody>
+            {{/unless}}
+
+        {{/each}}
+
+        <!-- Total -->
+        <tbody role="footer">
+            <tr>
+                <td colspan="4">&nbsp;</td>
+                <td>{{__ "Net_price"}}</td>
+                <td class="total">{{total.totalNetWithCurrency}}</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+                <td>{{__ "VAT"}} {{info.vat}}%</td>
+                <td class="total">{{total.totalVatWithCurrency}}</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+                <td class="heavy">{{__ "Total_price"}}</td>
+                <td class="total heavy">{{total.totalGrossWithCurrency}}</td>
+            </tr>
+            <!-- This is a Hack: DO NOT REMOVE OR CHANGE -->
+            <tr>
+                <td colspan="4">&nbsp;</td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Terms and Conditions -->
+    <table class="terms">
+        <thead>
+            <tr>
+                <th colspan="3">{{__ "Your_conditions"}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>&nbsp;</td>
+                <td>{{__ "Delivery_time"}}</td>
+                <td>{{_legacy "Working_dayWithCount" count=info.productionTime}} </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>{{__ "Delivery_date"}}</td>
+                <td>{{info.expectedDeliveryDate}}</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>{{__ "Shipping_terms"}}</td>
+                <td>{{_v info.shippingTerms}}</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>{{__ "Payment_terms"}}</td>
+                <td>{{_v info.paymentTerms}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Optional Comment Field -->
+    {{#if info.comments.[0]}}
+    <div class="comment-field">
+        <div class="title">{{__ "Special_remarks"}}</div>
+        {{#each info.comments}}
+        <p>{{this}}</p>
+        {{/each}}
+    </div>
+    {{/if}}
+
+    <!-- End Statement -->
+    <div class="ending">
+
+        {{#if info.isEU}}
+           <p>
+               {{__ "Confirmation.NoVat_requires_TaxId"}}
+           </p>
+        {{/if}}
+
+        <p>
+            {{__ "Confirmation.General_Sale_and_Delivery_Terms" webAgb=sender.webAgb }}
+        </p>
+        <p>
+            {{__ "Should_you_have_questions" telHref=sender.telHref phone=sender.phone}}
+        </p>
+        <p>
+            {{__ "Kind_regards"}}<br>
+            {{sender.contact}}
+        </p>
+    </div>
+</body>
+</html>
