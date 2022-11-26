@@ -16,7 +16,7 @@ MIT License
 ## Install
 
 ```bash
-$ npm i handlebars-i18n-cli
+$ npm i handlebars-i18n-cli --save-dev
 ```
 
 
@@ -240,6 +240,22 @@ $ i18n-collect my-project/**/*.html my-project/translation --update --lng=de,en,
 ```
 
 Leave out the language ending and json file extension and give only the base name for <target>. In this example case handlebars-i18n-cli would look for *translation.de.json*, *translation.en.json*, and *translation.en.json* to update them. A language file that does not exist yet will be generated.
+
+
+## Fix for "Command not found"
+
+In case you get an error trying to run `$ i18n-collect` like
+
+```bash
+bash: i18n-collect: command not found
+```
+
+you might need to link i18n-collect first. Running the following commands should fix this: 
+
+```bash
+cd node_modules/handlebars-i18n-cli
+sudo npm link
+```
 
 
 ## Run tests
