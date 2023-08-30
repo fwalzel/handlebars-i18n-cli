@@ -5,8 +5,8 @@ It will help to automatically extract translation strings from your handlebars t
 json files from it. It also helps to keep your translations up to date when changes are made in the templates.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+![Node.js Version](https://img.shields.io/badge/Node.js-14.x-green)
 [![Build](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)
-[![Code Quality](https://api.codiga.io/project/35110/score/svg)](https://api.codiga.io/project/35110/score/svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)
 
 ## License
@@ -49,6 +49,8 @@ From a very simple template like this …
 </body>
 </html>
 ```
+
+
 
 … the generated translations.json would be:
 
@@ -265,7 +267,3 @@ sudo npm link
 ```bash
 $ npm test
 ```
-
-
-
-
