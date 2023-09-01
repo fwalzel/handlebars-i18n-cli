@@ -9,7 +9,7 @@ install:
 script:
   - npm test
 
-after_success: 'npm run coveralls'
+after_success: 'npm run coverage'
 
 after_failure:
   - cat /Users/travis/.npm/_logs/*.log
