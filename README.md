@@ -7,12 +7,8 @@ json files from it. It also helps to keep your translations up to date when chan
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Node.js Version](https://img.shields.io/badge/Node.js-14.x-green)
 [![Build](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)
+![Coverage Status](https://coveralls.io/repos/github/fwalzel/handlebars-i18n-cli/badge.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)
-
-## License
-
-Copyright (c) 2022 Florian Walzel,
-MIT License
 
 
 ## Install
@@ -207,7 +203,7 @@ Write each language in a separate json file instead of a single one.
 $ i18n-collect my-project/template.html my-project/translation.json --lng=de,en,fr --separateLngFiles
 ```
 
-Will generate three json files: **translation.de.json**, **translation.en.json**, and **translation.en.json** each holding
+Will generate three json files: **translation.de.json**, **translation.en.json**, and **translation.fn.json** each holding
 only the translation for their respective language. By default all translations are written to a single json file.
 
 ---
@@ -265,5 +261,11 @@ sudo npm link
 ## Run tests
 
 ```bash
-$ npm test
+$ nyc npm test
 ```
+
+
+## License
+
+Copyright (c) 2022 Florian Walzel,
+MIT License
