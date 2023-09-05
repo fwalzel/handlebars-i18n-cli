@@ -21,6 +21,9 @@ jobs:
           npm install
           npm test -- --coverage
 
+      - name: Wait for coverage report
+        run: sleep 5
+
       - name: Publish to coveralls.io
         uses: coverallsapp/github-action@v1.1.2
         with:

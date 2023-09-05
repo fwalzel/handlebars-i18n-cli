@@ -1,0 +1,14 @@
+{
+  "reporter": [
+    "text-summary",
+    "lcov"
+  ],
+  "all": true,
+  "include": [
+    "src/i18n-collect.js"
+  ],
+  "exclude": [
+    "node_modules/**",
+    "**/*.test.js"
+  ]
+}
