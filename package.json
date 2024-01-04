@@ -1,6 +1,6 @@
 {
   "name": "handlebars-i18n-cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A CLI tool to support node module handlebars-i18n",
   "main": "./src/i18n-collect.js",
   "bin": {
@@ -11,7 +11,7 @@
     "access": "public"
   },
   "scripts": {
-    "test" : "nyc mocha",
+    "test": "nyc mocha",
     "test:istanbul": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec",
     "coveralls": "npm test && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "i18n-collect": "cd bin && node i18n-collect"
