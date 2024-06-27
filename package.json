@@ -1,7 +1,7 @@
 {
   "name": "handlebars-i18n-cli",
   "version": "1.0.5",
-  "description": "A CLI tool to support node module handlebars-i18n",
+  "description": "A CLI tool to support node module handlebars-i18n.",
   "main": "./src/i18n-collect.js",
   "bin": {
     "@fwalzel/handlebars-i18n-cli": "./bin/i18n-collect",
@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/fwalzel/handlebars-i18n-cli#readme",
   "dependencies": {
+    "commander": "^12.1.0",
     "esm": "^3.2.25",
     "util": "^0.12.5"
   },
