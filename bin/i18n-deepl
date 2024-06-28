@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { program } = require('commander');
-const { translateTexts, getSupportedLanguages } = require('src/i18n-deepl.js');
+const { translateTexts, readI18nJson, getSupportedLanguages } = require('../src/i18n-deepl.js');
 
 program
   .command('languages')

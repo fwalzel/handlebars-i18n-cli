@@ -48,8 +48,13 @@ async function getSupportedLanguages() {
   }
 }
 
+async function readI18nJson() {
+
+}
+
+
 // Function to translate an array of strings using the DeepL API
-async function translateTexts(texts, targetLang) {
+async function translateTexts(texts, targetLang, apiKey) {
   try {
     // Fetch supported languages
     const supportedLanguages = await getSupportedLanguages();
@@ -62,7 +67,7 @@ async function translateTexts(texts, targetLang) {
     const responses = await Promise.all(texts.map(text => {
       return axios.post('https://api-free.deepl.com/v2/translate', null, {
         params: {
-          auth_key: DEEPL_API_KEY,
+          auth_key: apiKey || DEEPL_API_KEY,
           text: text,
           target_lang: targetLang
         }
@@ -80,6 +85,7 @@ async function translateTexts(texts, targetLang) {
 // Export the functions
 module.exports = {
   translateTexts,
+  readI18nJson,
   getSupportedLanguages
 };
 
