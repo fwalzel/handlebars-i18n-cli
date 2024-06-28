@@ -31,6 +31,18 @@ const axios = require('axios');
 const deepl = require('deepl-node');
 
 
+async function readI18nJson(sourceLang, targetLang) {
+
+}
+
+async function writeI18nJson() {
+
+}
+
+async function setAuthKey() {
+
+}
+
 // Function to fetch supported languages from the DeepL API
 async function getSupportedLanguages(authKey) {
   try {
@@ -45,14 +57,6 @@ async function getSupportedLanguages(authKey) {
     console.error('Error fetching supported languages:', error.response ? error.response.data : error.message);
     throw error;
   }
-}
-
-async function readI18nJson(sourceLang, targetLang) {
-
-}
-
-async function writeI18nJson() {
-
 }
 
 // Function to translate an array of strings using the DeepL API
