@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
 require = require('esm')(module);
-require('../i18n-deepl.js/i18n-collect').cli(process.argv);
+require('../src/i18n-collect').cli(process.argv);

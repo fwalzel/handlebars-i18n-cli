@@ -11,7 +11,7 @@ chai.use(require('chai-as-promised'));
 const assert = chai.assert;
 const expect = chai.expect;
 const stdout = require('test-console').stdout;
-const { cli } = require('../i18n-deepl.js/i18n-collect');
+const { cli } = require('../src/i18n-collect');
 
 describe('handlebars-i18n-cli Tests', () => {
 
