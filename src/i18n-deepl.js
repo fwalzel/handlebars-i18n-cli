@@ -28,16 +28,15 @@
 
 
 const axios = require('axios');
+const deepl = require('deepl-node');
 
-// Replace with your actual DeepL API key
-const DEEPL_API_KEY = 'your-deepl-api-key';
 
 // Function to fetch supported languages from the DeepL API
-async function getSupportedLanguages() {
+async function getSupportedLanguages(authKey) {
   try {
     const response = await axios.get('https://api-free.deepl.com/v2/languages', {
       params: {
-        auth_key: DEEPL_API_KEY,
+        auth_key: authKey || process.env.DEEPL_API_KEY,
         type: 'target'
       }
     });
@@ -48,44 +47,28 @@ async function getSupportedLanguages() {
   }
 }
 
-async function readI18nJson() {
+async function readI18nJson(sourceLang, targetLang) {
 
 }
 
+async function writeI18nJson() {
+
+}
 
 // Function to translate an array of strings using the DeepL API
-async function translateTexts(texts, targetLang, apiKey) {
-  try {
-    // Fetch supported languages
-    const supportedLanguages = await getSupportedLanguages();
-
-    // Check if targetLang is valid
-    if (!supportedLanguages.some(lang => lang.language === targetLang)) {
-      throw new Error(`Invalid target language: ${targetLang}`);
-    }
-
-    const responses = await Promise.all(texts.map(text => {
-      return axios.post('https://api-free.deepl.com/v2/translate', null, {
-        params: {
-          auth_key: apiKey || DEEPL_API_KEY,
-          text: text,
-          target_lang: targetLang
-        }
-      });
-    }));
-
-    const translations = responses.map(response => response.data.translations[0].text);
-    return translations;
-  } catch (error) {
-    console.error('Error translating texts:', error.response ? error.response.data : error.message);
-    throw error;
-  }
+async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
+  console.log(`auth-key: ${authKey}`);
+  const translator = new deepl.Translator(authKey);
+  const res = await translator.translateText(texts, sourceLang, targetLang, options);
+  console.log(res);
+  return res;
 }
 
 // Export the functions
 module.exports = {
   translateTexts,
   readI18nJson,
+  writeI18nJson,
   getSupportedLanguages
 };
 
@@ -155,10 +138,10 @@ exports.cli = async (argv) => {
 
   //  answer to argument '--configure'
   if (args[0].startsWith('--configure=')) {
-    const deeplApiKey = args[0].split('=')[1]
+    const deeplauthKey = args[0].split('=')[1]
     const jsonFileName = (args[1] === '--pro-api') ?
       'deepl-pro-api-key' : 'deepl-free-api-key'
-    if (await writeJSON(`${jsonFileName}.json`, { apiKey : deeplApiKey }))
+    if (await writeJSON(`${jsonFileName}.json`, { authKey : deeplauthKey }))
       console.log('\x1b[32m%s\x1b[0m', `Saved Deepl API key in ${path.resolve(jsonFileName)}.json`)
     process.exit(0)
   }

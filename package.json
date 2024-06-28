@@ -39,6 +39,7 @@
     "async-file-tried": "^1.1.0",
     "axios": "^1.7.2",
     "commander": "^12.1.0",
+    "deepl-node": "^1.13.0",
     "esm": "^3.2.25",
     "util": "^0.12.5"
   },

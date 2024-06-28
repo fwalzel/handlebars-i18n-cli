@@ -4,11 +4,16 @@ const { program } = require('commander');
 const { translateTexts, readI18nJson, getSupportedLanguages } = require('../src/i18n-deepl.js');
 
 program
+  .option('--api-key <apiKey>', 'DeepL API key')
+  .option('--target-lang <targetLang>', 'Target language for translation');
+
+program
   .command('languages')
   .description('List supported languages')
   .action(async () => {
+    const options = program.opts();
     try {
-      const languages = await getSupportedLanguages();
+      const languages = await getSupportedLanguages(options.apiKey);
       console.log('Supported Languages:');
       languages.forEach(lang => console.log(`${lang.language} - ${lang.name}`));
     } catch (error) {
@@ -17,16 +22,22 @@ program
   });
 
 program
-  .command('translate <targetLang> [texts...]')
+  .command('translate [texts...]')
   .description('Translate texts to the target language')
-  .action(async (targetLang, texts) => {
+  .action(async (texts) => {
+    const options = program.opts();
     if (!texts.length) {
       console.error('Please provide texts to translate.');
       process.exit(1);
     }
 
+    if (!options.targetLang) {
+      console.error('Please provide a target language using --target-lang.');
+      process.exit(1);
+    }
+
     try {
-      const translations = await translateTexts(texts, targetLang);
+      const translations = await translateTexts(options.apiKey, texts, null, options.targetLang);
       translations.forEach((translation, index) => {
         console.log(`Original: ${texts[index]}`);
         console.log(`Translated: ${translation}`);
