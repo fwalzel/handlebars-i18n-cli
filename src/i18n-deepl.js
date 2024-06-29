@@ -29,18 +29,34 @@
 
 const axios = require('axios');
 const deepl = require('deepl-node');
+const fs = require('async-file-tried');
 
-
-async function readI18nJson(sourceLang, targetLang) {
-
+async function readI18nJson(file, sourceLang) {
+  let [res, err] = await fs.readJson(file, 'utf8');
+  if (err) {
+    console.error(`Unable to read file ${file}`);
+    throw err;
+  }
+  return (sourceLang && res[sourceLang])
+    ? res[sourceLang]
+    : res;
 }
 
 async function writeI18nJson() {
 
 }
 
-async function setAuthKey() {
-
+async function setAuthKey(key) {
+  if (typeof key !== 'string' || key === '') {
+    throw new Error('Provided Argument is not a valid deepl auth key.')
+  }
+  const file = 'deepl-auth.env';
+  let [res, err] = await fs.writeFile(file, `export DEEPL_AUTH_KEY='${key}'`, 'utf8');
+  if (err) {
+    console.error(`Unable to read file ${file}`);
+    throw err;
+  }
+  return true;
 }
 
 // Function to fetch supported languages from the DeepL API
@@ -48,7 +64,7 @@ async function getSupportedLanguages(authKey) {
   try {
     const response = await axios.get('https://api-free.deepl.com/v2/languages', {
       params: {
-        auth_key: authKey || process.env.DEEPL_API_KEY,
+        auth_key: authKey || process.env.DEEPL_AUTH_KEY,
         type: 'target'
       }
     });
@@ -61,10 +77,10 @@ async function getSupportedLanguages(authKey) {
 
 // Function to translate an array of strings using the DeepL API
 async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
-  console.log(`auth-key: ${authKey}`);
+  //console.log(`auth-key: ${authKey}`);
   const translator = new deepl.Translator(authKey);
   const res = await translator.translateText(texts, sourceLang, targetLang, options);
-  console.log(res);
+  //console.log(res);
   return res;
 }
 
@@ -75,13 +91,6 @@ module.exports = {
   writeI18nJson,
   getSupportedLanguages
 };
-
-
-
-
-
-
-
 
 
 /*
