@@ -1,11 +1,7 @@
 #!/usr/bin/env node
 
-const { program } = require('commander');
-const { translateTexts, readI18nJson, getSupportedLanguages } = require('../src/i18n-deepl.js');
-
-program
-  .option('--api-key <apiKey>', 'DeepL API key')
-  .option('--target-lang <targetLang>', 'Target language for translation');
+import { program } from 'commander';
+import { getSupportedLanguages, setAuthKey, translateJSON } from '../src/i18n-deepl.js';
 
 program
   .command('languages')
@@ -13,7 +9,7 @@ program
   .action(async () => {
     const options = program.opts();
     try {
-      const languages = await getSupportedLanguages(options.apiKey);
+      const languages = await getSupportedLanguages(options.authKey);
       console.log('Supported Languages:');
       languages.forEach(lang => console.log(`${lang.language} - ${lang.name}`));
     } catch (error) {
@@ -22,9 +18,23 @@ program
   });
 
 program
-  .command('translate [texts...]')
+  .command('set-auth authKey')
+  .description('Sets the DeepL Auth key as environmental variable for node.')
+  .action(async (authKey) => {
+    await setAuthKey(authKey);
+    return console.log('Success. DeepL Auth key is set.');
+  });
+
+program
+  .command('translate')
   .description('Translate texts to the target language')
-  .action(async (texts) => {
+  .arguments('<source> <target>')
+  .option('--auth-key <authKey>', 'DeepL Auth key')
+  .option('-dr, --dryRun', 'Perform a dry run and log it without making any changes to data')
+  .option('--src-lang <sourceLang>', 'Source language for translation, such as "en"')
+  .option('--target-lang <targetLang>', 'Target language for translation, such as "zh"')
+  .option('--opts <options>', 'DeepL API options, given as object, i.E. --opts="{formality: \'less\'}"')
+  .action(async (source, target) => {
     const options = program.opts();
     if (!texts.length) {
       console.error('Please provide texts to translate.');
@@ -37,11 +47,15 @@ program
     }
 
     try {
-      const translations = await translateTexts(options.apiKey, texts, null, options.targetLang);
-      translations.forEach((translation, index) => {
-        console.log(`Original: ${texts[index]}`);
-        console.log(`Translated: ${translation}`);
-      });
+       await translateJSON(
+        options.authKey,
+        source,
+        target,
+        options.sourceLang,
+        options.targetLang,
+        options.options,
+      );
+      console.log('success.')
     } catch (error) {
       console.error('Error translating texts:', error);
     }

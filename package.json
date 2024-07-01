@@ -3,6 +3,7 @@
   "version": "1.0.5",
   "description": "A CLI tool to support node module handlebars-i18n.",
   "main": "src/i18n-collect.js",
+  "type": "module",
   "bin": {
     "@fwalzel/handlebars-i18n-cli": "./bin/i18n-collect",
     "i18n-collect": "./bin/i18n-collect",
