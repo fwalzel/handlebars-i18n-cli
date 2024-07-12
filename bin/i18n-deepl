@@ -31,34 +31,24 @@ program
 program
   .command('translate')
   .description('Translate texts to the target language')
-  .arguments('<source> <target>')
+  .arguments('<source> <target> <targetLang>')
   .option('--auth-key <authKey>', 'DeepL Auth key')
   .option('-dr, --dryRun', 'Perform a dry run and log it without making any changes to data')
   .option('--source-lang <sourceLang>', 'Source language for translation, such as "en"')
-  .option('--target-lang <targetLang>', 'Target language for translation, such as "zh"')
   .option('--opts <options>', 'DeepL API options, given as object, i.E. --opts="{formality: \'less\'}"')
-  .action(async (source, target, options) => {
+  .action(
+    async (source, target, targetLang, options) => {
 
-    if (!source) {
-      console.error('Please provide argument <source> as file path to a JSON file holding the translation base.');
-      process.exit(1);
-    }
-
-    if (!options.targetLang) {
-      console.error('Please provide a target language using --target-lang.');
-      process.exit(1);
-    }
-
-    console.log(options);
+    // console.log(options);
 
     try {
        await translateJSON(
         options.authKey || process.env.DEEPL_AUTH_KEY,
         source,
         target,
-        options.sourceLang,
-        options.targetLang,
-        options.options,
+        targetLang,
+       options.sourceLang || null,
+        options.options || {}
       );
       console.log('success.')
     } catch (error) {

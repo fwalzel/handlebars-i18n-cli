@@ -121,7 +121,7 @@ function flattenObject(obj) {
  * @param values
  * @returns {*}
  */
-function mapArrayToObject(obj, values) {
+function mapArrayToObject(obj, values, childParam) {
   let index = 0;
 
   function recurse(curr) {
@@ -129,7 +129,7 @@ function mapArrayToObject(obj, values) {
       if (typeof curr[key] === 'object' && curr[key] !== null) {
         recurse(curr[key]);
       } else {
-        curr[key] = values[index++];
+        curr[key] = values[index++][childParam];
       }
     }
   }
@@ -167,7 +167,7 @@ async function readI18nJson(file, sourceLang) {
  * @param options
  * @returns {Promise<boolean>}
  */
-async function translateJSON(authKey, JsonSrc, JsonTarget, sourceLang, targetLang, options) {
+async function translateJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceLang, options) {
   console.log(`-- translateJSON --`);
   console.log(`authKey: ${authKey}`);
   console.log(`JsonSrc: ${JsonSrc}`);
@@ -178,9 +178,9 @@ async function translateJSON(authKey, JsonSrc, JsonTarget, sourceLang, targetLan
   const srcObj = await readI18nJson(JsonSrc, sourceLang);
   const translValues = flattenObject(srcObj);
   const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, options);
-  const translObj = mapArrayToObject(srcObj, translRes);
+  const translObj = mapArrayToObject(srcObj, translRes, 'text');
   //todo: if JSON target = null append to existing
-  const [res, err] = await fs.writeJson(JsonTarget, translObj, 'utf8');
+  const [res, err] = await fs.writeJson(JsonTarget, translObj);
   if (err) {
     console.error(`Unable to write file ${JsonTarget}`);
     throw err;
