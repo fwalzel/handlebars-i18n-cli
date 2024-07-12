@@ -34,7 +34,7 @@ program
   .arguments('<source> <target>')
   .option('--auth-key <authKey>', 'DeepL Auth key')
   .option('-dr, --dryRun', 'Perform a dry run and log it without making any changes to data')
-  .option('--src-lang <sourceLang>', 'Source language for translation, such as "en"')
+  .option('--source-lang <sourceLang>', 'Source language for translation, such as "en"')
   .option('--target-lang <targetLang>', 'Target language for translation, such as "zh"')
   .option('--opts <options>', 'DeepL API options, given as object, i.E. --opts="{formality: \'less\'}"')
   .action(async (source, target, options) => {

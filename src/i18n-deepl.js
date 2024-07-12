@@ -168,12 +168,15 @@ async function readI18nJson(file, sourceLang) {
  * @returns {Promise<boolean>}
  */
 async function translateJSON(authKey, JsonSrc, JsonTarget, sourceLang, targetLang, options) {
+  console.log(`-- translateJSON --`);
+  console.log(`authKey: ${authKey}`);
+  console.log(`JsonSrc: ${JsonSrc}`);
+  console.log(`JsonTarget: ${JsonTarget}`);
+  console.log(`sourceLang: ${sourceLang}`);
+  console.log(`targetLang: ${targetLang}`);
+
   const srcObj = await readI18nJson(JsonSrc, sourceLang);
   const translValues = flattenObject(srcObj);
-  console.log(authKey);
-  console.log(translValues);
-  console.log(sourceLang);
-  console.log(targetLang);
   const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, options);
   const translObj = mapArrayToObject(srcObj, translRes);
   //todo: if JSON target = null append to existing
