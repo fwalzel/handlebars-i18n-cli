@@ -2,6 +2,9 @@
 
 import { program } from 'commander';
 import { getSupportedLanguages, setAuthKey, translateJSON } from '../src/i18n-deepl.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 program
   .command('languages')
@@ -34,10 +37,10 @@ program
   .option('--src-lang <sourceLang>', 'Source language for translation, such as "en"')
   .option('--target-lang <targetLang>', 'Target language for translation, such as "zh"')
   .option('--opts <options>', 'DeepL API options, given as object, i.E. --opts="{formality: \'less\'}"')
-  .action(async (source, target) => {
-    const options = program.opts();
-    if (!texts.length) {
-      console.error('Please provide texts to translate.');
+  .action(async (source, target, options) => {
+
+    if (!source) {
+      console.error('Please provide argument <source> as file path to a JSON file holding the translation base.');
       process.exit(1);
     }
 
@@ -46,9 +49,11 @@ program
       process.exit(1);
     }
 
+    console.log(options);
+
     try {
        await translateJSON(
-        options.authKey,
+        options.authKey || process.env.DEEPL_AUTH_KEY,
         source,
         target,
         options.sourceLang,

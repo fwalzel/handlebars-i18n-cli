@@ -82,7 +82,9 @@ async function getSupportedLanguages(authKey) {
  * @returns {Promise<TextResult|TextResult[]>}
  */
 async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
-  //console.log(`auth-key: ${authKey}`);
+  console.log(`auth-key: ${authKey}`);
+  console.log(`texte: ${texts}`);
+  console.log(`sourceLang: ${sourceLang}`);
   const translator = new deepl.Translator(authKey);
   const res = await translator.translateText(texts, sourceLang, targetLang, options);
   //console.log(res);
@@ -148,6 +150,8 @@ async function readI18nJson(file, sourceLang) {
     console.error(`Unable to read file ${file}`);
     throw err;
   }
+  console.log(`result reading JSON:`);
+  console.log(res);
   return (sourceLang && res[sourceLang])
     ? res[sourceLang]
     : res;
@@ -164,9 +168,13 @@ async function readI18nJson(file, sourceLang) {
  * @returns {Promise<boolean>}
  */
 async function translateJSON(authKey, JsonSrc, JsonTarget, sourceLang, targetLang, options) {
-  const srcObj = readI18nJson(JsonSrc, sourceLang);
+  const srcObj = await readI18nJson(JsonSrc, sourceLang);
   const translValues = flattenObject(srcObj);
-  const translRes = translateTexts(authKey, translValues, sourceLang, targetLang, options);
+  console.log(authKey);
+  console.log(translValues);
+  console.log(sourceLang);
+  console.log(targetLang);
+  const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, options);
   const translObj = mapArrayToObject(srcObj, translRes);
   //todo: if JSON target = null append to existing
   const [res, err] = await fs.writeJson(JsonTarget, translObj, 'utf8');
