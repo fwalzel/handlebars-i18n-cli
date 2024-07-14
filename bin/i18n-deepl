@@ -8,7 +8,7 @@ dotenv.config();
 
 program
   .command('languages')
-  .description('List supported languages')
+  .description('List DeepL’s supported languages.')
   .action(async () => {
     const options = program.opts();
     try {
@@ -22,24 +22,29 @@ program
 
 program
   .command('set-auth authKey')
-  .description('Sets the DeepL Auth key as environmental variable for node.')
+  .description('Sets the DeepL Auth key as environmental variable.')
   .action(async (authKey) => {
     await setAuthKey(authKey);
-    return console.log('Success. DeepL Auth key is set.');
+    return console.log('Success. DeepL Auth key is now set.');
   });
 
 program
   .command('translate')
-  .description('Translate texts to the target language')
+  .description('Translate texts from a JSON file to the target language.')
   .arguments('<source> <target> <targetLang>')
-  .option('--auth-key <authKey>', 'DeepL Auth key')
-  .option('-dr, --dryRun', 'Perform a dry run and log it without making any changes to data')
-  .option('--source-lang <sourceLang>', 'Source language for translation, such as "en"')
-  .option('--opts <options>', 'DeepL API options, given as object, i.E. --opts="{formality: \'less\'}"')
+  .option('--auth-key <authKey>', 'The DeepL Auth Key.')
+  .option('--source-lang <sourceLang>', 'Source language for translation, such as "de".')
+  .option('--opts <options>', 'DeepL API options, given as object, i.E. --opts="{formality: \'less\'}."')
+  .option('--source-sub <sourceSub>', 'Send only a sub-entry of the source JSON to DeepL API. ' +
+    'I.E. --source-sub="[\'translations\', \'de\']" will route to the entry \'translations\' and within it will send the entries of \'en\' to translation.')
+  .option('--target-sub', 'Write the response from the translation API not to the root of the JSON file but to a sub-entry. ' +
+    'I.E. --target-sub="[\'translations\', \'enUS\']" will insert the translation in {\'translations\': { \'enUS\': { ... }}.')
+  .option('--dryRun, -dr', 'Perform a dry run and log it without making any changes to actual data.')
+  .option('--log, -l', 'Log translation response to console.')
   .action(
     async (source, target, targetLang, options) => {
 
-    // console.log(options);
+    console.log(options);
 
     try {
        await translateJSON(
@@ -47,8 +52,8 @@ program
         source,
         target,
         targetLang,
-       options.sourceLang || null,
-        options.options || {}
+         options.sourceLang || null,
+         options.options || {}
       );
       console.log('success.')
     } catch (error) {

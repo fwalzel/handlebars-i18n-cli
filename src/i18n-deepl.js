@@ -145,9 +145,9 @@ function mapArrayToObject(obj, values, childParam) {
  * @returns {Promise<*>}
  */
 async function readI18nJson(file, sourceLang) {
-  let [res, err] = await fs.readJson(file, 'utf8');
+  let [res, err] = await fs.readJson(file);
   if (err) {
-    console.error(`Unable to read file ${file}`);
+    console.error(`Unable to read file: ${file}`);
     throw err;
   }
   console.log(`result reading JSON:`);
