@@ -140,21 +140,45 @@ function mapArrayToObject(obj, values, childParam) {
 
 /**
  *
+ * @param obj
+ * @param path
+ * @returns {*}
+ */
+function getValueFromPath(obj, path) {
+  // Split the path into an array of keys
+  const keys = path.split('.');
+
+  // Use reduce to traverse the object
+  return keys.reduce((acc, key) => {
+    if (acc && acc.hasOwnProperty(key)) {
+      return acc[key];
+    }
+    return undefined; // Return undefined if any key is not found
+  }, obj);
+}
+
+/**
+ *
  * @param file
- * @param sourceLang
+ * @param subNode
  * @returns {Promise<*>}
  */
-async function readI18nJson(file, sourceLang) {
+async function readI18nJson(file, subNode) {
   let [res, err] = await fs.readJson(file);
   if (err) {
     console.error(`Unable to read file: ${file}`);
     throw err;
   }
-  console.log(`result reading JSON:`);
-  console.log(res);
-  return (sourceLang && res[sourceLang])
-    ? res[sourceLang]
-    : res;
+  //console.log(`result reading JSON:`);
+  //console.log(res);
+  if (typeof subNode === 'string') {
+    const subEntry = getValueFromPath(res, subNode);
+    if (subEntry)
+      return subEntry;
+    else
+      throw new Error()
+  }
+  else return res;
 }
 
 /**

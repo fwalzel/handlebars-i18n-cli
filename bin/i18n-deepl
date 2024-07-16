@@ -36,7 +36,7 @@ program
   .option('--source-lang <sourceLang>', 'Source language for translation, such as "de".')
   .option('--opts <options>', 'DeepL API options, given as object, i.E. --opts="{formality: \'less\'}."')
   .option('--source-sub <sourceSub>', 'Send only a sub-entry of the source JSON to DeepL API. ' +
-    'I.E. --source-sub="[\'translations\', \'de\']" will route to the entry \'translations\' and within it will send the entries of \'en\' to translation.')
+    'I.E. --source-sub="translations.de]" will route to the nested entry \'translations\' and within it will send the entries of \'en\' to translation.')
   .option('--target-sub', 'Write the response from the translation API not to the root of the JSON file but to a sub-entry. ' +
     'I.E. --target-sub="[\'translations\', \'enUS\']" will insert the translation in {\'translations\': { \'enUS\': { ... }}.')
   .option('--dryRun, -dr', 'Perform a dry run and log it without making any changes to actual data.')
