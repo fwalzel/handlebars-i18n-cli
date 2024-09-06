@@ -25,7 +25,7 @@ program
   .description('Sets the DeepL Auth key as environmental variable.')
   .action(async (authKey) => {
     await setAuthKey(authKey);
-    return console.log('Success. DeepL Auth key is now set.');
+    return console.log('Success. DeepL Auth Key is now set.');
   });
 
 program
