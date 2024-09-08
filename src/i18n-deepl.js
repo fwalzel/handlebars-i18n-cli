@@ -133,7 +133,7 @@ async function setAuthKey(key) {
  */
 async function getSupportedLanguages(authKey) {
   authKey = authKey || process.env.DEEPL_AUTH_KEY;
-  if (!authKey)
+  if (typeof authKey !== 'string')
     throw new Error('Invalid argument authKey provided.');
   try {
     const response = await axios.get('https://api-free.deepl.com/v2/languages', {

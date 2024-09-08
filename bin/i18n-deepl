@@ -1,28 +1,27 @@
 #!/usr/bin/env node
 
+import dotenv from 'dotenv';
 import { program } from 'commander';
 import { getSupportedLanguages, setAuthKey, translateJSON } from '../src/i18n-deepl.js';
-import dotenv from 'dotenv';
-
 dotenv.config();
 
 program
   .command('languages')
   .description('List DeepL’s supported languages.')
-  .action(async () => {
-    const options = program.opts();
-    try {
-      const languages = await getSupportedLanguages(options.authKey);
+  .option('--auth-key <authKey>', 'The DeepL Auth Key.')
+  .action(async (options) => {
+      const k = process.env;
+      const authKey = options.authKey || process.env.DEEPL_AUTH_KEY;
+      console.log("Current working directory:", process.cwd());
+      console.log(k);
+      const languages = await getSupportedLanguages(authKey);
       console.log('Supported Languages:');
       languages.forEach(lang => console.log(`${lang.language} - ${lang.name}`));
-    } catch (error) {
-      console.error('Error fetching supported languages:', error);
-    }
   });
 
 program
   .command('set-auth authKey')
-  .description('Sets the DeepL Auth key as environmental variable.')
+  .description('Sets the DeepL Auth Key as environmental variable.')
   .action(async (authKey) => {
     await setAuthKey(authKey);
     return console.log('Success. DeepL Auth Key is now set.');
