@@ -116,8 +116,8 @@ function __getValueFromPath(obj, path) {
 async function setAuthKey(key) {
   if (typeof key !== 'string' || key === '')
     throw new Error('Provided argument is not a valid deepl auth key.');
-  const file = 'deepl-auth.env';
-  let [res, err] = await fs.writeFile(file, `export DEEPL_AUTH_KEY='${key}'`);
+  const file = '.env';
+  let [res, err] = await fs.writeFile(file, `export DEEPL_AUTH=${key}`);
   if (err) {
     console.error(`Unable to read file ${file}`);
     throw err;

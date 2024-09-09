@@ -10,10 +10,7 @@ program
   .description('List DeepL’s supported languages.')
   .option('--auth-key <authKey>', 'The DeepL Auth Key.')
   .action(async (options) => {
-      const k = process.env;
-      const authKey = options.authKey || process.env.DEEPL_AUTH_KEY;
-      console.log("Current working directory:", process.cwd());
-      console.log(k);
+      const authKey = options.authKey || process.env.DEEPL_AUTH;
       const languages = await getSupportedLanguages(authKey);
       console.log('Supported Languages:');
       languages.forEach(lang => console.log(`${lang.language} - ${lang.name}`));
@@ -47,7 +44,7 @@ program
 
     try {
        await translateJSON(
-        options.authKey || process.env.DEEPL_AUTH_KEY,
+        options.authKey || process.env.DEEPL_AUTH,
         source,
         target,
         targetLang,

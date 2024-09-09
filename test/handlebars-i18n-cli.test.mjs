@@ -215,7 +215,7 @@ describe('i18n-deepl setAuthKey', () => {
     const validKey = 'valid-auth-key';
     const result = await setAuthKey(validKey);
     expect(result).to.be.true;
-    //expect(writeFileStub).to.have.been.calledOnceWithExactly('deepl-auth.env', `export DEEPL_AUTH_KEY='${validKey}'`);
+    //expect(writeFileStub).to.have.been.calledOnceWithExactly('.env', `export DEEPL_AUTH_KEY='${validKey}'`);
   });
 
   /*it('should throw an error if fs.writeFile fails', async function() {
@@ -223,7 +223,7 @@ describe('i18n-deepl setAuthKey', () => {
     writeFileStub.rejects(fsError); // Simulate file write error
     const validKey = 'valid-auth-key';
     await expect(await setAuthKey(validKey)).to.be.rejectedWith(fsError);
-    expect(writeFileStub).to.have.been.calledOnceWithExactly('deepl-auth.env', `export DEEPL_AUTH_KEY='${validKey}'`);
+    expect(writeFileStub).to.have.been.calledOnceWithExactly('.env', `export DEEPL_AUTH_KEY='${validKey}'`);
   });*/
 
 });
