@@ -30,6 +30,7 @@
 import deepl from 'deepl-node';
 import axios from 'axios';
 import fs from 'async-file-tried';
+import path from 'path';
 
 
 /****************************************
@@ -184,7 +185,7 @@ async function readI18nJson(file, subNode) {
     else
       throw new Error()
   }
-  else return res;
+  return res;
 }
 
 /**
@@ -192,12 +193,13 @@ async function readI18nJson(file, subNode) {
  * @param authKey
  * @param JsonSrc
  * @param JsonTarget
- * @param sourceLang
  * @param targetLang
+ * @param sourceLang
+ * @param sourceSub
  * @param options
  * @returns {Promise<boolean>}
  */
-async function translateJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceLang, options) {
+async function translateJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceLang, sourceSub, options) {
   console.log(`-- translateJSON --`);
   console.log(`authKey: ${authKey}`);
   console.log(`JsonSrc: ${JsonSrc}`);
@@ -209,8 +211,24 @@ async function translateJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceLan
   const translValues = __flattenObj(srcObj);
   const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, options);
   const translObj = __mapArrayToObj(srcObj, translRes, 'text');
-  //todo: if JSON target = null append to existing
-  const [res, err] = await fs.writeJson(JsonTarget, translObj);
+  let resultObj;
+  // check if source and target are identical
+  if (fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget))) {
+    if (!sourceSub) {
+      if (srcObj[targetLang])
+        Object.assign(srcObj[targetLang], translObj);
+      else
+        srcObj[targetLang] = translObj;
+        resultObj = srcObj;
+    } else {
+
+    }
+  }
+  else {
+    resultObj = translObj;
+  }
+  // write out result
+  const [res, err] = await fs.writeJson(JsonTarget, resultObj);
   if (err) {
     console.error(`Unable to write file ${JsonTarget}`);
     throw err;
