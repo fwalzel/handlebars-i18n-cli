@@ -132,7 +132,6 @@ async function setAuthKey(key) {
  * @returns {Promise<*>}
  */
 async function getSupportedLanguages(authKey) {
-  authKey = authKey || process.env.DEEPL_AUTH_KEY;
   if (typeof authKey !== 'string')
     throw new Error('Invalid argument authKey provided.');
   try {
@@ -149,7 +148,6 @@ async function getSupportedLanguages(authKey) {
   }
 }
 
-
 /**
  * Translate a string or an array of strings using the DeepL API
  *
@@ -161,15 +159,11 @@ async function getSupportedLanguages(authKey) {
  * @returns {Promise<TextResult|TextResult[]>}
  */
 async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
-  console.log(`auth-key: ${authKey}`);
-  console.log(`texte: ${texts}`);
-  console.log(`sourceLang: ${sourceLang}`);
+  if (typeof authKey !== 'string')
+    throw new Error('Invalid argument authKey provided.');
   const translator = new deepl.Translator(authKey);
-  const res = await translator.translateText(texts, sourceLang, targetLang, options);
-  //console.log(res);
-  return res;
+  return await translator.translateText(texts, sourceLang, targetLang, options);
 }
-
 
 /**
  *
@@ -183,8 +177,6 @@ async function readI18nJson(file, subNode) {
     console.error(`Unable to read file: ${file}`);
     throw err;
   }
-  //console.log(`result reading JSON:`);
-  //console.log(res);
   if (typeof subNode === 'string') {
     const subEntry = __getValueFromPath(res, subNode);
     if (subEntry)

@@ -11,6 +11,7 @@ import fs from 'fs';
 import chaiAsPromised from 'chai-as-promised';
 import sinonChai from 'sinon-chai';
 import axios from 'axios';
+import deepl from 'deepl-node'; // Assuming deepl is imported in the module
 import {stdout} from 'test-console';
 const { assert, expect } = chai;
 chai.use(chaiAsPromised);
@@ -262,5 +263,62 @@ describe('i18n-deepl getSupportedLanguages', function () {
     axiosGetStub.rejects(new Error('Network error'));
 
     await expect(getSupportedLanguages('valid-auth-key')).to.be.rejectedWith('Network error');
+  });
+});
+
+describe('i18n-deepl translateTexts', () => {
+  let authKey, texts, sourceLang, targetLang, options, translatorStub;
+
+  beforeEach(() => {
+    authKey = 'valid-auth-key';
+    texts = ['Hello', 'World'];
+    sourceLang = 'EN';
+    targetLang = 'FR';
+    options = { formality: 'informal' };
+
+    // Mock deepl.Translator
+    translatorStub = sinon.stub(new deepl.Translator(authKey));
+    sinon.stub(deepl, 'Translator').returns(translatorStub);
+  });
+
+  afterEach(() => {
+    sinon.restore(); // Reset all stubs/mocks/spies between tests
+  });
+
+  it('should throw an error if authKey is not a string', async () => {
+    try {
+      await translateTexts(12345, texts, sourceLang, targetLang, options);
+    } catch (error) {
+      expect(error.message).to.equal('Invalid argument authKey provided.');
+    }
+  });
+
+  it('should call deepl.Translator with correct authKey', async () => {
+    translatorStub.translateText.resolves(['Bonjour', 'Monde']);
+
+    await translateTexts(authKey, texts, sourceLang, targetLang, options);
+
+    expect(deepl.Translator).to.have.been.calledWith(authKey);
+    expect(translatorStub.translateText).to.have.been.calledWith(texts, sourceLang, targetLang, options);
+  });
+
+  it('should return translated texts from deepl.Translator', async () => {
+    const translatedTexts = ['Bonjour', 'Monde'];
+    translatorStub.translateText.resolves(translatedTexts);
+
+    const result = await translateTexts(authKey, texts, sourceLang, targetLang, options);
+
+    expect(result).to.deep.equal(translatedTexts);
+  });
+
+  it('should throw an error when deepl.Translator.translateText fails', async () => {
+    const error = new Error('Translation failed');
+    translatorStub.translateText.rejects(error);
+
+    try {
+      await translateTexts(authKey, texts, sourceLang, targetLang, options);
+    } catch (err) {
+      expect(err.message).to.equal('Translation failed');
+    }
   });
 });
