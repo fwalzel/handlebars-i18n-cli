@@ -2,7 +2,7 @@
 
 import dotenv from 'dotenv';
 import { program } from 'commander';
-import { getSupportedLanguages, setAuthKey, translateJSON } from '../src/i18n-deepl.js';
+import { getSupportedLanguages, setAuthKey, translateToJSON } from '../src/i18n-deepl.js';
 dotenv.config();
 
 program
@@ -12,8 +12,10 @@ program
   .action(async (options) => {
       const authKey = options.authKey || process.env.DEEPL_AUTH;
       const languages = await getSupportedLanguages(authKey);
-      console.log('Supported Languages:');
-      languages.forEach(lang => console.log(`${lang.language} - ${lang.name}`));
+      console.log('DeepL’s Supported Languages:');
+      languages.forEach(lang =>
+        console.log(`${lang.language} - ${lang.name}`)
+      );
   });
 
 program
@@ -43,7 +45,7 @@ program
     console.log(options);
 
     try {
-       await translateJSON(
+       await translateToJSON(
         options.authKey || process.env.DEEPL_AUTH,
         source,
         target,

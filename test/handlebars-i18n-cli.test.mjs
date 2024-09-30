@@ -23,7 +23,7 @@ import { setAuthKey,
   getSupportedLanguages,
   translateTexts,
   readI18nJson,
-  translateJSON } from '../src/i18n-deepl.js';
+  translateToJSON } from '../src/i18n-deepl.js';
 
 
 

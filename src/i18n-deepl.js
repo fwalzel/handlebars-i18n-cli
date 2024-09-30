@@ -45,7 +45,6 @@ import path from 'path';
  */
 function __flattenObj(obj) {
   const result = [];
-
   function recurse(curr) {
     for (let key in curr) {
       if (typeof curr[key] === 'object' && curr[key] !== null) {
@@ -101,6 +100,52 @@ function __getValueFromPath(obj, path) {
     }
     return undefined; // Return undefined if any key is not found
   }, obj);
+}
+
+/** Traverse an object by a given path of sub-nodes and set a value
+ * at the given position
+ *
+ * @param obj
+ * @param path
+ * @param val
+ * @private
+ */
+function __setNestedValue(obj, path, val) {
+  const keys = path.split('.');
+  keys.reduce((acc, key, index) => {
+    // If we're at the last key in the path
+    if (index === keys.length - 1) {
+      // If the existing value is an object and so is the new value, merge them
+      if (typeof acc[key] === 'object' && typeof val === 'object') {
+        acc[key] = { ...acc[key], ...val };
+      } else {
+        acc[key] = val; // Otherwise, set the value directly
+      }
+    } else {
+      // If the key doesn't exist, create an empty object to avoid `undefined`
+      if (!acc[key]) acc[key] = {};
+    }
+    return acc[key];
+  }, obj);
+}
+
+/** Modify a dot-delimited string by targeting the last segment and replacing it
+ *
+ * @param original
+ * @param prefix
+ * @param replacement
+ * @returns {*}
+ * @private
+ */
+function __replaceLastSegment(str, replacement) {
+  // Split the string into an array using the dot as a delimiter
+  let segments = str.split('.');
+
+  // Replace the last segment with the replacement value
+  segments[segments.length - 1] = replacement;
+
+  // Join the segments back into a single string
+  return segments.join('.');
 }
 
 
@@ -166,7 +211,8 @@ async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
   return await translator.translateText(texts, sourceLang, targetLang, options);
 }
 
-/**
+/** read a json file with the option of returning only
+ * a defined subNode of its content
  *
  * @param file
  * @param subNode
@@ -199,7 +245,7 @@ async function readI18nJson(file, subNode) {
  * @param options
  * @returns {Promise<boolean>}
  */
-async function translateJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceLang, sourceSub, options) {
+async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceLang, sourceSub, options) {
   console.log(`-- translateJSON --`);
   console.log(`authKey: ${authKey}`);
   console.log(`JsonSrc: ${JsonSrc}`);
@@ -207,22 +253,31 @@ async function translateJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceLan
   console.log(`sourceLang: ${sourceLang}`);
   console.log(`targetLang: ${targetLang}`);
 
+  // read the json source
   const srcObj = await readI18nJson(JsonSrc, sourceLang);
+  // flatten the resulting obj to an array
   const translValues = __flattenObj(srcObj);
+  // run translation array against DeepL API
   const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, options);
+  // re-build object structure from array
   const translObj = __mapArrayToObj(srcObj, translRes, 'text');
-  let resultObj;
-  // check if source and target are identical
-  if (fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget))) {
-    if (!sourceSub) {
-      if (srcObj[targetLang])
-        Object.assign(srcObj[targetLang], translObj);
-      else
-        srcObj[targetLang] = translObj;
-        resultObj = srcObj;
-    } else {
 
+  // the object we are going to write out, holding the result
+  let resultObj;
+
+  // check if source and target are the identical file
+  if (fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget))) {
+    // if the content come from a nested source
+    if (sourceSub) {
+      // traverse in the obj one node before last and insert (or merge) the translation
+      const traverse = __replaceLastSegment(sourceSub, targetLang);
+      __setNestedValue(srcObj, traverse, translObj);
+    } else {
+      (srcObj[targetLang])
+        ? Object.assign(srcObj[targetLang], translObj)
+        : srcObj[targetLang] = translObj;
     }
+    resultObj = srcObj;
   }
   else {
     resultObj = translObj;
@@ -242,5 +297,5 @@ export {
   getSupportedLanguages,
   translateTexts,
   readI18nJson,
-  translateJSON
+  translateToJSON
 };
