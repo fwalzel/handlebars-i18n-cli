@@ -1,6 +1,6 @@
 {
   "Invoice": "Rechnung",
-  "Invoice_pre": "Anzahlungsrechnung",
+  "Invoicepre": "Anzahlungsrechnung",
   "Invoice_final": "Schlussrechnung",
   "Intro_statement": "Auf Grundlage unseres Angebots {{refLetterId}} stellen wir Ihnen für die am {{shippingDate}} versendete Ware die folgenden Einzelpositionen in Rechnung:",
   "Intro_statement_pre": "Hiermit bestätigen wir, dass wir Ihren Auftragswunsch gem. unseres Angebots {{refLetterId}} erhalten haben.",

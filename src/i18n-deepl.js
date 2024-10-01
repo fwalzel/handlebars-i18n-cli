@@ -1,35 +1,19 @@
 /*********************************************************************
  * i18n-deepl.js
- *
  * @author: Florian Walzel
- * @date: 2022-10
- *
- * Usage:
- * $ i18n-collect <source> <target> <options...>
- *
- * valid options:
- * --auth-key=Your-DeepL-Auth-Key
- * --pro-api
- * --dryRun || -dr
- * --source-lang=de
- * --target-lang=en
- * --log || -l
- * --configure="free-api|pro-api:Your-DeepL-Auth-Key"
-
-
 
  /**
  *  Get an API Key:
  *  @link https://www.deepl.com/de/pro-checkout/account?productId=1200&yearly=false&trial=false
  *
- *  The API
+ *  The API Docs
  *  @link https://www.deepl.com/docs-api/translate-text/multiple-sentences/
  */
 
-
 import deepl from 'deepl-node';
 import axios from 'axios';
-import fs from 'async-file-tried';
+import fst from 'async-file-tried';
+import fs from 'fs';
 import path from 'path';
 
 
@@ -163,7 +147,7 @@ async function setAuthKey(key) {
   if (typeof key !== 'string' || key === '')
     throw new Error('Provided argument is not a valid deepl auth key.');
   const file = '.env';
-  let [res, err] = await fs.writeFile(file, `export DEEPL_AUTH=${key}`);
+  let [res, err] = await fst.writeFile(file, `export DEEPL_AUTH=${key}`);
   if (err) {
     console.error(`Unable to read file ${file}`);
     throw err;
@@ -219,7 +203,7 @@ async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
  * @returns {Promise<*>}
  */
 async function readI18nJson(file, subNode) {
-  let [res, err] = await fs.readJson(file);
+  let [res, err] = await fst.readJson(file);
   if (err) {
     console.error(`Unable to read file: ${file}`);
     throw err;
@@ -266,7 +250,8 @@ async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceL
   let resultObj;
 
   // check if source and target are the identical file
-  if (fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget))) {
+  if ( //todo: check if file exists
+    fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget))) {
     // if the content come from a nested source
     if (sourceSub) {
       // traverse in the obj one node before last and insert (or merge) the translation
@@ -283,7 +268,10 @@ async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceL
     resultObj = translObj;
   }
   // write out result
-  const [res, err] = await fs.writeJson(JsonTarget, resultObj);
+  if (!fs.existsSync(JsonTarget)) {
+    fs.writeFileSync(JsonTarget, '');
+  }
+  const [res, err] = await fst.writeJson(JsonTarget, resultObj);
   if (err) {
     console.error(`Unable to write file ${JsonTarget}`);
     throw err;

@@ -42,11 +42,11 @@ program
   .action(
     async (source, target, targetLang, sourceSub, options) => {
 
-    console.log(options);
+      console.log(options);
 
     try {
        await translateToJSON(
-        options.authKey || process.env.DEEPL_AUTH,
+        options?.authKey || process.env.DEEPL_AUTH,
         source,
         target,
         targetLang,
