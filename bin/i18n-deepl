@@ -40,18 +40,19 @@ program
   .option('--dryRun, -dr', 'Perform a dry run and log it without making any changes to actual data.')
   .option('--log, -l', 'Log translation response to console.')
   .action(
-    async (source, target, targetLang, sourceSub, options) => {
+    async (source, target, targetLang, options) => {
 
-      console.log(options);
+      //console.log(options.sourceSub);
+      //console.log(options);
 
     try {
        await translateToJSON(
-        options?.authKey || process.env.DEEPL_AUTH,
+        options.authKey || process.env.DEEPL_AUTH,
         source,
         target,
         targetLang,
          options.sourceLang || null,
-         sourceSub,
+         options.sourceSub,
          options.options || {}
       );
       console.log('Translation complete.')

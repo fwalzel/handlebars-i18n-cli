@@ -115,13 +115,14 @@ function __setNestedValue(obj, path, val) {
 
 /** Modify a dot-delimited string by targeting the last segment and replacing it
  *
- * @param original
- * @param prefix
+ * @param str
  * @param replacement
  * @returns {*}
  * @private
  */
 function __replaceLastSegment(str, replacement) {
+  console.log(typeof split)
+
   // Split the string into an array using the dot as a delimiter
   let segments = str.split('.');
 
@@ -130,6 +131,17 @@ function __replaceLastSegment(str, replacement) {
 
   // Join the segments back into a single string
   return segments.join('.');
+}
+
+/**
+ *
+ * @param file
+ * @returns {Promise<boolean>}
+ * @private
+ */
+async function __fileExists(file) {
+  let [res, err] = await fst.access(file, fst.constants.F_OK)
+  return !!res
 }
 
 
@@ -236,6 +248,7 @@ async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceL
   console.log(`JsonTarget: ${JsonTarget}`);
   console.log(`sourceLang: ${sourceLang}`);
   console.log(`targetLang: ${targetLang}`);
+  console.log(`sourceSub: ${sourceSub}`);
 
   // read the json source
   const srcObj = await readI18nJson(JsonSrc, sourceLang);
@@ -250,8 +263,10 @@ async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceL
   let resultObj;
 
   // check if source and target are the identical file
-  if ( //todo: check if file exists
-    fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget))) {
+  if (JsonSrc === JsonTarget
+    || (await __fileExists(JsonTarget) &&
+      fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget)))) {
+
     // if the content come from a nested source
     if (sourceSub) {
       // traverse in the obj one node before last and insert (or merge) the translation
@@ -268,9 +283,7 @@ async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceL
     resultObj = translObj;
   }
   // write out result
-  if (!fs.existsSync(JsonTarget)) {
-    fs.writeFileSync(JsonTarget, '');
-  }
+  console.log(resultObj);
   const [res, err] = await fst.writeJson(JsonTarget, resultObj);
   if (err) {
     console.error(`Unable to write file ${JsonTarget}`);
