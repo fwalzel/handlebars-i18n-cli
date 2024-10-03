@@ -86,6 +86,17 @@ function __getValueFromPath(obj, path) {
   }, obj);
 }
 
+/**
+ *
+ * @param obj
+ * @param path
+ * @returns {*}
+ */
+function getNestedValue(obj, path) {
+  return path.split('.').reduce((acc, key) => acc && acc[key], obj);
+}
+
+
 /** Traverse an object by a given path of sub-nodes and set a value
  * at the given position
  *
@@ -252,12 +263,23 @@ async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceL
 
   // read the json source
   const srcObj = await readI18nJson(JsonSrc, sourceLang);
+  // access nested structure if given
+  const srcObjPart = (sourceSub)
+    ? getNestedValue(srcObj, sourceSub)
+    : srcObj;
+
+  //console.log('srcObjPart:')
+  //console.log(srcObjPart)
+
   // flatten the resulting obj to an array
-  const translValues = __flattenObj(srcObj);
+  const translValues = __flattenObj(srcObjPart);
   // run translation array against DeepL API
   const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, options);
   // re-build object structure from array
-  const translObj = __mapArrayToObj(srcObj, translRes, 'text');
+  const translObj = __mapArrayToObj(srcObjPart, translRes, 'text');
+
+  //console.log('translObj:')
+  //console.log(translObj)
 
   // the object we are going to write out, holding the result
   let resultObj;
