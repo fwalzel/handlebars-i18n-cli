@@ -18,7 +18,7 @@ import path from 'path';
 
 
 /****************************************
- * HELPER FUNCTIONS
+ * PRIVATE HELPER FUNCTIONS
  ****************************************/
 
 /**
@@ -29,6 +29,7 @@ import path from 'path';
  */
 function __flattenObj(obj) {
   const result = [];
+
   function recurse(curr) {
     for (let key in curr) {
       if (typeof curr[key] === 'object' && curr[key] !== null) {
@@ -96,7 +97,6 @@ function getNestedValue(obj, path) {
   return path.split('.').reduce((acc, key) => acc && acc[key], obj);
 }
 
-
 /** Traverse an object by a given path of sub-nodes and set a value
  * at the given position
  *
@@ -112,7 +112,7 @@ function __setNestedValue(obj, path, val) {
     if (index === keys.length - 1) {
       // If the existing value is an object and so is the new value, merge them
       if (typeof acc[key] === 'object' && typeof val === 'object') {
-        acc[key] = { ...acc[key], ...val };
+        acc[key] = {...acc[key], ...val};
       } else {
         acc[key] = val; // Otherwise, set the value directly
       }
@@ -144,7 +144,7 @@ function __replaceLastSegment(str, replacement) {
   return segments.join('.');
 }
 
-/**
+/** ceck if a file exists
  *
  * @param file
  * @returns {Promise<boolean>}
@@ -241,7 +241,7 @@ async function readI18nJson(file, subNode) {
   return res;
 }
 
-/**
+/** read a json file, translate it with the Deepl API, write the result as json file
  *
  * @param authKey
  * @param JsonSrc
@@ -253,13 +253,6 @@ async function readI18nJson(file, subNode) {
  * @returns {Promise<boolean>}
  */
 async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceLang, sourceSub, options) {
-  console.log(`-- translateJSON --`);
-  console.log(`authKey: ${authKey}`);
-  console.log(`JsonSrc: ${JsonSrc}`);
-  console.log(`JsonTarget: ${JsonTarget}`);
-  console.log(`sourceLang: ${sourceLang}`);
-  console.log(`targetLang: ${targetLang}`);
-  console.log(`sourceSub: ${sourceSub}`);
 
   // read the json source
   const srcObj = await readI18nJson(JsonSrc, sourceLang);
@@ -268,28 +261,24 @@ async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceL
     ? getNestedValue(srcObj, sourceSub)
     : srcObj;
 
-  //console.log('srcObjPart:')
-  //console.log(srcObjPart)
-
-  // flatten the resulting obj to an array
+  // flatten the resulting object to an array
   const translValues = __flattenObj(srcObjPart);
+
   // run translation array against DeepL API
   const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, options);
+
   // re-build object structure from array
   const translObj = __mapArrayToObj(srcObjPart, translRes, 'text');
-
-  //console.log('translObj:')
-  //console.log(translObj)
 
   // the object we are going to write out, holding the result
   let resultObj;
 
-  // check if source and target are the identical file
+  // check if source and target are identical as string or resolve in the same file
   if (JsonSrc === JsonTarget
     || (await __fileExists(JsonTarget) &&
       fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget)))) {
 
-    // if the content come from a nested source
+    // if the content comes from a nested source
     if (sourceSub) {
       // traverse in the obj one node before last and insert (or merge) the translation
       const traverse = __replaceLastSegment(sourceSub, targetLang);
@@ -300,12 +289,14 @@ async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceL
         : srcObj[targetLang] = translObj;
     }
     resultObj = srcObj;
-  }
-  else {
+  } else {
+    if (await __fileExists(JsonTarget))
+      throw new Error (`The target file ${JsonTarget} already exists. 
+      Please prompt a different file name or remove the existing file.`);
     resultObj = translObj;
   }
+
   // write out result
-  console.log(resultObj);
   const [res, err] = await fst.writeJson(JsonTarget, resultObj);
   if (err) {
     console.error(`Unable to write file ${JsonTarget}`);
