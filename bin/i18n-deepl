@@ -3,7 +3,13 @@
 import dotenv from 'dotenv';
 import { program } from 'commander';
 import { getSupportedLanguages, setAuthKey, translateToJSON } from '../src/i18n-deepl.js';
+import fs from 'async-file-tried';
+
 dotenv.config();
+const [packageJS, err] = await fs.readJson('./package.json');
+if (err) throw (err);
+
+program.version(packageJS.version);
 
 program
   .command('languages')
