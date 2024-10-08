@@ -230,6 +230,7 @@ describe('i18n-deepl setAuthKey', () => {
 });
 
 describe('i18n-deepl getSupportedLanguages', function () {
+
   let axiosGetStub;
 
   beforeEach(function () {
@@ -321,4 +322,9 @@ describe('i18n-deepl translateTexts', () => {
       expect(err.message).to.equal('Translation failed');
     }
   });
+});
+
+describe('i18n-deepl translateToJSON', () => {
+  
+
 });

@@ -247,30 +247,41 @@ async function readI18nJson(file, subNode) {
  * @param JsonSrc
  * @param JsonTarget
  * @param targetLang
+ * @param sourceNode
  * @param sourceLang
- * @param sourceSub
- * @param options
+ * @param log
+ * @param dryRun
+ * @param deeplOpts
  * @returns {Promise<boolean>}
  */
-async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceLang, sourceSub, options) {
+async function translateToJSON(
+  authKey,
+  JsonSrc,
+  JsonTarget,
+  targetLang,
+  sourceNode,
+  sourceLang,
+  log,
+  dryRun,
+  deeplOpts) {
 
   // read the json source
   const srcObj = await readI18nJson(JsonSrc, sourceLang);
   // access nested structure if given
-  const srcObjPart = (sourceSub)
-    ? getNestedValue(srcObj, sourceSub)
+  const srcObjPart = (sourceNode)
+    ? getNestedValue(srcObj, sourceNode)
     : srcObj;
 
   // flatten the resulting object to an array
   const translValues = __flattenObj(srcObjPart);
 
   // run translation array against DeepL API
-  const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, options);
+  const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, deeplOpts);
 
   // re-build object structure from array
   const translObj = __mapArrayToObj(srcObjPart, translRes, 'text');
 
-  // the object we are going to write out, holding the result
+  // declare the object we are going to write out, holding the result
   let resultObj;
 
   // check if source and target are identical as string or resolve in the same file
@@ -279,29 +290,38 @@ async function translateToJSON(authKey, JsonSrc, JsonTarget, targetLang, sourceL
       fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget)))) {
 
     // if the content comes from a nested source
-    if (sourceSub) {
-      // traverse in the obj one node before last and insert (or merge) the translation
-      const traverse = __replaceLastSegment(sourceSub, targetLang);
+    if (sourceNode) {
+      // ... traverse in the object to one node before last and insert (or merge) the translation
+      const traverse = __replaceLastSegment(sourceNode, targetLang);
       __setNestedValue(srcObj, traverse, translObj);
     } else {
+      // ... if not, see if the target node exists
       (srcObj[targetLang])
-        ? Object.assign(srcObj[targetLang], translObj)
-        : srcObj[targetLang] = translObj;
+        ? Object.assign(srcObj[targetLang], translObj) // merge data with existing prop
+        : srcObj[targetLang] = translObj; // set a new prop
     }
     resultObj = srcObj;
   } else {
+    // ... check if the target file exists, if not set the resulting object
     if (await __fileExists(JsonTarget))
       throw new Error (`The target file ${JsonTarget} already exists. 
       Please prompt a different file name or remove the existing file.`);
     resultObj = translObj;
   }
 
+  // log if requested
+  if (log || dryRun)
+    console.log(resultObj);
+
   // write out result
-  const [res, err] = await fst.writeJson(JsonTarget, resultObj);
-  if (err) {
-    console.error(`Unable to write file ${JsonTarget}`);
-    throw err;
+  if (!dryRun) {
+    const [res, err] = await fst.writeJson(JsonTarget, resultObj);
+    if (err) {
+      console.error(`Unable to write file ${JsonTarget}`);
+      throw err;
+    }
   }
+
   return true;
 }
 
