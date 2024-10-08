@@ -49,6 +49,7 @@ function __flattenObj(obj) {
  *
  * @param obj
  * @param values
+ * @param childParam
  * @returns {*}
  */
 function __mapArrayToObj(obj, values, childParam) {
@@ -313,7 +314,7 @@ async function translateToJSON(
   if (log || dryRun)
     console.log(resultObj);
 
-  // write out result
+  // write out result if it is not a dry run
   if (!dryRun) {
     const [res, err] = await fst.writeJson(JsonTarget, resultObj);
     if (err) {
