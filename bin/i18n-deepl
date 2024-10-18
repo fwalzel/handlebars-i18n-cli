@@ -41,7 +41,7 @@ program
   .arguments('<source> <target> <targetLang>')
   .option('--auth-key, -ak <authKey>', 'The DeepL Auth Key.')
   .option('--source-lang, -sl <sourceLang>', 'Source language for translation, such as "de".')
-  .option('-sn, --source-node <sourceNode>', 'Send only a sub-entry of the source JSON to DeepL API. ' +
+  .option('-sn, --source-nested <sourceNested>', 'Send only a sub-entry of the source JSON to DeepL API. ' +
     'I.E. --source-node="translations.de]" will route to the nested entry \'translations\' and within it will send the entries of \'en\' to translation.')
   .option('--log, -l', 'Log translation response to console.')
   .option('--dryRun, -dr', 'Perform a dry run and log it without making any changes to actual data.')
@@ -61,7 +61,7 @@ program
          source,
          target,
          targetLang,
-         options.sourceNode || null,
+         options.sourceNested || null,
          options.sourceLang || null,
          options.L || false,
          options.Dr || false,

@@ -248,7 +248,7 @@ async function readI18nJson(file, subNode) {
  * @param JsonSrc
  * @param JsonTarget
  * @param targetLang
- * @param sourceNode
+ * @param sourceNested
  * @param sourceLang
  * @param log
  * @param dryRun
@@ -260,7 +260,7 @@ async function translateToJSON(
   JsonSrc,
   JsonTarget,
   targetLang,
-  sourceNode,
+  sourceNested,
   sourceLang,
   log,
   dryRun,
@@ -269,8 +269,8 @@ async function translateToJSON(
   // read the json source
   const srcObj = await readI18nJson(JsonSrc, sourceLang);
   // access nested structure if given
-  const srcObjPart = (sourceNode)
-    ? getNestedValue(srcObj, sourceNode)
+  const srcObjPart = (sourceNested)
+    ? getNestedValue(srcObj, sourceNested)
     : srcObj;
 
   // flatten the resulting object to an array
@@ -291,9 +291,9 @@ async function translateToJSON(
       fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget)))) {
 
     // if the content comes from a nested source
-    if (sourceNode) {
+    if (sourceNested) {
       // ... traverse in the object to one node before last and insert (or merge) the translation
-      const traverse = __replaceLastSegment(sourceNode, targetLang);
+      const traverse = __replaceLastSegment(sourceNested, targetLang);
       __setNestedValue(srcObj, traverse, translObj);
     } else {
       // ... if not, see if the target node exists

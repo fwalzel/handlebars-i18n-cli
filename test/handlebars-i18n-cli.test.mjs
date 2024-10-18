@@ -8,6 +8,7 @@
 import * as chai from 'chai';
 import sinon from 'sinon';
 import fs from 'fs';
+import fst from 'async-file-tried';
 import chaiAsPromised from 'chai-as-promised';
 import sinonChai from 'sinon-chai';
 import axios from 'axios';
@@ -325,6 +326,110 @@ describe('i18n-deepl translateTexts', () => {
 });
 
 describe('i18n-deepl translateToJSON', () => {
-  
+
+  afterEach(() => {
+    sinon.restore(); // Restore mocks after each test
+  });
+
+  it('should translate a JSON file and write the translated result to a target file', async () => {
+    // Mock reading the JSON source file
+    const mockJsonData = { greeting: "Hello" };
+    sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
+
+    // Mock DeepL translation result
+    const mockTranslationResult = [{ text: "Hallo" }];
+    sinon.stub(deepl.Translator.prototype, 'translateText').resolves(mockTranslationResult);
+
+    // Mock writing the translated result to a target file
+    const writeJsonMock = sinon.stub(fst, 'writeJson').resolves([true, null]);
+
+    // Execute the function
+    const result = await translateToJSON('authKey', 'src.json', 'target.json', 'de', '', 'en', false, false, {});
+
+    // Assertions
+    expect(writeJsonMock).to.have.been.calledWith('target.json', { greeting: 'Hallo' });
+    expect(result).to.be.true;
+  });
+
+  it('should log the translation result but not write the file when dryRun is true', async () => {
+    // Mock reading the JSON source file
+    const mockJsonData = { greeting: "Hello" };
+    sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
+
+    // Mock DeepL translation result
+    const mockTranslationResult = [{ text: "Hallo" }];
+    sinon.stub(deepl.Translator.prototype, 'translateText').resolves(mockTranslationResult);
+
+    // Mock writing (it should NOT be called)
+    const writeJsonMock = sinon.stub(fst, 'writeJson');
+
+    // Spy on console.log to check if it's called
+    const logSpy = sinon.spy(console, 'log');
+
+    // Execute the function
+    const result = await translateToJSON('authKey', 'src.json', 'target.json', 'de', '', 'en', false, true, {});
+
+    // Assertions
+    expect(writeJsonMock).not.to.have.been.called;
+    expect(logSpy).to.have.been.calledWith({ greeting: 'Hallo' });
+    expect(result).to.be.true;
+
+    // Restore console.log spy
+    logSpy.restore();
+  });
+
+
+  it('should throw an error if the target file already exists', async () => {
+    // Mock reading the JSON source file
+    const mockJsonData = { greeting: "Hello" };
+    sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
+
+    // Mock file existence and realpathSync
+    sinon.stub(fst, 'access').resolves([true, null]);
+    sinon.stub(fs, 'realpathSync').returns('/path/to/src.json');
+
+    try {
+      await translateToJSON('authKey', 'src.json', 'target.json', 'de', '', 'en', false, false, {});
+    } catch (err) {
+      expect(err.message).to.include('The target file target.json already exists.');
+    }
+  });
+
+  it('should translate a nested structure in the JSON file and insert into the target', async () => {
+    // Mock reading the JSON source file with a nested structure
+    const mockJsonData = { nested: { greeting: "Hello" } };
+    sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
+
+    // Mock DeepL translation result
+    const mockTranslationResult = [{ text: "Hallo" }];
+    sinon.stub(deepl.Translator.prototype, 'translateText').resolves(mockTranslationResult);
+
+    // Mock writing the translated result
+    const writeJsonMock = sinon.stub(fst, 'writeJson').resolves([true, null]);
+
+    // Execute the function
+    const result = await translateToJSON('authKey', 'src.json', 'target.json', 'de', 'nested', 'en', false, false, {});
+
+    // Assertions
+    expect(writeJsonMock).to.have.been.calledWith('target.json', { nested: { greeting: 'Hallo' } });
+    expect(result).to.be.true;
+  });
+
+  it('should throw an error if DeepL API call fails', async () => {
+    // Mock reading the JSON source file
+    const mockJsonData = { greeting: "Hello" };
+    sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
+
+    // Mock DeepL API failure
+    sinon.stub(deepl.Translator.prototype, 'translateText').rejects(new Error('API Error'));
+
+    try {
+      await translateToJSON('authKey', 'src.json', 'target.json', 'de', '', 'en', false, false, {});
+    } catch (err) {
+      expect(err.message).to.equal('API Error');
+    }
+  });
+
+
 
 });
