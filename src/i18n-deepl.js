@@ -220,7 +220,11 @@ async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
   if (typeof authKey !== 'string')
     throw new Error('Invalid argument authKey provided.');
   const translator = new deepl.Translator(authKey);
-  return await translator.translateText(texts, sourceLang, targetLang, options);
+  let [res, err] =
+    await fst.asyncHandler(() => translator.translateText(texts, sourceLang, targetLang, options));
+  if (err)
+    throw ('API Error. ' + err);
+  return res;
 }
 
 /** read a json file with the option of returning only

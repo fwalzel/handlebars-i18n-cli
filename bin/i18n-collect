@@ -1,36 +1,33 @@
 #!/usr/bin/env node
 
-import { program } from 'commander';
+import {program} from 'commander';
 import {i18nCollect} from "../src/i18n-collect.js";
 import fs from 'async-file-tried';
 
 const [packageJS, err] = await fs.readJson('./package.json');
 if (err) throw (err);
 
+
 program
   .name('i18n-deepl')
   .version(packageJS.version)
-  .description('Translate i18next JSON files via DeepL API.')
-
-program
-  .name('i18n-collect')
-  .description('CLI to collect internationalization keys')
+  .description(`Automatically extract translation strings from your handlebars templates and generate i18next conform json files from it`)
   .arguments('<source> <target>')
-  .option('-a, --alphabetical', 'sort keys alphabetically')
+  .option('-a, --alphabetical', 'sort keys alphabetically in the json output')
   .option('-dr, --dryRun', 'perform a dry run without making any changes')
-  .option('-e, --empty', 'include empty keys')
-  .option('--lng <languages>', 'specify languages, e.g., de,fr,es', (value) => value.split(','))
+  .option('-e, --empty', 'will create empty value strings for the translations in the json. Default: value strings contain current language and key name')
+  .option('--lng <languages>', 'the languages you want to be generated, e.g., de,fr,es. default: en', (value) => value.split(','))
   .option('-l, --log', 'enable logging')
-  .option('-sf, --separateLngFiles', 'create separate files for each language')
-  .option('--translFunc <function>', 'specify your custom translation function name')
-  .option('-u, --update', 'update existing keys')
-  .action(async(source, target, options) => {
+  .option('-sf, --separateLngFiles', 'create separate json files for each language')
+  .option('--translFunc <function>', 'specify your custom translation function name. Default: __ like handlebars-i18n notation: {{__ keyToTranslate}}')
+  .option('-u, --update', 'updates existing json files(s)')
+  .action(async (source, target, options) => {
     // Placeholder function to handle CLI logic
     console.log('Source:', source);
     console.log('Target:', target);
     console.log('Options:', options);
 
-    await i18nCollect (source, target, options)
+    await i18nCollect(source, target, options)
   });
 
 program.parse(process.argv);

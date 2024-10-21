@@ -49,14 +49,13 @@ program
   .action(
     async (source, target, targetLang, options) => {
 
-    console.log(`source: ${source}`)
+   /* console.log(`source: ${source}`)
     console.log(`target: ${target}`)
     console.log(`targetLang: ${targetLang}`)
     console.log(`options:`)
-    console.log(options)
+    console.log(options)*/
 
-    try {
-       await translateToJSON(
+    await translateToJSON(
         options.authKey || process.env.DEEPL_AUTH,
          source,
          target,
@@ -67,10 +66,7 @@ program
          options.Dr || false,
          options.options || {}
       );
-      console.log('Translation complete.')
-    } catch (error) {
-      console.error('Error translating texts:', error);
-    }
+      console.log(`Translation complete. See ${target} for your results.`)
   });
 
 program.parse(process.argv);
