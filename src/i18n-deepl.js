@@ -1,14 +1,18 @@
 /*********************************************************************
  * i18n-deepl.js
  * @author: Florian Walzel
-
- /**
+ *
  *  Get an API Key:
  *  @link https://www.deepl.com/de/pro-checkout/account?productId=1200&yearly=false&trial=false
  *
  *  The API Docs
  *  @link https://www.deepl.com/docs-api/translate-text/multiple-sentences/
  */
+
+
+/****************************************
+ * IMPORT
+ ****************************************/
 
 import deepl from 'deepl-node';
 import axios from 'axios';
@@ -18,7 +22,7 @@ import path from 'path';
 
 
 /****************************************
- * PRIVATE HELPER FUNCTIONS
+ * PRIVATE FUNCTIONS
  ****************************************/
 
 /**
@@ -158,7 +162,7 @@ async function __fileExists(file) {
 
 
 /****************************************
- * PUBLIC FUNCTIONS
+ * PUBLIC INTERFACE
  ****************************************/
 
 /**

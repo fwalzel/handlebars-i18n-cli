@@ -1,20 +1,99 @@
 /*********************************************************************
  * i18n-collect.js
- * @author: Florian Walzel
  *
- */
+ * @author: Florian Walzel
+ * @date: 2022-10
+ *
+ * Usage:
+ * $ i18n-collect <source> <target> <options...>
+ *
+ * valid options:
+ * --alphabetical || -a
+ * --dryRun || -dr
+ * --empty || -e
+ * --lng=de,fr,es,etc…
+ * --log || -l
+ * --separateLngFiles || -sf
+ * --translFunc=yourCustomFunctionName
+ * --update || -u*
+ *
+ * Copyright (c) 2020 Florian Walzel, MIT LICENSE
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaininga copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ *********************************************************************/
 
+
+'use strict';
 
 /****************************************
  * REQUIRE & DEFINE
  ****************************************/
 
-import fst from 'async-file-tried';
+const fs = require('fs')
+const { promisify } = require('util')
+const readFileAsync = promisify(fs.readFile)
+const writeFileAsync = promisify(fs.writeFile)
 
 
 /****************************************
- * PRIVATE FUNCTIONS
+ * FUNCTIONS
  ****************************************/
+
+/**
+ * Asynchronously read file
+ *
+ * @param file
+ * @returns {Promise<*>}
+ */
+async function readFile (file) {
+  try {
+    const data = await readFileAsync(file, 'utf8')
+    return data
+  }
+  catch (e) {
+    console.log('\x1b[31m%s\x1b[0m', `Error. Could not read ${file}`)
+    console.error(e)
+    return false
+  }
+}
+
+/**
+ * Asynchronously write file in utf8 encoding
+ *
+ * @param file
+ * @param data
+ * @returns {Promise<boolean>}
+ */
+async function writeFile(file, data) {
+  try {
+    await writeFileAsync(file, data, 'utf8')
+    return true
+  }
+  catch (e) {
+    console.log('\x1b[31m%s\x1b[0m', `Error. Could not write ${file}`)
+    console.error(e)
+    return false
+  }
+}
 
 /**
  * Simple object check.
@@ -315,7 +394,7 @@ function deepSort(arr) {
  * EXPORT PUBLIC INTERFACE
  ****************************************/
 
-async function i18nCollect(source, target, options) {
+exports.cli = async (argv) => {
 
   //  take in cli arguments from process argv
   let args = [ ]
@@ -479,9 +558,4 @@ async function i18nCollect(source, target, options) {
     if (await writeFile(targetFileName, fileOutputJson))
       return console.log('\x1b[32m%s\x1b[0m', `Done and Ready! Your output was written to ${targetFileName}`)
   }
-}
-
-// Export the function
-export {
-  i18nCollect
 }

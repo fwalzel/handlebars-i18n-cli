@@ -429,7 +429,5 @@ describe('i18n-deepl translateToJSON', () => {
       expect(err.message).to.equal('API Error');
     }
   });
-
-
-
+  
 });
