@@ -23,7 +23,7 @@ import fst from 'async-file-tried';
  * @returns {boolean}
  */
 function isObject(item) {
-  return (item && typeof item === 'object' && ! Array.isArray(item))
+  return (item && typeof item === 'object' && !Array.isArray(item))
 }
 
 /**
@@ -34,7 +34,7 @@ function isObject(item) {
  * @param ending
  * @returns {*|string[]}
  */
-function sanitizeFileExt(str, ending='.json') {
+function sanitizeFileExt(str, ending = '.json') {
   return str.toLowerCase().endsWith(ending) ? str.slice(0, ending.length * (-1)) : str
 }
 
@@ -78,8 +78,8 @@ function logHelp() {
  * getAllResults: mustacheBetweens.getAllResults}}
  */
 const mustacheBetweens = {
-  results : [ ],
-  str : '',
+  results: [],
+  str: '',
   /**
    * Returns a substring between an opening and
    * a closing string sequence in a given string
@@ -88,13 +88,13 @@ const mustacheBetweens = {
    * @param sub2
    * @returns {string|boolean}
    */
-  getFromBetween : function(sub1, sub2) {
+  getFromBetween: function (sub1, sub2) {
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
       return false
     let SP = this.str.indexOf(sub1) + sub1.length,
-        string1 = this.str.substr(0, SP),
-        string2 = this.str.substr(SP),
-        TP = string1.length + string2.indexOf(sub2)
+      string1 = this.str.substr(0, SP),
+      string2 = this.str.substr(SP),
+      TP = string1.length + string2.indexOf(sub2)
     return this.str.substring(SP, TP)
   },
 
@@ -106,11 +106,11 @@ const mustacheBetweens = {
    * @param sub2
    * @returns {boolean}
    */
-  removeFromBetween : function(sub1, sub2) {
+  removeFromBetween: function (sub1, sub2) {
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
       return false
     let removal = sub1 + this.getFromBetween(sub1, sub2) + sub2
-    this.str = this.str.replace(removal,'')
+    this.str = this.str.replace(removal, '')
   },
 
   /**
@@ -120,14 +120,14 @@ const mustacheBetweens = {
    * @param sub1
    * @param sub2
    */
-  getAllResults : function(sub1, sub2) {
+  getAllResults: function (sub1, sub2) {
     //  first check to see if we do have both substrings
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
       return false
     //  find first result
     let result = this.getFromBetween(sub1, sub2)
     //  replace multiple spaces by a single one, then trim and push it to the results array
-    this.results.push(result.replace(/ +(?= )/g,'').trim())
+    this.results.push(result.replace(/ +(?= )/g, '').trim())
     //  remove the most recently found one from the string
     this.removeFromBetween(sub1, sub2)
     //  recursion in case there are more substrings
@@ -142,34 +142,34 @@ const mustacheBetweens = {
    * @param sub2
    * @returns {*}
    */
-  getSorted : function(string, translFuncName, sub1='{{', sub2='}}') {
+  getSorted: function (string, translFuncName, sub1 = '{{', sub2 = '}}') {
     this.str = string
     this.getAllResults(sub1, sub2)
     this.results =
       this.results.filter(
-      (el) => {
-        return typeof el === 'string' && el.startsWith(`${translFuncName} `)
-      })
-      .map(
         (el) => {
-          //  remove leading translation function and explode string by space
-          let splited = el.replace(`${translFuncName} `, '').split(' ')
-          //  remove quotation marks around key name in element 0 of array
-          splited[0] = splited[0]
-            .replace(/"/g, '')
-            .replace(/'/g, '')
-          //  split remaining string in first element of array by dot (.) to get separate keys of a dot-notated object
-          let keys = splited[0].split('.')
-          //  transformed is a container object for key
-          let transformed = { }
-          transformed.keys = keys
-          transformed.replacementVars = [ ]
-          //  split following elements by '=' and preserve first element of split
-          for (let i = 1; i < splited.length; i++)
-            transformed.replacementVars[i-1] = splited[i].split('=')[0]
+          return typeof el === 'string' && el.startsWith(`${translFuncName} `)
+        })
+        .map(
+          (el) => {
+            //  remove leading translation function and explode string by space
+            let splited = el.replace(`${translFuncName} `, '').split(' ')
+            //  remove quotation marks around key name in element 0 of array
+            splited[0] = splited[0]
+              .replace(/"/g, '')
+              .replace(/'/g, '')
+            //  split remaining string in first element of array by dot (.) to get separate keys of a dot-notated object
+            let keys = splited[0].split('.')
+            //  transformed is a container object for key
+            let transformed = {}
+            transformed.keys = keys
+            transformed.replacementVars = []
+            //  split following elements by '=' and preserve first element of split
+            for (let i = 1; i < splited.length; i++)
+              transformed.replacementVars[i - 1] = splited[i].split('=')[0]
 
-          return transformed
-      })
+            return transformed
+          })
     return this.results
   }
 };
@@ -187,7 +187,7 @@ const mustacheBetweens = {
  * @returns {*}
  */
 const arrRmvDuplicateValues = (arr) => {
-  let seen = { }
+  let seen = {}
   return arr.filter((item) => {
     return seen.hasOwnProperty(item.keys) ? false : seen[item.keys] = true
   })
@@ -202,7 +202,7 @@ const arrRmvDuplicateValues = (arr) => {
  * @param empty
  * @returns {{}}
  */
-function objectify (arr, lang='en', empty = false) {
+function objectify(arr, lang = 'en', empty = false) {
 
   /**
    *
@@ -211,16 +211,14 @@ function objectify (arr, lang='en', empty = false) {
    * @param arr
    * @param pos
    */
-  function __iterateArr (obj, val, arr, pos) {
-    if (! obj.hasOwnProperty(arr[pos])) {
+  function __iterateArr(obj, val, arr, pos) {
+    if (!obj.hasOwnProperty(arr[pos])) {
       if (pos + 1 < arr.length) {
-        obj[arr[pos]] = { }
+        obj[arr[pos]] = {}
         __iterateArr(obj[arr[pos]], val, arr, pos + 1)
-      }
-      else
+      } else
         obj[arr[pos]] = val;
-    }
-    else if (pos+1 < arr.length)
+    } else if (pos + 1 < arr.length)
       __iterateArr(obj[arr[pos]], val, arr, pos + 1);
   }
 
@@ -232,7 +230,7 @@ function objectify (arr, lang='en', empty = false) {
    * @param textBefore
    * @returns {string}
    */
-  function __listTranslVariables(arr, textBefore= '')  {
+  function __listTranslVariables(arr, textBefore = '') {
     let str = '';
     if (arr.length === 0)
       return str;
@@ -241,7 +239,7 @@ function objectify (arr, lang='en', empty = false) {
     return textBefore + str.slice(0, -1);
   }
 
-  let obj = { }
+  let obj = {}
   arr.forEach((el) => {
     let prop;
     if (empty)
@@ -262,14 +260,14 @@ function objectify (arr, lang='en', empty = false) {
  * @param ...sources
  */
 function mergeDeep(target, ...sources) {
-  if (! sources.length) return target;
+  if (!sources.length) return target;
   const source = sources.shift();
 
   if (isObject(target) && isObject(source)) {
     for (const key in source) {
       if (isObject(source[key])) {
-        if (! target[key])
-          Object.assign(target, {[key]: { }});
+        if (!target[key])
+          Object.assign(target, {[key]: {}});
         mergeDeep(target[key], source[key]);
       } else
         Object.assign(target, {[key]: source[key]});
@@ -298,9 +296,9 @@ function deepSort(arr) {
       depth = inst.keys.length;
 
   //  iterate from longest to shortest and sort
-  for (let i = depth-1; i>=0; i--) {
+  for (let i = depth - 1; i >= 0; i--) {
     arr = arr.sort((a, b) => {
-      if ( a.keys[i] !== undefined && b.keys[i] !== undefined )
+      if (a.keys[i] !== undefined && b.keys[i] !== undefined)
         return a.keys[i] > b.keys[i] ? -1 : 1;
       else
         return a.keys[i] !== undefined ? -1 : 1
@@ -317,128 +315,101 @@ function deepSort(arr) {
 
 async function i18nCollect(source, target, options) {
 
-  //  take in cli arguments from process argv
-  let args = [ ]
-  for (let i = 2; i < argv.length; i++)
-    args.push(argv[i])
+  if (typeof source !== 'string')
+    throw new Error(`First argument SOURCE must be of type string. Please specify a valid SOURCE.`);
 
-  //  validation: error when no argument was given
-  if (args.length === 0)
-    throw new Error(`No arguments given. Please specify SOURCE and TARGET. 
-      Call argument --help for further Information.`)
+  if (typeof target !== 'string')
+    throw new Error(`Second argument TARGET must be of type string. Please specify a valid TARGET.`);
 
-  //  only one argument was given
-  if (args.length === 1) {
-    //  answer to argument 'help'
-    if (['help', '--help', '-h'].includes(args[0]))
-      return logHelp()
-    //  error the missing second argument
-    else
-      throw new Error(`Missing second argument for TARGET. 
-        Call argument --help for further Information.`)
-  }
+  options = options || {};
+
+  if (typeof options !== 'object' && !Array.isArray(options) && Object.prototype.toString.call(options))
+    throw new Error(`Third argument OPTIONS must be of type object. Please specify a valid OPTION.`);
 
   //  register vars
-  let hndlbrKeys = [ ],
+  let hndlbrKeys = [],
     sources,
-    targetFileName,
     targetFileNameSeparated,
-    translationFuncName,
     pos = -1,
-    languages,
     translObj,
     outputObj;
 
-  //  create an array "sources" by filtering out all options from args
-  sources = args.filter(
-    (el) => ! (el === 'help' || el.startsWith('--') || el.startsWith('-'))
-  )
-
-  //  then removing last element as being the <target>
-  targetFileName = sources.pop()
-
-  //  check for argument '--translFunc=someName' => a custom function name was given
-  args.forEach((el, key) => {
-    if (el.startsWith('--translFunc=')) return pos = key
-  })
-  translationFuncName = (pos >= 0) ? args[pos].split('=')[1] : '__'
-
-  //  read in file(s) and join contents keeping only unique key names
   for (let file of sources) {
-    console.log(`Now processing ${file}`)
-    let content = await readFile(file)
+    console.log(`Now processing ${file}`);
+    let [content, err] = await fst.readFile(file);
+    if (err)
+      throw (err);
     hndlbrKeys = hndlbrKeys.concat(
-      mustacheBetweens.getSorted(content, translationFuncName)
-    )
+      mustacheBetweens.getSorted(content, options.translFunc || '__')
+    );
   }
 
   //  break if no strings for translation where found
   if (hndlbrKeys.length === 0)
-    return console.log('No strings for translation found, no files written.')
+    return console.log('No strings for translation found, no files written.');
 
   //  remove all duplicate value entries in position 'keys' of array hndlbrKeys
-  hndlbrKeys = arrRmvDuplicateValues(hndlbrKeys)
+  hndlbrKeys = arrRmvDuplicateValues(hndlbrKeys);
 
   //  evaluate argument '--alphabetical' for sorting
-  if (args.includes('--alphabetical') || args.includes('-a'))
+  if (options.alphabetical)
     hndlbrKeys = deepSort(hndlbrKeys)
 
-  //  form an array of languages from argument '--lng='
-  languages = args.filter((el) => {
-    return el.startsWith('--lng=')
-  }).map((el) => {
-    return el.split('=')[1].split(',')
-  })[0]
-
-  //  if no language parameter is passed set 'en' as default language
-  if (typeof languages === 'undefined') languages = ['en']
+  //  form an array of languages from argument '--lng
+  const languages = (typeof options.lng === 'string')
+    ? options.lng.split(',')
+    : ['en'];
 
 
   //  WRITE TO ONE FILE PER LANGUAGE
   //  ------------------------------------------------
 
   //  evaluate argument '--separateLngFiles' to output each language in a separate file
-  if (args.includes('--separateLngFiles') || args.includes('-sf')) {
+  if (options.separateLngFiles) {
 
     //  if user entered argument for target ending with .json, remove it
-    targetFileName = sanitizeFileExt(targetFileName)
+    let targetFileName = sanitizeFileExt(source)
 
     for (let lng of languages) {
+
       //  join file name per language such as myfile.de.json, myfile.en.json, ...
-      targetFileNameSeparated =
-        (targetFileName.startsWith('/') ? targetFileName.substring(1) : targetFileName) + '.' + lng + '.json'
+      targetFileNameSeparated = (targetFileName.startsWith('/')
+        ? targetFileName.substring(1)
+        : targetFileName)
+        + '.' + lng + '.json';
 
       //  create output object per language and add keys in nested object form
-      outputObj = { }
-      outputObj[lng] = objectify(hndlbrKeys, lng, args.includes('--empty') || args.includes('-e'))
+      outputObj = {}
+      outputObj[lng] = objectify(hndlbrKeys, lng, options.empty)
 
       //  if argument '--update' was given, existing files per language are read in, parsed,
       //  and the new translation Object is merged onto the existing translation
-      if (args.includes('--update') || args.includes('-u')) {
-        let existingTransl = await readFile(targetFileNameSeparated)
-        existingTransl = JSON.parse(existingTransl)
-        outputObj = mergeDeep(outputObj[lng], existingTransl)
+      if (options.update) {
+        let [res, err] = await fst.readJson(targetFileNameSeparated);
+        if (err)
+          throw (err);
+        outputObj = mergeDeep(outputObj[lng], res)
       }
 
       //  convert output object to json with linebreaks and indenting of 2 spaces
       const fileOutputJson = JSON.stringify(outputObj, null, 2)
 
       //  log output per language
-      if (args.includes('--log') || args.includes('-l')
-        || args.includes('--dryRun') || args.includes('-dr'))
+      if (options.log || options.dryRun)
         console.log(fileOutputJson)
 
       //  write files only if no --dryRun option was set
-      if (! args.includes('--dryRun') && ! args.includes('-dr'))
+      if (!options.dryRun)
         //  write out the json to target file per language
-        if (await writeFile(targetFileNameSeparated, fileOutputJson))
-          console.log('\x1b[34m%s\x1b[0m', `Wrote language keys for '${lng}' to ${targetFileNameSeparated}`)
+        [res, err] = await fst.writeFile(targetFileNameSeparated, fileOutputJson);
+        if (err)
+          throw (err);
+        console.log('\x1b[34m%s\x1b[0m', `Wrote language keys for '${lng}' to ${targetFileNameSeparated}`)
     }
 
-    return (args.includes('--dryRun') || args.includes('-dr')) ?
-      console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.')
-      :
-      console.log('\x1b[32m%s\x1b[0m', `You’re good. All Done.`)
+    return (options.dryRun)
+      ? console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.')
+      : console.log('\x1b[32m%s\x1b[0m', 'You’re good. All Done.')
   }
 
   //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
@@ -446,7 +417,7 @@ async function i18nCollect(source, target, options) {
   else {
     //  create object to hold the translations and create a key for every language
     //  add all handlebars translation keys to each language key as nested objects
-    translObj = {translations: { }}
+    translObj = {translations: {}}
     languages.forEach((lng) => {
       translObj.translations[lng] = objectify(hndlbrKeys, lng, args.includes('--empty') || args.includes('-e'))
     })
@@ -457,12 +428,11 @@ async function i18nCollect(source, target, options) {
       let existingTransl = await readFile(targetFileName)
       existingTransl = JSON.parse(existingTransl)
       outputObj = mergeDeep(translObj, existingTransl)
-    }
-    else
+    } else
       outputObj = translObj
 
     //  convert output object to json with linebreaks and indenting of 2 spaces
-    const fileOutputJson = JSON.stringify(outputObj,null, 2)
+    const fileOutputJson = JSON.stringify(outputObj, null, 2)
 
     //  log the final object to console if option '--log' or '--dryRun' was set
     if (args.includes('--log') || args.includes('-l')

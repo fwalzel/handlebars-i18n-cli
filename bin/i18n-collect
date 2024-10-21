@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import {program} from 'commander';
-import {i18nCollect} from "../src/i18n-collect.js";
+//import {i18nCollect} from "../src/i18n-collect.js";
 import fs from 'async-file-tried';
 
 const [packageJS, err] = await fs.readJson('./package.json');
@@ -27,7 +27,7 @@ program
     console.log('Target:', target);
     console.log('Options:', options);
 
-    await i18nCollect(source, target, options)
+    //await i18nCollect(source, target, options)
   });
 
 program.parse(process.argv);
