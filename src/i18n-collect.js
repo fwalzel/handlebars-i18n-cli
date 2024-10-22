@@ -10,7 +10,7 @@
  ****************************************/
 
 import fst from 'async-file-tried';
-
+import { glob } from 'glob'
 
 /****************************************
  * PRIVATE FUNCTIONS
@@ -328,13 +328,16 @@ async function i18nCollect(source, target, options) {
 
   //  register vars
   let hndlbrKeys = [],
-    sources,
     targetFileNameSeparated,
     pos = -1,
     translObj,
     outputObj;
 
-  for (let file of sources) {
+  // get glob from source
+  const templateFiles = await glob('source', { ignore: 'node_modules/**' })
+
+  // extract translations keys from file(s) in array hndlbrKeys
+  for (let file of templateFiles) {
     console.log(`Now processing ${file}`);
     let [content, err] = await fst.readFile(file);
     if (err)
@@ -374,8 +377,8 @@ async function i18nCollect(source, target, options) {
 
       //  join file name per language such as myfile.de.json, myfile.en.json, ...
       targetFileNameSeparated = (targetFileName.startsWith('/')
-        ? targetFileName.substring(1)
-        : targetFileName)
+          ? targetFileName.substring(1)
+          : targetFileName)
         + '.' + lng + '.json';
 
       //  create output object per language and add keys in nested object form
@@ -402,9 +405,9 @@ async function i18nCollect(source, target, options) {
       if (!options.dryRun)
         //  write out the json to target file per language
         [res, err] = await fst.writeFile(targetFileNameSeparated, fileOutputJson);
-        if (err)
-          throw (err);
-        console.log('\x1b[34m%s\x1b[0m', `Wrote language keys for '${lng}' to ${targetFileNameSeparated}`)
+      if (err)
+        throw (err);
+      console.log('\x1b[34m%s\x1b[0m', `Wrote language keys for '${lng}' to ${targetFileNameSeparated}`)
     }
 
     return (options.dryRun)
@@ -412,22 +415,23 @@ async function i18nCollect(source, target, options) {
       : console.log('\x1b[32m%s\x1b[0m', 'You’re good. All Done.')
   }
 
-  //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
+    //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
   //  ------------------------------------------------
   else {
     //  create object to hold the translations and create a key for every language
     //  add all handlebars translation keys to each language key as nested objects
     translObj = {translations: {}}
     languages.forEach((lng) => {
-      translObj.translations[lng] = objectify(hndlbrKeys, lng, args.includes('--empty') || args.includes('-e'))
+      translObj.translations[lng] = objectify(hndlbrKeys, lng, options.empty)
     })
 
     //  if argument '--update' was given, an existing file is read in, parsed,
     //  and the new translation Object is merged onto the existing translations
-    if (args.includes('--update') || args.includes('-u')) {
-      let existingTransl = await readFile(targetFileName)
-      existingTransl = JSON.parse(existingTransl)
-      outputObj = mergeDeep(translObj, existingTransl)
+    if (options.update) {
+      let [res, err] = await fst.readJson(targetFileNameSeparated);
+      if (err)
+        throw (err);
+      outputObj = mergeDeep(outputObj[lng], res)
     } else
       outputObj = translObj
 
@@ -435,19 +439,20 @@ async function i18nCollect(source, target, options) {
     const fileOutputJson = JSON.stringify(outputObj, null, 2)
 
     //  log the final object to console if option '--log' or '--dryRun' was set
-    if (args.includes('--log') || args.includes('-l')
-      || args.includes('--dryRun') || args.includes('-dr'))
+    if (options.log || options.dryRun)
       console.log(fileOutputJson)
 
     //  exit if option '--dryRun' was set
-    if (args.includes('--dryRun') || args.includes('-dr')) {
+    if (options.dryRun) {
       console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No file witten.')
       process.exit(0)
     }
 
     //  write out the json to target file
-    if (await writeFile(targetFileName, fileOutputJson))
-      return console.log('\x1b[32m%s\x1b[0m', `Done and Ready! Your output was written to ${targetFileName}`)
+    [res, err] = await fst.writeFile(targetFileName, fileOutputJson);
+    if (err)
+      throw (err);
+    return console.log('\x1b[32m%s\x1b[0m', `Done and Ready! Your output was written to ${targetFileName}`)
   }
 }
 

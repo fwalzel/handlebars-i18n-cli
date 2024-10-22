@@ -43,6 +43,7 @@
     "deepl-node": "^1.13.0",
     "dotenv": "^16.4.5",
     "esm": "^3.2.25",
+    "glob": "^11.0.0",
     "util": "^0.12.5"
   },
   "devDependencies": {
