@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import {program} from 'commander';
-//import {i18nCollect} from "../src/i18n-collect.js";
+import {i18nCollect} from "../src/i18n-collect.js";
 import fs from 'async-file-tried';
 
 const [packageJS, err] = await fs.readJson('./package.json');
@@ -22,12 +22,16 @@ program
   .option('--translFunc <function>', 'specify your custom translation function name. Default: __ like handlebars-i18n notation: {{__ keyToTranslate}}')
   .option('-u, --update', 'updates existing json files(s)')
   .action(async (source, target, options) => {
-    // Placeholder function to handle CLI logic
-    console.log('Source:', source);
-    console.log('Target:', target);
-    console.log('Options:', options);
 
-    //await i18nCollect(source, target, options)
+    //console.log('Source:', source);
+    //console.log('Target:', target);
+    //console.log('Options:', options);
+
+    if (await i18nCollect(source, target, options)) {
+      return (options.separateLngFiles)
+        ? console.log('\x1b[32m%s\x1b[0m', 'You’re good. Separate language files where written.')
+        : console.log('\x1b[32m%s\x1b[0m', `Done and Ready. Your output was written to ${target}`);
+    }
   });
 
 program.parse(process.argv);

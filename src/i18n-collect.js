@@ -10,7 +10,7 @@
  ****************************************/
 
 import fst from 'async-file-tried';
-import { glob } from 'glob'
+import {glob} from 'glob'
 
 /****************************************
  * PRIVATE FUNCTIONS
@@ -100,7 +100,7 @@ const mustacheBetweens = {
 
   /**
    * Removes a found sequence between an opening and
-   * a closing string from a a given string
+   * a closing string from a given string
    *
    * @param sub1
    * @param sub2
@@ -328,20 +328,19 @@ async function i18nCollect(source, target, options) {
 
   //  register vars
   let hndlbrKeys = [],
-    targetFileNameSeparated,
-    pos = -1,
     translObj,
     outputObj;
 
   // get glob from source
-  const templateFiles = await glob('source', { ignore: 'node_modules/**' })
+  const templateFiles = await glob(source, {ignore: 'node_modules/**'})
 
   // extract translations keys from file(s) in array hndlbrKeys
   for (let file of templateFiles) {
     console.log(`Now processing ${file}`);
-    let [content, err] = await fst.readFile(file);
+    let [content, err] = await fst.readFile(file, 'utf8');
     if (err)
       throw (err);
+    console.log(content)
     hndlbrKeys = hndlbrKeys.concat(
       mustacheBetweens.getSorted(content, options.translFunc || '__')
     );
@@ -371,12 +370,12 @@ async function i18nCollect(source, target, options) {
   if (options.separateLngFiles) {
 
     //  if user entered argument for target ending with .json, remove it
-    let targetFileName = sanitizeFileExt(source)
+    let targetFileName = sanitizeFileExt(target)
 
     for (let lng of languages) {
 
       //  join file name per language such as myfile.de.json, myfile.en.json, ...
-      targetFileNameSeparated = (targetFileName.startsWith('/')
+      let targetFileNameSeparated = (targetFileName.startsWith('/')
           ? targetFileName.substring(1)
           : targetFileName)
         + '.' + lng + '.json';
@@ -385,7 +384,7 @@ async function i18nCollect(source, target, options) {
       outputObj = {}
       outputObj[lng] = objectify(hndlbrKeys, lng, options.empty)
 
-      //  if argument '--update' was given, existing files per language are read in, parsed,
+      //  if option 'update' was given, existing files per language are read in, parsed,
       //  and the new translation Object is merged onto the existing translation
       if (options.update) {
         let [res, err] = await fst.readJson(targetFileNameSeparated);
@@ -410,12 +409,11 @@ async function i18nCollect(source, target, options) {
       console.log('\x1b[34m%s\x1b[0m', `Wrote language keys for '${lng}' to ${targetFileNameSeparated}`)
     }
 
-    return (options.dryRun)
-      ? console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.')
-      : console.log('\x1b[32m%s\x1b[0m', 'You’re good. All Done.')
+    if (options.dryRun)
+     console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.');
   }
 
-    //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
+  //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
   //  ------------------------------------------------
   else {
     //  create object to hold the translations and create a key for every language
@@ -449,11 +447,11 @@ async function i18nCollect(source, target, options) {
     }
 
     //  write out the json to target file
-    [res, err] = await fst.writeFile(targetFileName, fileOutputJson);
+    let [res, err] = await fst.writeFile(target, fileOutputJson);
     if (err)
       throw (err);
-    return console.log('\x1b[32m%s\x1b[0m', `Done and Ready! Your output was written to ${targetFileName}`)
   }
+  return true;
 }
 
 // Export the function
