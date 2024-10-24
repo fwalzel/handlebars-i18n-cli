@@ -14,76 +14,47 @@ import sinonChai from 'sinon-chai';
 import axios from 'axios';
 import deepl from 'deepl-node'; // Assuming deepl is imported in the module
 import {stdout} from 'test-console';
-const { assert, expect } = chai;
+
+const {assert, expect} = chai;
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-// import * as i18nCollect from '../src/i18n-collect.js';
+import {i18nCollect} from '../src/i18n-collect.js';
 
-import { setAuthKey,
+import {
+  setAuthKey,
   getSupportedLanguages,
   translateTexts,
   readI18nJson,
-  translateToJSON } from '../src/i18n-deepl.js';
+  translateToJSON
+} from '../src/i18n-deepl.js';
 
 
-
-
-/*describe('Tests for Command i18n-collect', () => {
+describe('Tests for Command i18n-collect', () => {
 
   const templSimple = 'test/test-assets/simple.html';
   const customSimple = 'test/test-assets/custom-func.html';
 
-  /!****************************************
+  /*****************************************
    * TEST MAIN INTERFACE
-   ****************************************!/
+   ****************************************/
   
-  it('[1] FUNC: cli shall be a function', () => {
-    assert.isFunction(cli);
+  it('[1] FUNC: i18nCollect shall be a function', () => {
+    assert.isFunction(i18nCollect);
   });
 
-  it('[2] ERROR: cli shall error when called without argument', async () => {
-    const argv = [null, null];
-    expect(cli(argv)).to.be.rejectedWith(Error);
+  it('[2] ERROR: i18nCollect shall error when called without argument', async () => {
+    expect(i18nCollect()).to.be.rejectedWith(Error);
   });
 
-  it('[3] HELP: cli shall log help when called with argument --help', () => {
-    const argv = [null, null, '--help']
-    const output = stdout.inspectSync(() => { cli(argv) });
-    assert.deepEqual(output, [
-        '\u001b[2mUsage:\n',
-        'i18n-collect <source> <target> <options...>\n',
-        '\n',
-        '<source>                 path to handlebars.js template file(s), glob pattern allowed\n',
-        '<target>                 json file(s) to write result to\n',
-        '\n',
-        '<options>\n',
-        '--alphabetical or -a     will order the keys to the translation strings alphabetically in the json\n',
-        '                         default: keys in order of appearance as within the template(s)\n',
-        '--dryRun or -dr          will log the result(s) but not write out json file(s)\n',
-        '--empty or -e            will create empty value strings for the translations in the json\n',
-        '                         default: value strings contain current language and key name\n',
-        '--lng=en,fr,es,…         the languages you want to be generated\n',
-        '                         default: en\n',
-        '--log or -l              log final results to console\n',
-        '--separateLngFiles       write each language in a separate json file\n',
-        '  or -sf                 default: all languages are written as arrays in one json file\n',
-        '--translFunc=customName  a custom name of the translation function used in the templates\n',
-        '                         default: __ like handlebars-i18n notation: {{__ keyToTranslate}}\n',
-        '--update or -u           updates existing json files(s) after changes made in template file(s)\n',
-        '\u001b[0m\n' ]
-    );
+
+  it('[3] ERROR: i18nCollect shall error when called without a second argument', async () => {
+    expect(i18nCollect(templSimple)).to.be.rejectedWith(Error);
   });
 
-  it('[4] ERROR: cli shall error when called without a second argument', async () => {
-    const argv = [null, null, 'someText']
-    expect(cli(argv)).to.be.rejectedWith(Error);
-  });
-
-  it('[5] WARN: cli shall log when a given file does not contain strings for translation',async () => {
-    const argv = [null, null, 'test/test-assets/empty.html', 'test/test-generated/empty.json'];
+  it('[4] WARN: i18nCollect shall log when a given file does not contain strings for translation',async () => {
     const inspect = stdout.inspect();
-    await cli(argv);
+    await i18nCollect('test/test-assets/empty.html', 'test/test-generated/empty.json');
     inspect.restore();
     assert.deepEqual(inspect.output, [
       'Now processing test/test-assets/empty.html\n',
@@ -91,7 +62,8 @@ import { setAuthKey,
     ]);
   });
 
-  it('[6] LOG: cli shall log myKey and myVar (with additional text) for language "en" when called with argument --log', async () => {
+
+  /*it('[6] LOG: cli shall log myKey and myVar (with additional text) for language "en" when called with argument --log', async () => {
     const fileNo = 6; // we use the no. of the test here
     const argv = [null, null, templSimple, `test/test-generated/test-${fileNo}.json`, '--log'];
     const inspect = stdout.inspect();
@@ -185,34 +157,34 @@ import { setAuthKey,
       "{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"en of myKey with variables {{myVar}}\",\n      \"hasAlreadyAKey\": \"WithSomeValue\"\n    }\n  }\n}\n",
       `\u001b[32mDone and Ready! Your output was written to test/test-generated/test-${fileNo}.json\u001b[0m\n`
     ]);
-  });
+  });*/
 
-});*/
+});
 
 describe('i18n-deepl setAuthKey', () => {
   let writeFileStub;
 
-  beforeEach(function() {
+  beforeEach(function () {
     // Stub the fs.writeFile function
     writeFileStub = sinon.stub(fs, 'writeFile');
   });
 
-  afterEach(function() {
+  afterEach(function () {
     // Restore the original fs.writeFile function
     sinon.restore();
   });
 
-  it('should throw an error if the key is not a string', async function() {
+  it('should throw an error if the key is not a string', async function () {
     const invalidKey = 12345; // Example of a non-string key
     await expect(setAuthKey(invalidKey)).to.be.rejectedWith('Provided argument is not a valid deepl auth key.');
   });
 
-  it('should throw an error if the key is an empty string', async function() {
+  it('should throw an error if the key is an empty string', async function () {
     const invalidKey = ''; // Example of an empty string key
     await expect(setAuthKey(invalidKey)).to.be.rejectedWith('Provided argument is not a valid deepl auth key.');
   });
 
-  it('should return true if the key is valid and the file is written successfully', async function() {
+  it('should return true if the key is valid and the file is written successfully', async function () {
     writeFileStub.resolves([true, null]); // Simulate successful file write
     const validKey = 'valid-auth-key';
     const result = await setAuthKey(validKey);
@@ -250,7 +222,7 @@ describe('i18n-deepl getSupportedLanguages', function () {
 
   it('should fetch supported languages when authKey is valid', async function () {
     // Mock the response for the axios.get request
-    const mockResponse = { data: [{ language: 'EN' }, { language: 'DE' }] };
+    const mockResponse = {data: [{language: 'EN'}, {language: 'DE'}]};
     axiosGetStub.resolves(mockResponse);
 
     const result = await getSupportedLanguages('valid-auth-key');
@@ -276,7 +248,7 @@ describe('i18n-deepl translateTexts', () => {
     texts = ['Hello', 'World'];
     sourceLang = 'EN';
     targetLang = 'FR';
-    options = { formality: 'informal' };
+    options = {formality: 'informal'};
 
     // Mock deepl.Translator
     translatorStub = sinon.stub(new deepl.Translator(authKey));
@@ -333,11 +305,11 @@ describe('i18n-deepl translateToJSON', () => {
 
   it('should translate a JSON file and write the translated result to a target file', async () => {
     // Mock reading the JSON source file
-    const mockJsonData = { greeting: "Hello" };
+    const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
 
     // Mock DeepL translation result
-    const mockTranslationResult = [{ text: "Hallo" }];
+    const mockTranslationResult = [{text: "Hallo"}];
     sinon.stub(deepl.Translator.prototype, 'translateText').resolves(mockTranslationResult);
 
     // Mock writing the translated result to a target file
@@ -347,17 +319,17 @@ describe('i18n-deepl translateToJSON', () => {
     const result = await translateToJSON('authKey', 'src.json', 'target.json', 'de', '', 'en', false, false, {});
 
     // Assertions
-    expect(writeJsonMock).to.have.been.calledWith('target.json', { greeting: 'Hallo' });
+    expect(writeJsonMock).to.have.been.calledWith('target.json', {greeting: 'Hallo'});
     expect(result).to.be.true;
   });
 
   it('should log the translation result but not write the file when dryRun is true', async () => {
     // Mock reading the JSON source file
-    const mockJsonData = { greeting: "Hello" };
+    const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
 
     // Mock DeepL translation result
-    const mockTranslationResult = [{ text: "Hallo" }];
+    const mockTranslationResult = [{text: "Hallo"}];
     sinon.stub(deepl.Translator.prototype, 'translateText').resolves(mockTranslationResult);
 
     // Mock writing (it should NOT be called)
@@ -371,7 +343,7 @@ describe('i18n-deepl translateToJSON', () => {
 
     // Assertions
     expect(writeJsonMock).not.to.have.been.called;
-    expect(logSpy).to.have.been.calledWith({ greeting: 'Hallo' });
+    expect(logSpy).to.have.been.calledWith({greeting: 'Hallo'});
     expect(result).to.be.true;
 
     // Restore console.log spy
@@ -381,7 +353,7 @@ describe('i18n-deepl translateToJSON', () => {
 
   it('should throw an error if the target file already exists', async () => {
     // Mock reading the JSON source file
-    const mockJsonData = { greeting: "Hello" };
+    const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
 
     // Mock file existence and realpathSync
@@ -397,11 +369,11 @@ describe('i18n-deepl translateToJSON', () => {
 
   it('should translate a nested structure in the JSON file and insert into the target', async () => {
     // Mock reading the JSON source file with a nested structure
-    const mockJsonData = { nested: { greeting: "Hello" } };
+    const mockJsonData = {nested: {greeting: "Hello"}};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
 
     // Mock DeepL translation result
-    const mockTranslationResult = [{ text: "Hallo" }];
+    const mockTranslationResult = [{text: "Hallo"}];
     sinon.stub(deepl.Translator.prototype, 'translateText').resolves(mockTranslationResult);
 
     // Mock writing the translated result
@@ -411,13 +383,13 @@ describe('i18n-deepl translateToJSON', () => {
     const result = await translateToJSON('authKey', 'src.json', 'target.json', 'de', 'nested', 'en', false, false, {});
 
     // Assertions
-    expect(writeJsonMock).to.have.been.calledWith('target.json', { nested: { greeting: 'Hallo' } });
+    expect(writeJsonMock).to.have.been.calledWith('target.json', {nested: {greeting: 'Hallo'}});
     expect(result).to.be.true;
   });
 
   it('should throw an error if DeepL API call fails', async () => {
     // Mock reading the JSON source file
-    const mockJsonData = { greeting: "Hello" };
+    const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
 
     // Mock DeepL API failure
@@ -429,5 +401,5 @@ describe('i18n-deepl translateToJSON', () => {
       expect(err.message).to.equal('API Error');
     }
   });
-  
+
 });
