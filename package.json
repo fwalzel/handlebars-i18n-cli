@@ -1,7 +1,7 @@
 {
   "name": "handlebars-i18n-cli",
   "version": "1.0.5",
-  "description": "A CLI tool to support node module handlebars-i18n.",
+  "description": "Extract translation keys from handlebars templates and form JSON from it; generate automatic translations via deepL.",
   "main": "src/i18n-collect.js",
   "type": "module",
   "bin": {
@@ -25,10 +25,10 @@
   "keywords": [
     "cli helper",
     "handlebars-i18n",
-    "handlebars",
-    "i18n-next",
+    "handlebars translation",
     "extract translations from i18next templates",
-    "handlebars-i18next"
+    "deepL automatic translation",
+    "i18next JSON"
   ],
   "author": "Florian Walzel",
   "license": "MIT",
@@ -42,16 +42,13 @@
     "commander": "^12.1.0",
     "deepl-node": "^1.13.0",
     "dotenv": "^16.4.5",
-    "esm": "^3.2.25",
-    "glob": "^11.0.0",
-    "util": "^0.12.5"
+    "glob": "^11.0.0"
   },
   "devDependencies": {
+    "c8": "^10.1.2",
     "chai": "^5.1.1",
     "chai-as-promised": "^8.0.0",
-    "c8": "^10.1.2",
     "coveralls-next": "^4.2.1",
-    "istanbul": "^0.4.5",
     "mocha": "^10.1.0",
     "sinon": "^18.0.0",
     "sinon-chai": "^4.0.0",

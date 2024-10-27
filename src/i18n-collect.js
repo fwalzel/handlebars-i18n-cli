@@ -340,7 +340,7 @@ async function i18nCollect(source, target, options) {
     let [content, err] = await fst.readFile(file, 'utf8');
     if (err)
       throw (err);
-    console.log(content)
+    //console.log(content)
     hndlbrKeys = hndlbrKeys.concat(
       mustacheBetweens.getSorted(content, options.translFunc || '__')
     );
