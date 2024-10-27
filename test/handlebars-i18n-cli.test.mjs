@@ -62,7 +62,7 @@ describe('Tests for Command i18n-collect', () => {
     ]);
   });
 
-  it('[5] LOG: cli shall log myKey and myVar (with additional text) for language "en" when called with argument --log', async () => {
+  it('[5] LOG: i18nCollect shall log myKey and myVar (with additional text) for language "en" when called with argument --log', async () => {
     const fileNo = 5; // we use the no. of the test here
     const inspect = stdout.inspect();
     await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {log: true});
@@ -73,24 +73,26 @@ describe('Tests for Command i18n-collect', () => {
     ]);
   });
 
-  /*it('[7] ALPHABETICAL: cli shall log keys for language "en" in alphabetical order when called with argument --alphabetical and --log', async () => {
-    const fileNo = 7;
-    const argv = [null, null, 'test/test-assets/multiple.html', `test/test-generated/test-${fileNo}.json`, '--alphabetical', '--log'];
+  it('[6] ALPHABETICAL: i18nCollect shall log keys for language "en" in alphabetical order when called with argument --alphabetical and --log', async () => {
+    const fileNo = 6;
     const inspect = stdout.inspect();
-    await cli(argv);
+    await i18nCollect('test/test-assets/multiple.html', `test/test-generated/test-${fileNo}.json`, {
+      alphabetical: true,
+      log: true
+    });
     inspect.restore();
     assert.deepEqual(inspect.output, [
       'Now processing test/test-assets/multiple.html\n',
-      '{\n  \"translations\": {\n    \"en\": {\n      \"a\": {\n        \"a\": \"en of a.a\",\n        \"b\": \"en of a.b\"\n      },\n      \"b\": \"en of b\"\n    }\n  }\n}\n',
-      `\u001b[32mDone and Ready! Your output was written to test/test-generated/test-${fileNo}.json\u001b[0m\n`
+      '{\n  \"translations\": {\n    \"en\": {\n      \"a\": {\n        \"a\": \"en of a.a\",\n        \"b\": \"en of a.b\"\n      },\n      \"b\": \"en of b\"\n    }\n  }\n}\n'
     ]);
   });
-  
-  it('[8] EMPTY: cli shall log myKey and myVar (no text) for language "en" when called with argument --empty and --log', async () => {
+
+  /*
+  it('[8] EMPTY: i18nCollect shall log myKey and myVar (no text) for language "en" when called with argument --empty and --log', async () => {
     const fileNo = 8;
     const argv = [null, null, templSimple, `test/test-generated/test-${fileNo}.json`, '--empty', '--log'];
     const inspect = stdout.inspect();
-    await cli(argv);
+    await i18nCollect(argv);
     inspect.restore();
     assert.deepEqual(inspect.output, [
        `Now processing ${templSimple}\n`,
@@ -99,11 +101,11 @@ describe('Tests for Command i18n-collect', () => {
     ]);
   });
 
-  it('[9] LNG: cli shall log myKey and myVar for language "de", "fr", and "es" when called with arguments --lng=de,fr,es and --log', async () => {
+  it('[9] LNG: i18nCollect shall log myKey and myVar for language "de", "fr", and "es" when called with arguments --lng=de,fr,es and --log', async () => {
     const fileNo = 9;
     const argv = [null, null, templSimple, `test/test-generated/test-${fileNo}.json`, '--lng=de,fr,es', '--log'];
     const inspect = stdout.inspect();
-    await cli(argv);
+    await i18nCollect(argv);
     inspect.restore();
     assert.deepEqual(inspect.output, [
        `Now processing ${templSimple}\n`,
@@ -112,11 +114,11 @@ describe('Tests for Command i18n-collect', () => {
     ]);
   });
 
-  it('[10] SEPARATE FILES: cli shall log for three single files when called with arguments --lng=de,fr,es -sf and --log', async () => {
+  it('[10] SEPARATE FILES: i18nCollect shall log for three single files when called with arguments --lng=de,fr,es -sf and --log', async () => {
     const fileNo = 10;
     const argv = [null, null, templSimple, `test/test-generated/test-${fileNo}.json`, '--lng=de,fr,es', '-sf', '--log'];
     const inspect = stdout.inspect();
-    await cli(argv);
+    await i18nCollect(argv);
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing ${templSimple}\n`,
@@ -130,11 +132,11 @@ describe('Tests for Command i18n-collect', () => {
     ]);
   });
 
-  it('[11] CUSTOM TRANSLATION FUNC: cli shall log myOtherKey when called with arguments --translFunc=_t and --log', async () => {
+  it('[11] CUSTOM TRANSLATION FUNC: i18nCollect shall log myOtherKey when called with arguments --translFunc=_t and --log', async () => {
     const fileNo = 11;
     const argv = [null, null, customSimple, `test/test-generated/test-${fileNo}.json`, '--translFunc=_t', '--log'];
     const inspect = stdout.inspect();
-    await cli(argv);
+    await i18nCollect(argv);
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing ${customSimple}\n`,
@@ -143,11 +145,11 @@ describe('Tests for Command i18n-collect', () => {
     ]);
   });
 
-  it('[12] UPDATE: cli shall log for extending existing file when called with arguments --update and --log', async () => {
+  it('[12] UPDATE: i18nCollect shall log for extending existing file when called with arguments --update and --log', async () => {
     const fileNo = 12;
     const argv = [null, null, templSimple, `test/test-generated/test-${fileNo}.json`, '--update', '--log'];
     const inspect = stdout.inspect();
-    await cli(argv);
+    await i18nCollect(argv);
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing ${templSimple}\n`,
