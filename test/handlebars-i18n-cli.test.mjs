@@ -87,33 +87,29 @@ describe('Tests for Command i18n-collect', () => {
     ]);
   });
 
-  /*
-  it('[8] EMPTY: i18nCollect shall log myKey and myVar (no text) for language "en" when called with argument --empty and --log', async () => {
+  it('[7] EMPTY: i18nCollect shall log myKey and myVar (no text) for language "en" when called with argument --empty and --log', async () => {
     const fileNo = 8;
-    const argv = [null, null, templSimple, `test/test-generated/test-${fileNo}.json`, '--empty', '--log'];
     const inspect = stdout.inspect();
-    await i18nCollect(argv);
+    await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {empty: true, log: true});
     inspect.restore();
     assert.deepEqual(inspect.output, [
-       `Now processing ${templSimple}\n`,
-      '{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"{{myVar}}\"\n    }\n  }\n}\n',
-      `\u001b[32mDone and Ready! Your output was written to test/test-generated/test-${fileNo}.json\u001b[0m\n`
+      `Now processing ${templSimple}\n`,
+      '{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"{{myVar}}\"\n    }\n  }\n}\n'
     ]);
   });
 
-  it('[9] LNG: i18nCollect shall log myKey and myVar for language "de", "fr", and "es" when called with arguments --lng=de,fr,es and --log', async () => {
+  it('[8] LNG: i18nCollect shall log myKey and myVar for language "de", "fr", and "es" when called with arguments --lng=de,fr,es and --log', async () => {
     const fileNo = 9;
-    const argv = [null, null, templSimple, `test/test-generated/test-${fileNo}.json`, '--lng=de,fr,es', '--log'];
     const inspect = stdout.inspect();
-    await i18nCollect(argv);
+    await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {languages: 'de,fr,es', log: true});
     inspect.restore();
     assert.deepEqual(inspect.output, [
-       `Now processing ${templSimple}\n`,
-      '{\n  \"translations\": {\n    \"de\": {\n      \"myKey\": \"de of myKey with variables {{myVar}}\"\n    },\n    \"fr\": {\n      \"myKey\": \"fr of myKey with variables {{myVar}}\"\n    },\n    \"es\": {\n      \"myKey\": \"es of myKey with variables {{myVar}}\"\n    }\n  }\n}\n',
-      `\u001b[32mDone and Ready! Your output was written to test/test-generated/test-${fileNo}.json\u001b[0m\n`
+      `Now processing ${templSimple}\n`,
+      '{\n  \"translations\": {\n    \"de\": {\n      \"myKey\": \"de of myKey with variables {{myVar}}\"\n    },\n    \"fr\": {\n      \"myKey\": \"fr of myKey with variables {{myVar}}\"\n    },\n    \"es\": {\n      \"myKey\": \"es of myKey with variables {{myVar}}\"\n    }\n  }\n}\n'
     ]);
   });
 
+  /*
   it('[10] SEPARATE FILES: i18nCollect shall log for three single files when called with arguments --lng=de,fr,es -sf and --log', async () => {
     const fileNo = 10;
     const argv = [null, null, templSimple, `test/test-generated/test-${fileNo}.json`, '--lng=de,fr,es', '-sf', '--log'];
