@@ -99,9 +99,9 @@ describe('Tests for Command i18n-collect', () => {
   });
 
   it('[8] LNG: i18nCollect shall log myKey and myVar for language "de", "fr", and "es" when called with arguments --lng=de,fr,es and --log', async () => {
-    const fileNo = 9;
+    const fileNo = 8;
     const inspect = stdout.inspect();
-    await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {languages: 'de,fr,es', log: true});
+    await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {lng: ["de", "fr", "es"], log: true});
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing ${templSimple}\n`,
@@ -109,12 +109,14 @@ describe('Tests for Command i18n-collect', () => {
     ]);
   });
 
-  /*
-  it('[10] SEPARATE FILES: i18nCollect shall log for three single files when called with arguments --lng=de,fr,es -sf and --log', async () => {
-    const fileNo = 10;
-    const argv = [null, null, templSimple, `test/test-generated/test-${fileNo}.json`, '--lng=de,fr,es', '-sf', '--log'];
+  it('[9] SEPARATE FILES: i18nCollect shall log for three single files when called with arguments --lng=de,fr,es -sf and --log', async () => {
+    const fileNo = 9;
     const inspect = stdout.inspect();
-    await i18nCollect(argv);
+    await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {
+      lng: ["de", "fr", "es"],
+      log: true,
+      separateLngFiles: true
+    });
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing ${templSimple}\n`,
@@ -123,11 +125,11 @@ describe('Tests for Command i18n-collect', () => {
       "{\n  \"fr\": {\n    \"myKey\": \"fr of myKey with variables {{myVar}}\"\n  }\n}\n",
       `\u001b[34mWrote language keys for 'fr' to test/test-generated/test-${fileNo}.fr.json\u001b[0m\n`,
       "{\n  \"es\": {\n    \"myKey\": \"es of myKey with variables {{myVar}}\"\n  }\n}\n",
-      `\u001b[34mWrote language keys for 'es' to test/test-generated/test-${fileNo}.es.json\u001b[0m\n`,
-      "\u001b[32mYou’re good. All Done.\u001b[0m\n"
+      `\u001b[34mWrote language keys for 'es' to test/test-generated/test-${fileNo}.es.json\u001b[0m\n`
     ]);
   });
 
+  /*
   it('[11] CUSTOM TRANSLATION FUNC: i18nCollect shall log myOtherKey when called with arguments --translFunc=_t and --log', async () => {
     const fileNo = 11;
     const argv = [null, null, customSimple, `test/test-generated/test-${fileNo}.json`, '--translFunc=_t', '--log'];

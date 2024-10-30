@@ -358,8 +358,8 @@ async function i18nCollect(source, target, options) {
     hndlbrKeys = deepSort(hndlbrKeys)
 
   //  form an array of languages from argument '--lng
-  const languages = (typeof options.lng === 'string')
-    ? options.lng.split(',')
+  const languages = (Array.isArray(options.lng) && options.lng.length > 0)
+    ? options.lng
     : ['en'];
 
 
@@ -400,12 +400,15 @@ async function i18nCollect(source, target, options) {
       if (options.log || options.dryRun)
         console.log(fileOutputJson)
 
+
+      let [write, e] = [undefined, undefined];
+
       //  write files only if no --dryRun option was set
       if (!options.dryRun)
         //  write out the json to target file per language
-        [res, err] = await fst.writeFile(targetFileNameSeparated, fileOutputJson);
-      if (err)
-        throw (err);
+        [write, e] = await fst.writeFile(targetFileNameSeparated, fileOutputJson);
+      if (e)
+        throw (e);
       console.log('\x1b[34m%s\x1b[0m', `Wrote language keys for '${lng}' to ${targetFileNameSeparated}`)
     }
 
