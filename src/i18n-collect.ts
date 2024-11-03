@@ -1,12 +1,12 @@
-/*********************************************************************
+/****************************************
  * i18n-collect.js
  * @author: Florian Walzel
  *
- */
+ * ****************************************/
 
 
 /****************************************
- * REQUIRE & DEFINE
+ * IMPORT
  ****************************************/
 
 import fst from 'async-file-tried';
@@ -22,7 +22,7 @@ import {glob} from 'glob'
  * @param item
  * @returns {boolean}
  */
-function isObject(item) {
+function isObject(item: any) {
   return (item && typeof item === 'object' && !Array.isArray(item))
 }
 
@@ -34,38 +34,10 @@ function isObject(item) {
  * @param ending
  * @returns {*|string[]}
  */
-function sanitizeFileExt(str, ending = '.json') {
+function sanitizeFileExt(str: string, ending: string = '.json') {
   return str.toLowerCase().endsWith(ending) ? str.slice(0, ending.length * (-1)) : str
 }
 
-/**
- * Log the help information to console
- * @returns {boolean}
- */
-function logHelp() {
-  console.log('\x1b[2m%s', 'Usage:')
-  console.log('i18n-collect <source> <target> <options...>')
-  console.log('')
-  console.log('<source>                 path to handlebars.js template file(s), glob pattern allowed')
-  console.log('<target>                 json file(s) to write result to')
-  console.log('')
-  console.log('<options>')
-  console.log('--alphabetical or -a     will order the keys to the translation strings alphabetically in the json')
-  console.log('                         default: keys in order of appearance as within the template(s)')
-  console.log('--dryRun or -dr          will log the result(s) but not write out json file(s)')
-  console.log('--empty or -e            will create empty value strings for the translations in the json')
-  console.log('                         default: value strings contain current language and key name')
-  console.log('--lng=en,fr,es,…         the languages you want to be generated')
-  console.log('                         default: en')
-  console.log('--log or -l              log final results to console')
-  console.log('--separateLngFiles       write each language in a separate json file')
-  console.log('  or -sf                 default: all languages are written as arrays in one json file')
-  console.log('--translFunc=customName  a custom name of the translation function used in the templates')
-  console.log('                         default: __ like handlebars-i18n notation: {{__ keyToTranslate}}')
-  console.log('--update or -u           updates existing json files(s) after changes made in template file(s)')
-  console.log('\x1b[0m')
-  return true
-}
 
 /**
  * A collection of functions to extract and handle the
@@ -88,13 +60,13 @@ const mustacheBetweens = {
    * @param sub2
    * @returns {string|boolean}
    */
-  getFromBetween: function (sub1, sub2) {
+  getFromBetween: function (sub1: string, sub2: string): string {
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
-      return false
+      return ''
     let SP = this.str.indexOf(sub1) + sub1.length,
-      string1 = this.str.substr(0, SP),
-      string2 = this.str.substr(SP),
-      TP = string1.length + string2.indexOf(sub2)
+        string1 = this.str.substr(0, SP),
+        string2 = this.str.substr(SP),
+        TP = string1.length + string2.indexOf(sub2)
     return this.str.substring(SP, TP)
   },
 
@@ -106,10 +78,10 @@ const mustacheBetweens = {
    * @param sub2
    * @returns {boolean}
    */
-  removeFromBetween: function (sub1, sub2) {
+  removeFromBetween: function (sub1: string, sub2: string) {
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
-      return false
-    let removal = sub1 + this.getFromBetween(sub1, sub2) + sub2
+      return ''
+    let removal: string = sub1 + this.getFromBetween(sub1, sub2) + sub2
     this.str = this.str.replace(removal, '')
   },
 
@@ -120,14 +92,15 @@ const mustacheBetweens = {
    * @param sub1
    * @param sub2
    */
-  getAllResults: function (sub1, sub2) {
+  getAllResults: function (sub1: string, sub2: string) {
     //  first check to see if we do have both substrings
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
       return false
     //  find first result
     let result = this.getFromBetween(sub1, sub2)
     //  replace multiple spaces by a single one, then trim and push it to the results array
-    this.results.push(result.replace(/ +(?= )/g, '').trim())
+    if (result !== '')
+      this.results.push(result.replace(/ +(?= )/g, '').trim())
     //  remove the most recently found one from the string
     this.removeFromBetween(sub1, sub2)
     //  recursion in case there are more substrings
@@ -142,34 +115,35 @@ const mustacheBetweens = {
    * @param sub2
    * @returns {*}
    */
-  getSorted: function (string, translFuncName, sub1 = '{{', sub2 = '}}') {
+  getSorted: function (string: string, translFuncName: string, sub1: string = '{{', sub2: string = '}}') {
     this.str = string
     this.getAllResults(sub1, sub2)
     this.results =
-      this.results.filter(
-        (el) => {
-          return typeof el === 'string' && el.startsWith(`${translFuncName} `)
-        })
-        .map(
-          (el) => {
-            //  remove leading translation function and explode string by space
-            let splited = el.replace(`${translFuncName} `, '').split(' ')
-            //  remove quotation marks around key name in element 0 of array
-            splited[0] = splited[0]
-              .replace(/"/g, '')
-              .replace(/'/g, '')
-            //  split remaining string in first element of array by dot (.) to get separate keys of a dot-notated object
-            let keys = splited[0].split('.')
-            //  transformed is a container object for key
-            let transformed = {}
-            transformed.keys = keys
-            transformed.replacementVars = []
-            //  split following elements by '=' and preserve first element of split
-            for (let i = 1; i < splited.length; i++)
-              transformed.replacementVars[i - 1] = splited[i].split('=')[0]
+        this.results.filter(
+            (el) => {
+              return typeof el === 'string' && el.startsWith(`${translFuncName} `)
+            })
+            .map(
+                (el) => {
+                  //  remove leading translation function and explode string by space
+                  let splited = el.replace(`${translFuncName} `, '').split(' ')
+                  //  remove quotation marks around key name in element 0 of array
+                  splited[0] = splited[0]
+                      .replace(/"/g, '')
+                      .replace(/'/g, '')
+                  //  split remaining string in first element of array by dot (.) to get separate keys of a dot-notated object
+                  let keys = splited[0].split('.')
+                  //  transformed is a container object for key
+                  let transformed = {
+                    replacementVars: [],
+                    keys: keys
+                  }
+                  //  split following elements by '=' and preserve first element of split
+                  for (let i = 1; i < splited.length; i++)
+                    transformed.replacementVars[i - 1] = splited[i].split('=')[0]
 
-            return transformed
-          })
+                  return transformed
+                })
     return this.results
   }
 };
@@ -186,7 +160,7 @@ const mustacheBetweens = {
  * @param arr
  * @returns {*}
  */
-const arrRmvDuplicateValues = (arr) => {
+const arrRmvDuplicateValues = (arr: Array<any>) => {
   let seen = {}
   return arr.filter((item) => {
     return seen.hasOwnProperty(item.keys) ? false : seen[item.keys] = true
@@ -202,7 +176,7 @@ const arrRmvDuplicateValues = (arr) => {
  * @param empty
  * @returns {{}}
  */
-function objectify(arr, lang = 'en', empty = false) {
+function objectify(arr: Array<any>, lang: string = 'en', empty: boolean | undefined = false) {
 
   /**
    *
@@ -211,7 +185,7 @@ function objectify(arr, lang = 'en', empty = false) {
    * @param arr
    * @param pos
    */
-  function __iterateArr(obj, val, arr, pos) {
+  function __iterateArr(obj: object, val: any, arr: Array<any>, pos: number) {
     if (!obj.hasOwnProperty(arr[pos])) {
       if (pos + 1 < arr.length) {
         obj[arr[pos]] = {}
@@ -230,7 +204,7 @@ function objectify(arr, lang = 'en', empty = false) {
    * @param textBefore
    * @returns {string}
    */
-  function __listTranslVariables(arr, textBefore = '') {
+  function __listTranslVariables(arr: Array<any>, textBefore: string = '') {
     let str = '';
     if (arr.length === 0)
       return str;
@@ -312,8 +286,18 @@ function deepSort(arr) {
 /****************************************
  * EXPORT PUBLIC INTERFACE
  ****************************************/
+declare interface opts {
+  alphabetical?: boolean,
+  dryRun?: boolean,
+  empty?: boolean | undefined,
+  log?: boolean,
+  separateLngFiles?: boolean,
+  translFunc?: string,
+  update?: boolean
+}
 
-async function i18nCollect(source, target, options) {
+
+async function i18nCollect(source: string, target: string, lng: Array<string>, options?: opts) {
 
   if (typeof source !== 'string')
     throw new Error(`First argument SOURCE must be of type string. Please specify a valid SOURCE.`);
@@ -328,8 +312,8 @@ async function i18nCollect(source, target, options) {
 
   //  register vars
   let hndlbrKeys = [],
-    translObj,
-    outputObj;
+      translObj,
+      outputObj;
 
   // get glob from source
   const templateFiles = await glob(source, {ignore: 'node_modules/**'})
@@ -342,7 +326,7 @@ async function i18nCollect(source, target, options) {
       throw (err);
     //console.log(content)
     hndlbrKeys = hndlbrKeys.concat(
-      mustacheBetweens.getSorted(content, options.translFunc || '__')
+        mustacheBetweens.getSorted(content, options.translFunc || '__')
     );
   }
 
@@ -358,10 +342,12 @@ async function i18nCollect(source, target, options) {
     hndlbrKeys = deepSort(hndlbrKeys)
 
   //  form an array of languages from argument '--lng
-  const languages = (Array.isArray(options.lng) && options.lng.length > 0)
-    ? options.lng
-    : ['en'];
+  const languages = (Array.isArray(lng) && lng.length > 0)
+      ? lng
+      : ['en'];
 
+
+  let targetFileNameSeparated: string;
 
   //  WRITE TO ONE FILE PER LANGUAGE
   //  ------------------------------------------------
@@ -375,10 +361,10 @@ async function i18nCollect(source, target, options) {
     for (let lng of languages) {
 
       //  join file name per language such as myfile.de.json, myfile.en.json, ...
-      let targetFileNameSeparated = (targetFileName.startsWith('/')
-          ? targetFileName.substring(1)
-          : targetFileName)
-        + '.' + lng + '.json';
+      targetFileNameSeparated = (targetFileName.startsWith('/')
+              ? targetFileName.substring(1)
+              : targetFileName)
+          + '.' + lng + '.json';
 
       //  create output object per language and add keys in nested object form
       outputObj = {}
@@ -405,7 +391,7 @@ async function i18nCollect(source, target, options) {
 
       //  write files only if no --dryRun option was set
       if (!options.dryRun)
-        //  write out the json to target file per language
+          //  write out the json to target file per language
         [write, e] = await fst.writeFile(targetFileNameSeparated, fileOutputJson);
       if (e)
         throw (e);
@@ -413,10 +399,10 @@ async function i18nCollect(source, target, options) {
     }
 
     if (options.dryRun)
-     console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.');
+      console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.');
   }
 
-  //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
+      //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
   //  ------------------------------------------------
   else {
     //  create object to hold the translations and create a key for every language
