@@ -1,8 +1,8 @@
-/****************************************
+/*********************************************************************
  * i18n-collect.js
  * @author: Florian Walzel
  *
- * ****************************************/
+ */
 
 
 /****************************************
@@ -22,7 +22,7 @@ import {glob} from 'glob'
  * @param item
  * @returns {boolean}
  */
-function isObject(item: any) {
+function isObject(item) {
   return (item && typeof item === 'object' && !Array.isArray(item))
 }
 
@@ -34,10 +34,9 @@ function isObject(item: any) {
  * @param ending
  * @returns {*|string[]}
  */
-function sanitizeFileExt(str: string, ending: string = '.json') {
+function sanitizeFileExt(str, ending = '.json') {
   return str.toLowerCase().endsWith(ending) ? str.slice(0, ending.length * (-1)) : str
 }
-
 
 /**
  * A collection of functions to extract and handle the
@@ -60,13 +59,13 @@ const mustacheBetweens = {
    * @param sub2
    * @returns {string|boolean}
    */
-  getFromBetween: function (sub1: string, sub2: string): string {
+  getFromBetween: function (sub1, sub2) {
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
-      return ''
+      return false
     let SP = this.str.indexOf(sub1) + sub1.length,
-        string1 = this.str.substr(0, SP),
-        string2 = this.str.substr(SP),
-        TP = string1.length + string2.indexOf(sub2)
+      string1 = this.str.substr(0, SP),
+      string2 = this.str.substr(SP),
+      TP = string1.length + string2.indexOf(sub2)
     return this.str.substring(SP, TP)
   },
 
@@ -78,10 +77,10 @@ const mustacheBetweens = {
    * @param sub2
    * @returns {boolean}
    */
-  removeFromBetween: function (sub1: string, sub2: string) {
+  removeFromBetween: function (sub1, sub2) {
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
-      return ''
-    let removal: string = sub1 + this.getFromBetween(sub1, sub2) + sub2
+      return false
+    let removal = sub1 + this.getFromBetween(sub1, sub2) + sub2
     this.str = this.str.replace(removal, '')
   },
 
@@ -92,15 +91,14 @@ const mustacheBetweens = {
    * @param sub1
    * @param sub2
    */
-  getAllResults: function (sub1: string, sub2: string) {
+  getAllResults: function (sub1, sub2) {
     //  first check to see if we do have both substrings
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
       return false
     //  find first result
     let result = this.getFromBetween(sub1, sub2)
     //  replace multiple spaces by a single one, then trim and push it to the results array
-    if (result !== '')
-      this.results.push(result.replace(/ +(?= )/g, '').trim())
+    this.results.push(result.replace(/ +(?= )/g, '').trim())
     //  remove the most recently found one from the string
     this.removeFromBetween(sub1, sub2)
     //  recursion in case there are more substrings
@@ -115,35 +113,34 @@ const mustacheBetweens = {
    * @param sub2
    * @returns {*}
    */
-  getSorted: function (string: string, translFuncName: string, sub1: string = '{{', sub2: string = '}}') {
+  getSorted: function (string, translFuncName, sub1 = '{{', sub2 = '}}') {
     this.str = string
     this.getAllResults(sub1, sub2)
     this.results =
-        this.results.filter(
-            (el) => {
-              return typeof el === 'string' && el.startsWith(`${translFuncName} `)
-            })
-            .map(
-                (el) => {
-                  //  remove leading translation function and explode string by space
-                  let splited = el.replace(`${translFuncName} `, '').split(' ')
-                  //  remove quotation marks around key name in element 0 of array
-                  splited[0] = splited[0]
-                      .replace(/"/g, '')
-                      .replace(/'/g, '')
-                  //  split remaining string in first element of array by dot (.) to get separate keys of a dot-notated object
-                  let keys = splited[0].split('.')
-                  //  transformed is a container object for key
-                  let transformed = {
-                    replacementVars: [],
-                    keys: keys
-                  }
-                  //  split following elements by '=' and preserve first element of split
-                  for (let i = 1; i < splited.length; i++)
-                    transformed.replacementVars[i - 1] = splited[i].split('=')[0]
+      this.results.filter(
+        (el) => {
+          return typeof el === 'string' && el.startsWith(`${translFuncName} `)
+        })
+        .map(
+          (el) => {
+            //  remove leading translation function and explode string by space
+            let splited = el.replace(`${translFuncName} `, '').split(' ')
+            //  remove quotation marks around key name in element 0 of array
+            splited[0] = splited[0]
+              .replace(/"/g, '')
+              .replace(/'/g, '')
+            //  split remaining string in first element of array by dot (.) to get separate keys of a dot-notated object
+            let keys = splited[0].split('.')
+            //  transformed is a container object for key
+            let transformed = {}
+            transformed.keys = keys
+            transformed.replacementVars = []
+            //  split following elements by '=' and preserve first element of split
+            for (let i = 1; i < splited.length; i++)
+              transformed.replacementVars[i - 1] = splited[i].split('=')[0]
 
-                  return transformed
-                })
+            return transformed
+          })
     return this.results
   }
 };
@@ -160,7 +157,7 @@ const mustacheBetweens = {
  * @param arr
  * @returns {*}
  */
-const arrRmvDuplicateValues = (arr: Array<any>) => {
+const arrRmvDuplicateValues = (arr) => {
   let seen = {}
   return arr.filter((item) => {
     return seen.hasOwnProperty(item.keys) ? false : seen[item.keys] = true
@@ -176,7 +173,7 @@ const arrRmvDuplicateValues = (arr: Array<any>) => {
  * @param empty
  * @returns {{}}
  */
-function objectify(arr: Array<any>, lang: string = 'en', empty: boolean | undefined = false) {
+function objectify(arr, lang = 'en', empty = false) {
 
   /**
    *
@@ -185,7 +182,7 @@ function objectify(arr: Array<any>, lang: string = 'en', empty: boolean | undefi
    * @param arr
    * @param pos
    */
-  function __iterateArr(obj: object, val: any, arr: Array<any>, pos: number) {
+  function __iterateArr(obj, val, arr, pos) {
     if (!obj.hasOwnProperty(arr[pos])) {
       if (pos + 1 < arr.length) {
         obj[arr[pos]] = {}
@@ -204,7 +201,7 @@ function objectify(arr: Array<any>, lang: string = 'en', empty: boolean | undefi
    * @param textBefore
    * @returns {string}
    */
-  function __listTranslVariables(arr: Array<any>, textBefore: string = '') {
+  function __listTranslVariables(arr, textBefore = '') {
     let str = '';
     if (arr.length === 0)
       return str;
@@ -286,18 +283,8 @@ function deepSort(arr) {
 /****************************************
  * EXPORT PUBLIC INTERFACE
  ****************************************/
-declare interface opts {
-  alphabetical?: boolean,
-  dryRun?: boolean,
-  empty?: boolean | undefined,
-  log?: boolean,
-  separateLngFiles?: boolean,
-  translFunc?: string,
-  update?: boolean
-}
 
-
-async function i18nCollect(source: string, target: string, lng: Array<string>, options?: opts) {
+async function i18nCollect(source, target, options) {
 
   if (typeof source !== 'string')
     throw new Error(`First argument SOURCE must be of type string. Please specify a valid SOURCE.`);
@@ -312,8 +299,8 @@ async function i18nCollect(source: string, target: string, lng: Array<string>, o
 
   //  register vars
   let hndlbrKeys = [],
-      translObj,
-      outputObj;
+    translObj,
+    outputObj;
 
   // get glob from source
   const templateFiles = await glob(source, {ignore: 'node_modules/**'})
@@ -326,7 +313,7 @@ async function i18nCollect(source: string, target: string, lng: Array<string>, o
       throw (err);
     //console.log(content)
     hndlbrKeys = hndlbrKeys.concat(
-        mustacheBetweens.getSorted(content, options.translFunc || '__')
+      mustacheBetweens.getSorted(content, options.translFunc || '__')
     );
   }
 
@@ -342,12 +329,10 @@ async function i18nCollect(source: string, target: string, lng: Array<string>, o
     hndlbrKeys = deepSort(hndlbrKeys)
 
   //  form an array of languages from argument '--lng
-  const languages = (Array.isArray(lng) && lng.length > 0)
-      ? lng
-      : ['en'];
+  const languages = (Array.isArray(options.lng) && options.lng.length > 0)
+    ? options.lng
+    : ['en'];
 
-
-  let targetFileNameSeparated: string;
 
   //  WRITE TO ONE FILE PER LANGUAGE
   //  ------------------------------------------------
@@ -361,10 +346,10 @@ async function i18nCollect(source: string, target: string, lng: Array<string>, o
     for (let lng of languages) {
 
       //  join file name per language such as myfile.de.json, myfile.en.json, ...
-      targetFileNameSeparated = (targetFileName.startsWith('/')
-              ? targetFileName.substring(1)
-              : targetFileName)
-          + '.' + lng + '.json';
+      let targetFileNameSeparated = (targetFileName.startsWith('/')
+          ? targetFileName.substring(1)
+          : targetFileName)
+        + '.' + lng + '.json';
 
       //  create output object per language and add keys in nested object form
       outputObj = {}
@@ -391,7 +376,7 @@ async function i18nCollect(source: string, target: string, lng: Array<string>, o
 
       //  write files only if no --dryRun option was set
       if (!options.dryRun)
-          //  write out the json to target file per language
+        //  write out the json to target file per language
         [write, e] = await fst.writeFile(targetFileNameSeparated, fileOutputJson);
       if (e)
         throw (e);
@@ -399,10 +384,10 @@ async function i18nCollect(source: string, target: string, lng: Array<string>, o
     }
 
     if (options.dryRun)
-      console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.');
+     console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.');
   }
 
-      //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
+  //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
   //  ------------------------------------------------
   else {
     //  create object to hold the translations and create a key for every language
