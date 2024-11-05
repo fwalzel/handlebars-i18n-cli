@@ -10,7 +10,7 @@
  ****************************************/
 
 import fst from 'async-file-tried';
-import {glob} from 'glob'
+import {glob} from 'glob';
 
 /****************************************
  * PRIVATE FUNCTIONS
@@ -60,12 +60,11 @@ const mustacheBetweens = {
    * @returns {string|boolean}
    */
   getFromBetween: function (sub1, sub2) {
-    if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
-      return false
     let SP = this.str.indexOf(sub1) + sub1.length,
-      string1 = this.str.substr(0, SP),
-      string2 = this.str.substr(SP),
-      TP = string1.length + string2.indexOf(sub2)
+      string1 = this.str.slice(0, SP),
+      string2 = this.str.slice(SP),
+      TP = string1.length + string2.indexOf(sub2);
+
     return this.str.substring(SP, TP)
   },
 
@@ -78,10 +77,9 @@ const mustacheBetweens = {
    * @returns {boolean}
    */
   removeFromBetween: function (sub1, sub2) {
-    if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
-      return false
-    let removal = sub1 + this.getFromBetween(sub1, sub2) + sub2
-    this.str = this.str.replace(removal, '')
+    let removal = sub1 + this.getFromBetween(sub1, sub2) + sub2;
+    this.str = this.str.replace(removal, '');
+    return true
   },
 
   /**
@@ -94,16 +92,16 @@ const mustacheBetweens = {
   getAllResults: function (sub1, sub2) {
     //  first check to see if we do have both substrings
     if (this.str.indexOf(sub1) < 0 || this.str.indexOf(sub2) < 0)
-      return false
+      return false;
     //  find first result
-    let result = this.getFromBetween(sub1, sub2)
+    let result = this.getFromBetween(sub1, sub2);
     //  replace multiple spaces by a single one, then trim and push it to the results array
-    this.results.push(result.replace(/ +(?= )/g, '').trim())
+    this.results.push(result.replace(/ +(?= )/g, '').trim());
     //  remove the most recently found one from the string
-    this.removeFromBetween(sub1, sub2)
+    this.removeFromBetween(sub1, sub2);
     //  recursion in case there are more substrings
     if (this.str.indexOf(sub1) > -1 && this.str.indexOf(sub2) > -1)
-      this.getAllResults(sub1, sub2)
+      this.getAllResults(sub1, sub2);
   },
 
   /**
@@ -114,8 +112,8 @@ const mustacheBetweens = {
    * @returns {*}
    */
   getSorted: function (string, translFuncName, sub1 = '{{', sub2 = '}}') {
-    this.str = string
-    this.getAllResults(sub1, sub2)
+    this.str = string;
+    this.getAllResults(sub1, sub2);
     this.results =
       this.results.filter(
         (el) => {
@@ -124,23 +122,23 @@ const mustacheBetweens = {
         .map(
           (el) => {
             //  remove leading translation function and explode string by space
-            let splited = el.replace(`${translFuncName} `, '').split(' ')
+            let splited = el.replace(`${translFuncName} `, '').split(' ');
             //  remove quotation marks around key name in element 0 of array
             splited[0] = splited[0]
               .replace(/"/g, '')
-              .replace(/'/g, '')
+              .replace(/'/g, '');
             //  split remaining string in first element of array by dot (.) to get separate keys of a dot-notated object
-            let keys = splited[0].split('.')
+            let keys = splited[0].split('.');
             //  transformed is a container object for key
-            let transformed = {}
-            transformed.keys = keys
-            transformed.replacementVars = []
+            let transformed = {};
+            transformed.keys = keys;
+            transformed.replacementVars = [];
             //  split following elements by '=' and preserve first element of split
             for (let i = 1; i < splited.length; i++)
-              transformed.replacementVars[i - 1] = splited[i].split('=')[0]
+              transformed.replacementVars[i - 1] = splited[i].split('=')[0];
 
             return transformed
-          })
+          });
     return this.results
   }
 };
@@ -158,11 +156,11 @@ const mustacheBetweens = {
  * @returns {*}
  */
 const arrRmvDuplicateValues = (arr) => {
-  let seen = {}
+  let seen = {};
   return arr.filter((item) => {
     return seen.hasOwnProperty(item.keys) ? false : seen[item.keys] = true
   })
-}
+};
 
 
 /**
@@ -185,8 +183,8 @@ function objectify(arr, lang = 'en', empty = false) {
   function __iterateArr(obj, val, arr, pos) {
     if (!obj.hasOwnProperty(arr[pos])) {
       if (pos + 1 < arr.length) {
-        obj[arr[pos]] = {}
-        __iterateArr(obj[arr[pos]], val, arr, pos + 1)
+        obj[arr[pos]] = {};
+        __iterateArr(obj[arr[pos]], val, arr, pos + 1);
       } else
         obj[arr[pos]] = val;
     } else if (pos + 1 < arr.length)
@@ -207,7 +205,7 @@ function objectify(arr, lang = 'en', empty = false) {
       return str;
     for (let elem of arr)
       str += `{{${elem}}} `;
-    return textBefore + str.slice(0, -1);
+    return textBefore + str.slice(0, -1)
   }
 
   let obj = {}
@@ -216,7 +214,7 @@ function objectify(arr, lang = 'en', empty = false) {
     if (empty)
       prop = __listTranslVariables(el.replacementVars);
     else
-      prop = `${lang} of ${el.keys.join('.') + __listTranslVariables(el.replacementVars, ' with variables ')}`
+      prop = `${lang} of ${el.keys.join('.') + __listTranslVariables(el.replacementVars, ' with variables ')}`;
     __iterateArr(obj, prop, el.keys, 0)
   })
 
@@ -231,7 +229,9 @@ function objectify(arr, lang = 'en', empty = false) {
  * @param ...sources
  */
 function mergeDeep(target, ...sources) {
-  if (!sources.length) return target;
+  if (!sources.length)
+    return target;
+
   const source = sources.shift();
 
   if (isObject(target) && isObject(source)) {
@@ -245,7 +245,7 @@ function mergeDeep(target, ...sources) {
     }
   }
 
-  return mergeDeep(target, ...sources);
+  return mergeDeep(target, ...sources)
 }
 
 /**
@@ -260,8 +260,8 @@ function mergeDeep(target, ...sources) {
  * @returns arr
  */
 function deepSort(arr) {
-  //  determine the longest array in keys properties
   let depth = 0;
+  //  determine the longest array in keys properties
   for (let inst of arr)
     if (inst.keys.length > depth)
       depth = inst.keys.length;
@@ -272,11 +272,11 @@ function deepSort(arr) {
       if (a.keys[i] !== undefined && b.keys[i] !== undefined)
         return a.keys[i] > b.keys[i] ? -1 : 1;
       else
-        return a.keys[i] !== undefined ? -1 : 1
+        return a.keys[i] !== undefined ? -1 : 1;
     });
   }
   //  we get a descending array, so we invert it
-  return arr.reverse();
+  return arr.reverse()
 }
 
 
@@ -384,10 +384,10 @@ async function i18nCollect(source, target, options) {
     }
 
     if (options.dryRun)
-     console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.');
+      console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.');
   }
 
-  //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
+    //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
   //  ------------------------------------------------
   else {
     //  create object to hold the translations and create a key for every language

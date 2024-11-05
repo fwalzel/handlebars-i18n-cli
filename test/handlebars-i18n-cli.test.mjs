@@ -47,7 +47,6 @@ describe('Tests for Command i18n-collect', () => {
     expect(i18nCollect()).to.be.rejectedWith(Error);
   });
 
-
   it('[3] ERROR: i18nCollect shall error when called without a second argument', async () => {
     expect(i18nCollect(templSimple)).to.be.rejectedWith(Error);
   });

@@ -1,26 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es6",                          // Specifies the ECMAScript target version: 'es5', 'es6', 'esnext', etc.
-    "module": "commonjs",                      // Specifies the module code generation: 'commonjs', 'amd', 'es2015', etc.
-    "strict": true,                            // Enable all strict type-checking options
-    "esModuleInterop": true,                   // Enables compatibility with CommonJS modules
-    "skipLibCheck": true,                      // Skip type checking of declaration files for faster builds
-    "forceConsistentCasingInFileNames": true,  // Disallow inconsistently-cased imports
-    "moduleResolution": "node",                // Use Node.js module resolution strategy
-    "outDir": "./dist",                        // Redirect output structure to the 'dist' folder
-    "rootDir": "./src",                        // Specify the root folder for input files
-    "declaration": true,                       // Generate .d.ts files for type declarations
-    "sourceMap": true,                         // Generate source maps for debugging
-    "allowJs": true,                           // Allow JavaScript files to be compiled
-    "resolveJsonModule": true                  // Enable importing .json files
+    "allowJs": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./types",
+    "strict": true
   },
-  "include": [
-    "src/**/*"                                 // Include all .ts/.js files in the 'src' folder
-  ],
+  "include": ["src/**/*"],
   "exclude": [
-    "node_modules",                             // Exclude node_modules folder
-    "test",
-    "**/*.test.ts",                            // Exclude test files
-    "**/*.spec.ts"                             // Exclude spec files
-  ]
+    "bin",
+    "coverage",
+    "types",
+    "node_modules",
+    "test"]      // Specifies folders or patterns to exclude
 }

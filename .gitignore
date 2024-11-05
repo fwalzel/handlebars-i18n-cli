@@ -1,12 +1,5 @@
 # Node artifact files
 node_modules/
-types/
-
-# Compiled Java class files
-*.class
-
-# Compiled Python bytecode
-*.py[cod]
 
 # Log files
 *.log
