@@ -7,6 +7,7 @@ declare interface opts {
   lng?: Array<string>,
   log?: boolean,
   separateLngFiles?: boolean,
+  translFunc?: string,
   update?: boolean,
 }
 export function i18nCollect(source: string, target: string, options?: opts): Promise<true | void>;

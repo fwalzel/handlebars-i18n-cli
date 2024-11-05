@@ -128,19 +128,18 @@ describe('Tests for Command i18n-collect', () => {
     ]);
   });
 
-  /*
-  it('[11] CUSTOM TRANSLATION FUNC: i18nCollect shall log myOtherKey when called with arguments --translFunc=_t and --log', async () => {
-    const fileNo = 11;
-    const argv = [null, null, customSimple, `test/test-generated/test-${fileNo}.json`, '--translFunc=_t', '--log'];
+  it('[10] CUSTOM TRANSLATION FUNC: i18nCollect shall log myOtherKey when called with arguments --translFunc=_t and --log', async () => {
+    const fileNo = 10;
     const inspect = stdout.inspect();
-    await i18nCollect(argv);
+    await i18nCollect(customSimple, `test/test-generated/test-${fileNo}.json`, {translFunc: "_t", log: true});
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing ${customSimple}\n`,
       "{\n  \"translations\": {\n    \"en\": {\n      \"myOtherKey\": \"en of myOtherKey\"\n    }\n  }\n}\n",
-      `\u001b[32mDone and Ready! Your output was written to test/test-generated/test-${fileNo}.json\u001b[0m\n`
     ]);
   });
+
+  /*
 
   it('[12] UPDATE: i18nCollect shall log for extending existing file when called with arguments --update and --log', async () => {
     const fileNo = 12;

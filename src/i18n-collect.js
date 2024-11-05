@@ -1,8 +1,8 @@
-/*********************************************************************
+/****************************************
  * i18n-collect.js
  * @author: Florian Walzel
  *
- */
+ ****************************************/
 
 
 /****************************************
@@ -17,7 +17,7 @@ import {glob} from 'glob';
  ****************************************/
 
 /**
- * Simple object check.
+ * Simple object check
  *
  * @param item
  * @returns {boolean}
@@ -28,7 +28,7 @@ function isObject(item) {
 
 /**
  * Conditionally removes a substring (file extension)
- * from end of given string.
+ * from end of given string
  *
  * @param str
  * @param ending
@@ -84,7 +84,7 @@ const mustacheBetweens = {
 
   /**
    * gets all substrings of a string that are between an opening character sequence (sub1)
-   * and a closing sequence (sub2). The Result is stored in parent results array.
+   * and a closing sequence (sub2). The Result is stored in parent results array
    *
    * @param sub1
    * @param sub2
@@ -164,7 +164,7 @@ const arrRmvDuplicateValues = (arr) => {
 
 
 /**
- * Builds a nested object with key-value-pairs from a three-dimensional array.
+ * Builds a nested object with key-value-pairs from a three-dimensional array
  *
  * @param arr
  * @param lang
@@ -223,7 +223,7 @@ function objectify(arr, lang = 'en', empty = false) {
 
 /**
  * Deep merge two objects whereby all properties of
- * sources are kept and the target properties are added.
+ * sources are kept and the target properties are added
  *
  * @param target
  * @param ...sources

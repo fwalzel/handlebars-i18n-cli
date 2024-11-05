@@ -4,6 +4,7 @@
   "description": "Extracts translation keys from handlebars templates and forms JSON from it; generates automatic translations via DeepL.",
   "main": "src/index.js",
   "type": "module",
+  "types": "types/index.d.ts",
   "bin": {
     "@fwalzel/handlebars-i18n-cli": "./bin/i18n-collect",
     "i18n-collect": "./bin/i18n-collect",

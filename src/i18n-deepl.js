@@ -276,6 +276,7 @@ async function translateToJSON(
 
   // read the json source
   const srcObj = await readI18nJson(JsonSrc, sourceLang);
+
   // access nested structure if given
   const srcObjPart = (sourceNested)
     ? getNestedValue(srcObj, sourceNested)
