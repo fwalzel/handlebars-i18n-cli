@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 import dotenv from 'dotenv';
+
 dotenv.config();
-import { program } from 'commander';
-import { getSupportedLanguages, setAuthKey, translateToJSON } from '../src/i18n-deepl.js';
+import {program} from 'commander';
+import {getSupportedLanguages, setAuthKey, translateToJSON} from '../src/i18n-deepl.js';
 import fs from 'async-file-tried';
 
 const [packageJS, err] = await fs.readJson('./package.json');
@@ -19,12 +20,12 @@ program
   .description('List DeepL’s supported languages.')
   .option('--auth-key <authKey>', 'The DeepL Auth Key.')
   .action(async (options) => {
-      const authKey = options.authKey || process.env.DEEPL_AUTH;
-      const languages = await getSupportedLanguages(authKey);
-      console.log('DeepL’s Supported Languages:');
-      languages.forEach(lang =>
-        console.log(`${lang.language} - ${lang.name}`)
-      );
+    const authKey = options.authKey || process.env.DEEPL_AUTH;
+    const languages = await getSupportedLanguages(authKey);
+    console.log('DeepL’s Supported Languages:');
+    languages.forEach(lang =>
+      console.log(`${lang.language} - ${lang.name}`)
+    );
   });
 
 program
@@ -49,24 +50,23 @@ program
   .action(
     async (source, target, targetLang, options) => {
 
-   /* console.log(`source: ${source}`)
-    console.log(`target: ${target}`)
-    console.log(`targetLang: ${targetLang}`)
-    console.log(`options:`)
-    console.log(options)*/
+      /* console.log(`source: ${source}`)
+       console.log(`target: ${target}`)
+       console.log(`targetLang: ${targetLang}`)
+       console.log(`options:`)
+       console.log(options)*/
 
-    await translateToJSON(
-        options.authKey || process.env.DEEPL_AUTH,
-         source,
-         target,
-         targetLang,
-         options.sourceNested || null,
-         options.sourceLang || null,
-         options.L || false,
-         options.Dr || false,
-         options.options || {}
+      await translateToJSON(options.authKey || process.env.DEEPL_AUTH,
+        source,
+        target,
+        options.sourceLang || null,
+        targetLang,
+        options.options || {},
+        options.sourceNested || null,
+        options.L || false,
+        options.Dr || false,
       );
       console.log(`Translation complete. See ${target} for your results.`)
-  });
+    });
 
 program.parse(process.argv);

@@ -50,5 +50,5 @@ export function readI18nJson(file: string, subNode?: string): Promise<any>;
  * @param deeplOpts
  * @returns {Promise<boolean>}
  */
-export function translateToJSON(authKey: string, JsonSrc: string, JsonTarget: string, targetLang: string, sourceNested?: string, sourceLang?: any, log?: boolean, dryRun?: boolean, deeplOpts?: object): Promise<boolean>;
+export function translateToJSON(authKey: string, JsonSrc: string, JsonTarget: string, sourceLang: string, targetLang: string, deeplOpts?: object, sourceNested?: string, log?: boolean, dryRun?: boolean): Promise<boolean>;
 //# sourceMappingURL=i18n-deepl.d.ts.map

@@ -254,9 +254,9 @@ async function readI18nJson(file, subNode) {
  * @param authKey
  * @param JsonSrc
  * @param JsonTarget
- * @param targetLang
+ * @param targetLangCode
  * @param sourceNested
- * @param sourceLang
+ * @param sourceLangCode
  * @param log
  * @param dryRun
  * @param deeplOpts
@@ -266,15 +266,15 @@ async function translateToJSON(
   authKey,
   JsonSrc,
   JsonTarget,
-  targetLang,
+  sourceLangCode,
+  targetLangCode,
+  deeplOpts,
   sourceNested,
-  sourceLang,
   log,
-  dryRun,
-  deeplOpts) {
+  dryRun) {
 
   // read the json source
-  const srcObj = await readI18nJson(JsonSrc, sourceLang);
+  const srcObj = await readI18nJson(JsonSrc, sourceNested);
 
   // access nested structure if given
   const srcObjPart = (sourceNested)
@@ -285,7 +285,7 @@ async function translateToJSON(
   const translValues = __flattenObj(srcObjPart);
 
   // run translation array against DeepL API
-  const translRes = await translateTexts(authKey, translValues, sourceLang, targetLang, deeplOpts);
+  const translRes = await translateTexts(authKey, translValues, sourceLangCode, targetLangCode, deeplOpts);
 
   // re-build object structure from array
   const translObj = __mapArrayToObj(srcObjPart, translRes, 'text');
@@ -301,13 +301,13 @@ async function translateToJSON(
     // if the content comes from a nested source
     if (sourceNested) {
       // ... traverse in the object to one node before last and insert (or merge) the translation
-      const traverse = __replaceLastSegment(sourceNested, targetLang);
+      const traverse = __replaceLastSegment(sourceNested, targetLangCode);
       __setNestedValue(srcObj, traverse, translObj);
     } else {
       // ... if not, see if the target node exists
-      (srcObj[targetLang])
-        ? Object.assign(srcObj[targetLang], translObj) // merge data with existing prop
-        : srcObj[targetLang] = translObj; // set a new prop
+      (srcObj[targetLangCode])
+        ? Object.assign(srcObj[targetLangCode], translObj) // merge data with existing prop
+        : srcObj[targetLangCode] = translObj; // set a new prop
     }
     resultObj = srcObj;
   } else {

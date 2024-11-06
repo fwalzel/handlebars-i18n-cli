@@ -29,3 +29,4 @@ coverage
 # Custom
 test/test-generated/*.json
 !test/test-generated/test-12.json
+translate.js
