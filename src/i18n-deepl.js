@@ -177,8 +177,7 @@ async function setAuthKey(key) {
   const file = '.env';
   let [res, err] = await fst.writeFile(file, `export DEEPL_AUTH=${key}`);
   if (err) {
-    console.error(`Unable to read file ${file}`);
-    throw err;
+    throw new Error(`Failed to write file ${file}`);
   }
   return true;
 }
@@ -223,7 +222,7 @@ async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
   let [res, err] =
     await fst.asyncHandler(() => translator.translateText(texts, sourceLang, targetLang, options));
   if (err)
-    throw ('API Error. ' + err);
+    throw (err);
   return res;
 }
 
@@ -314,7 +313,7 @@ async function translateToJSON(
   } else {
     // ... check if the target file exists, if not set the resulting object
     if (await __fileExists(JsonTarget))
-      throw new Error (`The target file ${JsonTarget} already exists. 
+      throw new Error(`The target file ${JsonTarget} already exists. 
       Please prompt a different file name or remove the existing file.`);
     resultObj = translObj;
   }
