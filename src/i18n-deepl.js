@@ -92,16 +92,6 @@ function __getValueFromPath(obj, path) {
   }, obj);
 }
 
-/**
- *
- * @param obj
- * @param path
- * @returns {*}
- */
-function getNestedValue(obj, path) {
-  return path.split('.').reduce((acc, key) => acc && acc[key], obj);
-}
-
 /** Traverse an object by a given path of sub-nodes and set a value
  * at the given position
  *
@@ -244,7 +234,7 @@ async function readI18nJson(file, subNode) {
     if (subEntry)
       return subEntry;
     else
-      throw new Error()
+      throw new Error(`The nested key "${subNode}" does not exist in JSON file ${file}`)
   }
   return res;
 }
@@ -273,13 +263,14 @@ async function translateToJSON(
   log,
   dryRun) {
 
-  // read the json source
+  // read the json source, already extract the nested key if wanted
   const srcObj = await readI18nJson(JsonSrc, sourceNested);
 
-  // access nested structure if given
-  const srcObjPart = (sourceNested)
-    ? getNestedValue(srcObj, sourceNested)
-    : srcObj;
+  // in key destination access the child key with the source language code,
+  // otherwise assume we are already in the key with the source lang code
+  const srcObjPart = (srcObj[sourceLangCode])
+    ? srcObj[sourceLangCode]
+    : srcObj
 
   // flatten the resulting object to an array
   const translValues = __flattenObj(srcObjPart);
@@ -293,7 +284,7 @@ async function translateToJSON(
   // declare the object we are going to write out, holding the result
   let resultObj;
 
-  // check if source and target are identical as string or resolve in the same file
+  // check if source and target are identical either as string, or resolve in the same file
   if (JsonSrc === JsonTarget
     || (await __fileExists(JsonTarget) &&
       fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget)))) {
