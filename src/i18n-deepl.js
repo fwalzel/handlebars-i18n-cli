@@ -107,11 +107,14 @@ function __setNestedValue(obj, path, val) {
     if (index === keys.length - 1) {
       // If the existing value is an object and so is the new value, merge them
       if (typeof acc[key] === 'object' && typeof val === 'object') {
+        console.log('merge')
         acc[key] = {...acc[key], ...val};
       } else {
+        console.log('insert directly')
         acc[key] = val; // Otherwise, set the value directly
       }
-    } else {
+    } else { //todo: fix this
+      console.log('create')
       // If the key doesn't exist, create an empty object to avoid `undefined`
       if (!acc[key]) acc[key] = {};
     }
@@ -229,7 +232,7 @@ async function readI18nJson(file, subNode) {
     console.error(`Unable to read file: ${file}`);
     throw err;
   }
-  if (typeof subNode === 'string') {
+  if (typeof subNode === 'string' && subNode !== '') {
     const subEntry = __getValueFromPath(res, subNode);
     if (subEntry)
       return subEntry;
@@ -270,7 +273,7 @@ async function translateToJSON(
   // otherwise assume we are already in the key with the source lang code
   const srcObjPart = (srcObj[sourceLangCode])
     ? srcObj[sourceLangCode]
-    : srcObj
+    : srcObj;
 
   // flatten the resulting object to an array
   const translValues = __flattenObj(srcObjPart);
@@ -289,18 +292,21 @@ async function translateToJSON(
     || (await __fileExists(JsonTarget) &&
       fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget)))) {
 
+    // make a copy of srcObj to avoid circular references
+    const modifiedObj = JSON.parse(JSON.stringify(srcObj));
+
     // if the content comes from a nested source
-    if (sourceNested) {
+    if (typeof sourceNested === 'string' && sourceNested !== '') {
       // ... traverse in the object to one node before last and insert (or merge) the translation
       const traverse = __replaceLastSegment(sourceNested, targetLangCode);
-      __setNestedValue(srcObj, traverse, translObj);
+      __setNestedValue(modifiedObj, traverse, translObj);
     } else {
       // ... if not, see if the target node exists
-      (srcObj[targetLangCode])
-        ? Object.assign(srcObj[targetLangCode], translObj) // merge data with existing prop
-        : srcObj[targetLangCode] = translObj; // set a new prop
+      (modifiedObj[targetLangCode])
+        ? Object.assign(modifiedObj[targetLangCode], translObj) // ... and merge data with existing prop
+        : modifiedObj[targetLangCode] = translObj; // ... else set a new prop
     }
-    resultObj = srcObj;
+    resultObj = modifiedObj;
   } else {
     // ... check if the target file exists, if not set the resulting object
     if (await __fileExists(JsonTarget))
