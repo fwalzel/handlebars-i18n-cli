@@ -98,48 +98,28 @@ function __getValueFromPath(obj, path) {
  * @param obj
  * @param path
  * @param val
+ * @param langCode
  * @private
  */
-function __setNestedValue(obj, path, val) {
+function __setNestedValue(obj, path, val, langCode) {
   const keys = path.split('.');
-  keys.reduce((acc, key, index) => {
-    // If we're at the last key in the path
-    if (index === keys.length - 1) {
-      // If the existing value is an object and so is the new value, merge them
-      if (typeof acc[key] === 'object' && typeof val === 'object') {
-        console.log('merge')
-        acc[key] = {...acc[key], ...val};
-      } else {
-        console.log('insert directly')
-        acc[key] = val; // Otherwise, set the value directly
-      }
-    } else { //todo: fix this
-      console.log('create')
-      // If the key doesn't exist, create an empty object to avoid `undefined`
-      if (!acc[key]) acc[key] = {};
+
+  function iterate(ob, keys, insert, lngCode, i = 0) {
+    let key = keys[i];
+    if (i < keys.length - 1) {
+      i = i+1;
+      iterate(ob[key], keys, insert, langCode, i);
     }
-    return acc[key];
-  }, obj);
-}
+    else {
+      //console.log(ob[key])
+      ob[key][langCode] = (typeof ob[key][langCode] === 'object')
+        ? {...ob[key][langCode], ...insert}
+        : ob[key][langCode] = insert;
+    }
+  }
 
-/** Modify a dot-delimited string by targeting the last segment and replacing it
- *
- * @param str
- * @param replacement
- * @returns {*}
- * @private
- */
-function __replaceLastSegment(str, replacement) {
-  console.log(typeof split)
-
-  // Split the string into an array using the dot as a delimiter
-  let segments = str.split('.');
-
-  // Replace the last segment with the replacement value
-  segments[segments.length - 1] = replacement;
-
-  // Join the segments back into a single string
-  return segments.join('.');
+  iterate(obj, keys, val, langCode);
+  return true;
 }
 
 /** ceck if a file exists
@@ -266,14 +246,35 @@ async function translateToJSON(
   log,
   dryRun) {
 
-  // read the json source, already extract the nested key if wanted
-  const srcObj = await readI18nJson(JsonSrc, sourceNested);
+  // read the json source
+  let [srcObj, err] = await fst.readJson(JsonSrc);
+  if (err) {
+    console.error(`Unable to read file: ${file}`);
+    throw err;
+  }
+
+  // make a copy of srcObj to avoid circular references
+  const modifiedObj = JSON.parse(JSON.stringify(srcObj));
+
+  // define variable to hold the parsed JSON
+  let srcObjParsed;
+
+  // extract the nested key if exists
+  if (typeof sourceNested === 'string' && sourceNested !== '') {
+    const subEntry = __getValueFromPath(srcObj, sourceNested);
+    if (!subEntry)
+      throw new Error(`The nested key "${sourceNested}" does not exist in JSON file "${JsonSrc}"`);
+    srcObjParsed = subEntry;
+  }
+  // if not, the source object is the parsed object
+  else
+    srcObjParsed = srcObj;
 
   // in key destination access the child key with the source language code,
   // otherwise assume we are already in the key with the source lang code
-  const srcObjPart = (srcObj[sourceLangCode])
-    ? srcObj[sourceLangCode]
-    : srcObj;
+  const srcObjPart = (srcObjParsed[sourceLangCode])
+    ? srcObjParsed[sourceLangCode]
+    : srcObjParsed;
 
   // flatten the resulting object to an array
   const translValues = __flattenObj(srcObjPart);
@@ -292,14 +293,14 @@ async function translateToJSON(
     || (await __fileExists(JsonTarget) &&
       fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget)))) {
 
-    // make a copy of srcObj to avoid circular references
-    const modifiedObj = JSON.parse(JSON.stringify(srcObj));
-
     // if the content comes from a nested source
     if (typeof sourceNested === 'string' && sourceNested !== '') {
-      // ... traverse in the object to one node before last and insert (or merge) the translation
-      const traverse = __replaceLastSegment(sourceNested, targetLangCode);
-      __setNestedValue(modifiedObj, traverse, translObj);
+      // ... traverse in the object and insert or merge the translation
+      /*console.log(modifiedObj.data.translations.all);
+      console.log(sourceNested);
+      console.log(translObj);
+      console.log(targetLangCode);*/
+      __setNestedValue(modifiedObj, sourceNested, translObj, targetLangCode);
     } else {
       // ... if not, see if the target node exists
       (modifiedObj[targetLangCode])
@@ -308,10 +309,11 @@ async function translateToJSON(
     }
     resultObj = modifiedObj;
   } else {
-    // ... check if the target file exists, if not set the resulting object
+    // error if the target file name exists
     if (await __fileExists(JsonTarget))
-      throw new Error(`The target file ${JsonTarget} already exists. 
+      throw new Error(`The target file "${JsonTarget}" already exists. 
       Please prompt a different file name or remove the existing file.`);
+    // ... if ok, set the resulting object
     resultObj = translObj;
   }
 
@@ -323,7 +325,7 @@ async function translateToJSON(
   if (!dryRun) {
     const [res, err] = await fst.writeJson(JsonTarget, resultObj);
     if (err) {
-      console.error(`Unable to write file ${JsonTarget}`);
+      console.error(`Unable to write file: ${JsonTarget}`);
       throw err;
     }
   }
