@@ -146,7 +146,7 @@ async function __fileExists(file) {
  */
 async function setAuthKey(key) {
   if (typeof key !== 'string' || key === '')
-    throw new Error('Provided argument is not a valid deepl auth key.');
+    throw new Error('Provided argument is not a valid DeepL auth key.');
   const file = '.env';
   let [res, err] = await fst.writeFile(file, `export DEEPL_AUTH=${key}`);
   if (err) {
@@ -162,7 +162,7 @@ async function setAuthKey(key) {
  * @returns {Promise<*>}
  */
 async function getSupportedLanguages(authKey) {
-  if (typeof authKey !== 'string')
+  if (typeof authKey !== 'string' || authKey === '')
     throw new Error('Invalid argument authKey provided.');
   try {
     const response = await axios.get('https://api-free.deepl.com/v2/languages', {
@@ -189,7 +189,7 @@ async function getSupportedLanguages(authKey) {
  * @returns {Promise<TextResult|TextResult[]>}
  */
 async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
-  if (typeof authKey !== 'string')
+  if (typeof authKey !== 'string' || authKey === '')
     throw new Error('Invalid argument authKey provided.');
   const translator = new deepl.Translator(authKey);
   let [res, err] =
@@ -199,28 +199,6 @@ async function translateTexts(authKey, texts, sourceLang, targetLang, options) {
   return res;
 }
 
-/** read a json file with the option of returning only
- * a defined subNode of its content
- *
- * @param file
- * @param subNode
- * @returns {Promise<*>}
- */
-async function readI18nJson(file, subNode) {
-  let [res, err] = await fst.readJson(file);
-  if (err) {
-    console.error(`Unable to read file: ${file}`);
-    throw err;
-  }
-  if (typeof subNode === 'string' && subNode !== '') {
-    const subEntry = __getValueFromPath(res, subNode);
-    if (subEntry)
-      return subEntry;
-    else
-      throw new Error(`The nested key "${subNode}" does not exist in JSON file ${file}`)
-  }
-  return res;
-}
 
 /** read a json file, translate it with the Deepl API, write the result as json file
  *
@@ -245,6 +223,16 @@ async function translateToJSON(
   sourceNested,
   log,
   dryRun) {
+
+  [authKey,
+    JsonSrc,
+    JsonTarget,
+    sourceLangCode,
+    targetLangCode].forEach((v,i) => {
+      if (typeof v !== 'string' || v === '' ) {
+        throw new Error (`Invalid Argument (${(i+1)}): must be a non-empty string.`);
+      }
+  });
 
   // read the json source
   let [srcObj, err] = await fst.readJson(JsonSrc);
@@ -338,6 +326,5 @@ export {
   setAuthKey,
   getSupportedLanguages,
   translateTexts,
-  readI18nJson,
   translateToJSON
 };

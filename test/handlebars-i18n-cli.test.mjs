@@ -24,7 +24,6 @@ import {
   setAuthKey,
   getSupportedLanguages,
   translateTexts,
-  readI18nJson,
   translateToJSON
 } from '../src/i18n-deepl.js';
 
@@ -46,14 +45,14 @@ describe('i18n-deepl setAuthKey', () => {
     sinon.restore();
   });
 
-  it('[E-1] setAuthKey should throw an error if the key is not a string', async function () {
+  it('[A-1] setAuthKey should throw an error if the key is not a string', async function () {
     const invalidKey = 12345; // Example of a non-string key
-    await expect(setAuthKey(invalidKey)).to.be.rejectedWith('Provided argument is not a valid deepl auth key.');
+    await expect(setAuthKey(invalidKey)).to.be.rejectedWith('Provided argument is not a valid DeepL auth key.');
   });
 
   it('[A-2] setAuthKey should throw an error if the key is an empty string', async function () {
     const invalidKey = ''; // Example of an empty string key
-    await expect(setAuthKey(invalidKey)).to.be.rejectedWith('Provided argument is not a valid deepl auth key.');
+    await expect(setAuthKey(invalidKey)).to.be.rejectedWith('Provided argument is not a valid DeepL auth key.');
   });
 
   it('[A-3] setAuthKey should return true if the key is valid and the file is written successfully', async function () {
@@ -184,7 +183,11 @@ describe('i18n-deepl translateToJSON', () => {
     sinon.restore(); // Restore mocks after each test
   });
 
-  it('[D-1] translateToJSON should translate a JSON file and write the translated result to a target file', async () => {
+  it('[D-1] translateToJSON should error when called without empty string as first argument', async () => {
+    await expect(translateToJSON('')).to.be.rejectedWith('Invalid Argument (1): must be a non-empty string.');
+  });
+
+  it('[D-2] translateToJSON should translate a JSON file and write the translated result to a target file', async () => {
     // Mock reading the JSON source file
     const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
@@ -202,22 +205,19 @@ describe('i18n-deepl translateToJSON', () => {
       'src.json',
       'target.json',
       'de',
-      '',
       'en',
-      true,
+      {},
+      null,
       false,
-      {}
+      false
     );
 
-    console.log(result)
-
     // Assertions
-    expect(writeJsonMock).to.have.been.calledWith('target.json', {greeting: 'Hallo'});
     expect(result).to.be.true;
+    expect(writeJsonMock).to.have.been.calledWith('target.json', {greeting: 'Hallo'});
   });
 
-  /*
-  it('should log the translation result but not write the file when dryRun is true', async () => {
+  it('[D-3] translateToJSON should log the translation result but not write the file when dryRun is true', async () => {
     // Mock reading the JSON source file
     const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
@@ -233,19 +233,28 @@ describe('i18n-deepl translateToJSON', () => {
     const logSpy = sinon.spy(console, 'log');
 
     // Execute the function
-    const result = await translateToJSON('authKey', 'src.json', 'target.json', 'de', '', 'en', false, true, {});
+    const result = await translateToJSON(
+      'authKey',
+      'src.json',
+      'target.json',
+      'de',
+      'en',
+      {},
+      null,
+      null,
+      true,
+    );
 
     // Assertions
+    expect(result).to.be.true;
     expect(writeJsonMock).not.to.have.been.called;
     expect(logSpy).to.have.been.calledWith({greeting: 'Hallo'});
-    expect(result).to.be.true;
 
     // Restore console.log spy
     logSpy.restore();
   });
 
-
-  it('should throw an error if the target file already exists', async () => {
+  it('[D-4] translateToJSON should throw an error if the target file already exists', async () => {
     // Mock reading the JSON source file
     const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
@@ -255,12 +264,19 @@ describe('i18n-deepl translateToJSON', () => {
     sinon.stub(fs, 'realpathSync').returns('/path/to/src.json');
 
     try {
-      await translateToJSON('authKey', 'src.json', 'target.json', 'de', '', 'en', false, false, {});
+      const result = await translateToJSON(
+        'authKey',
+        'src.json',
+        'target.json',
+        'de',
+        'en'
+      );
     } catch (err) {
       expect(err.message).to.include('The target file target.json already exists.');
     }
   });
 
+  /*
   it('should translate a nested structure in the JSON file and insert into the target', async () => {
     // Mock reading the JSON source file with a nested structure
     const mockJsonData = {nested: {greeting: "Hello"}};
@@ -295,8 +311,7 @@ describe('i18n-deepl translateToJSON', () => {
       expect(err.message).to.equal('API Error');
     }
   });
-
-   */
+  */
 });
 
 

@@ -29,25 +29,17 @@ export function getSupportedLanguages(authKey: string): Promise<any>;
  * @returns {Promise<TextResult|TextResult[]>}
  */
 export function translateTexts(authKey: string, texts: Array<string>, sourceLang: string, targetLang: string, options?: object): Promise<TextResult | TextResult[]>;
-/** read a json file with the option of returning only
- * a defined subNode of its content
- *
- * @param file
- * @param subNode
- * @returns {Promise<*>}
- */
-export function readI18nJson(file: string, subNode?: string): Promise<any>;
 /** read a json file, translate it with the Deepl API, write the result as json file
  *
  * @param authKey
  * @param JsonSrc
  * @param JsonTarget
  * @param targetLang
- * @param sourceNested
  * @param sourceLang
+ * @param deeplOpts
+ * @param sourceNested
  * @param log
  * @param dryRun
- * @param deeplOpts
  * @returns {Promise<boolean>}
  */
 export function translateToJSON(authKey: string, JsonSrc: string, JsonTarget: string, sourceLang: string, targetLang: string, deeplOpts?: object, sourceNested?: string, log?: boolean, dryRun?: boolean): Promise<boolean>;
