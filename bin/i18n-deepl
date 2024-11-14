@@ -29,7 +29,7 @@ program
   });
 
 program
-  .command('set-auth authKey')
+  .command('setAuth authKey')
   .description('Sets the DeepL Auth Key as environmental variable (.env).')
   .action(async (authKey) => {
     await setAuthKey(authKey);
@@ -43,7 +43,7 @@ program
   .option('--auth-key, -ak <authKey>', 'The DeepL Auth Key.')
   .option('--source-lang, -sl <sourceLang>', 'Source language for translation, such as "de".')
   .option('-sn, --source-nested <sourceNested>', 'Send only a sub-entry of the source JSON to DeepL API. ' +
-    'I.E. --source-node="translations.de]" will route to the nested entry \'translations\' and within it will send the entries of \'en\' to translation.')
+    'I.E. --source-nested="translations.de]" will route to the nested entry \'translations\' and within it will send the entries of \'de\' to translation.')
   .option('--log, -l', 'Log translation response to console.')
   .option('--dryRun, -dr', 'Perform a dry run and log it without making any changes to actual data.')
   .option('--options, -o <options>', 'DeepL API options, given as object, i.E. --options="{formality: \'less\'}."')
@@ -55,6 +55,8 @@ program
        console.log(`targetLang: ${targetLang}`)
        console.log(`options:`)
        console.log(options)*/
+
+      console.log(options.authKey || process.env.DEEPL_AUTH)
 
       await translateToJSON(options.authKey || process.env.DEEPL_AUTH,
         source,

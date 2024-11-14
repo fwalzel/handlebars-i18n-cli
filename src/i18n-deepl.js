@@ -5,7 +5,7 @@
  *  Get an API Key:
  *  @link https://www.deepl.com/de/pro-checkout/account?productId=1200&yearly=false&trial=false
  *
- *  The API Docs
+ *  The API Docs:
  *  @link https://www.deepl.com/docs-api/translate-text/multiple-sentences/
  */
 
@@ -224,7 +224,7 @@ async function translateToJSON(
   log,
   dryRun) {
 
-  [authKey,
+  /*[authKey,
     JsonSrc,
     JsonTarget,
     sourceLangCode,
@@ -232,7 +232,7 @@ async function translateToJSON(
       if (typeof v !== 'string' || v === '' ) {
         throw new Error (`Invalid Argument (${(i+1)}): must be a non-empty string.`);
       }
-  });
+  });*/
 
   // read the json source
   let [srcObj, err] = await fst.readJson(JsonSrc);
