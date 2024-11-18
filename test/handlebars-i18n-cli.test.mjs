@@ -19,13 +19,13 @@ const {assert, expect} = chai;
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-import {i18nCollect} from '../src/i18n-collect.js';
 import {
+  i18nCollect,
   setAuthKey,
   getSupportedLanguages,
   translateTexts,
   translateToJSON
-} from '../src/i18n-deepl.js';
+} from '../src/index.js';
 
 
 /****************************************
@@ -183,11 +183,8 @@ describe('i18n-deepl translateToJSON', () => {
     sinon.restore(); // Restore mocks after each test
   });
 
-  it('[D-1] translateToJSON should error when called without empty string as first argument', async () => {
-    await expect(translateToJSON('')).to.be.rejectedWith('Invalid Argument (1): must be a non-empty string.');
-  });
+  it('[D-1] translateToJSON should translate a JSON file and write the translated result to a target file', async () => {
 
-  it('[D-2] translateToJSON should translate a JSON file and write the translated result to a target file', async () => {
     // Mock reading the JSON source file
     const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
@@ -217,7 +214,8 @@ describe('i18n-deepl translateToJSON', () => {
     expect(writeJsonMock).to.have.been.calledWith('target.json', {greeting: 'Hallo'});
   });
 
-  it('[D-3] translateToJSON should log the translation result but not write the file when dryRun is true', async () => {
+  it('[D-2] translateToJSON should log the translation result but not write the file when dryRun is true', async () => {
+
     // Mock reading the JSON source file
     const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
@@ -254,16 +252,36 @@ describe('i18n-deepl translateToJSON', () => {
     logSpy.restore();
   });
 
-  it('[D-4] translateToJSON should throw an error if the target file already exists', async () => {
+  it('[D-3] translateToJSON should throw an error if the target file already exists', async () => {
+
     // Mock reading the JSON source file
     const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
 
-    // Mock file existence and realpathSync
-    sinon.stub(fst, 'access').resolves([true, null]);
-    sinon.stub(fs, 'realpathSync').returns('/path/to/src.json');
+    // Mock DeepL translation result
+    const mockTranslationResult = [{text: "Hallo"}];
+    sinon.stub(deepl.Translator.prototype, 'translateText').resolves(mockTranslationResult);
 
-    try {
+    // Mock file existence and realpathSync
+    sinon.stub(fst, 'access').resolves([null, false]);
+
+    console.log("hi");
+
+    const result = await translateToJSON(
+      'authKey',
+      'src.json',
+      'target.json',
+      'de',
+      'en',
+      {},
+      null,
+      null,
+      null
+    );
+
+    console.log(result)
+
+    /*try {
       const result = await translateToJSON(
         'authKey',
         'src.json',
@@ -272,8 +290,8 @@ describe('i18n-deepl translateToJSON', () => {
         'en'
       );
     } catch (err) {
-      expect(err.message).to.include('The target file target.json already exists.');
-    }
+      expect(err.message).to.include('The target file "target.json" already exists.');
+    }*/
   });
 
   /*

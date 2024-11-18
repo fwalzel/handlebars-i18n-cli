@@ -45,7 +45,7 @@ function __flattenObj(obj) {
   }
 
   recurse(obj);
-  return result;
+  return result
 }
 
 /**
@@ -70,7 +70,7 @@ function __mapArrayToObj(obj, values, childParam) {
   }
 
   recurse(obj);
-  return obj;
+  return obj
 }
 
 /** Traverse an object by a given path of sub-nodes and retrieve its value
@@ -119,7 +119,7 @@ function __setNestedValue(obj, path, val, langCode) {
   }
 
   iterate(obj, keys, val, langCode);
-  return true;
+  return true
 }
 
 /** ceck if a file exists
@@ -129,8 +129,8 @@ function __setNestedValue(obj, path, val, langCode) {
  * @private
  */
 async function __fileExists(file) {
-  let [res, err] = await fst.access(file, fst.constants.F_OK)
-  return !!res
+  let [res, err] = await fst.access(file);
+  return !err
 }
 
 
@@ -224,16 +224,6 @@ async function translateToJSON(
   log,
   dryRun) {
 
-  /*[authKey,
-    JsonSrc,
-    JsonTarget,
-    sourceLangCode,
-    targetLangCode].forEach((v,i) => {
-      if (typeof v !== 'string' || v === '' ) {
-        throw new Error (`Invalid Argument (${(i+1)}): must be a non-empty string.`);
-      }
-  });*/
-
   // read the json source
   let [srcObj, err] = await fst.readJson(JsonSrc);
   if (err) {
@@ -318,11 +308,12 @@ async function translateToJSON(
     }
   }
 
-  return true;
+  return true
 }
 
 // Export the functions
 export {
+  __fileExists,
   setAuthKey,
   getSupportedLanguages,
   translateTexts,
