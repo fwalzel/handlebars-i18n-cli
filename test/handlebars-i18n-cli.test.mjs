@@ -265,8 +265,33 @@ describe('i18n-deepl translateToJSON', () => {
     // Mock file existence and realpathSync
     sinon.stub(fst, 'access').resolves([null, false]);
 
-    console.log("hi");
+    try {
+      const result = await translateToJSON(
+        'authKey',
+        'my.json',
+        'target.json',
+        'de',
+        'en'
+      );
+    } catch (err) {
 
+      expect(err.message).to.include('The target file "target.json" already exists.');
+    }
+  });
+
+  it('[D-4] should translate a nested structure in the JSON file and insert into the target', async () => {
+    // Mock reading the JSON source file with a nested structure
+    const mockJsonData = {nested: {greeting: "Hallo Welt"}};
+    sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
+
+    // Mock DeepL translation result
+    const mockTranslationResult = [{text: "Hello World"}];
+    sinon.stub(deepl.Translator.prototype, 'translateText').resolves(mockTranslationResult);
+
+    // Mock writing the translated result
+    const writeJsonMock = sinon.stub(fst, 'writeJson').resolves([true, null]);
+
+    // Execute the function
     const result = await translateToJSON(
       'authKey',
       'src.json',
@@ -274,48 +299,17 @@ describe('i18n-deepl translateToJSON', () => {
       'de',
       'en',
       {},
-      null,
-      null,
-      null
-    );
-
-    console.log(result)
-
-    /*try {
-      const result = await translateToJSON(
-        'authKey',
-        'src.json',
-        'target.json',
-        'de',
-        'en'
-      );
-    } catch (err) {
-      expect(err.message).to.include('The target file "target.json" already exists.');
-    }*/
-  });
-
-  /*
-  it('should translate a nested structure in the JSON file and insert into the target', async () => {
-    // Mock reading the JSON source file with a nested structure
-    const mockJsonData = {nested: {greeting: "Hello"}};
-    sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
-
-    // Mock DeepL translation result
-    const mockTranslationResult = [{text: "Hallo"}];
-    sinon.stub(deepl.Translator.prototype, 'translateText').resolves(mockTranslationResult);
-
-    // Mock writing the translated result
-    const writeJsonMock = sinon.stub(fst, 'writeJson').resolves([true, null]);
-
-    // Execute the function
-    const result = await translateToJSON('authKey', 'src.json', 'target.json', 'de', 'nested', 'en', false, false, {});
+      'nested',
+      false,
+      false);
 
     // Assertions
-    expect(writeJsonMock).to.have.been.calledWith('target.json', {nested: {greeting: 'Hallo'}});
     expect(result).to.be.true;
+    expect(writeJsonMock).to.have.been.calledWith('target.json', {"greeting": "Hello World"});
   });
 
-  it('should throw an error if DeepL API call fails', async () => {
+
+  it('[D-5] should throw an error if DeepL API call fails', async () => {
     // Mock reading the JSON source file
     const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
@@ -324,12 +318,17 @@ describe('i18n-deepl translateToJSON', () => {
     sinon.stub(deepl.Translator.prototype, 'translateText').rejects(new Error('API Error'));
 
     try {
-      await translateToJSON('authKey', 'src.json', 'target.json', 'de', '', 'en', false, false, {});
+      await translateToJSON(
+        'authKey',
+        'src.json',
+        'target.json',
+        'de',
+        'en'
+      );
     } catch (err) {
       expect(err.message).to.equal('API Error');
     }
   });
-  */
 });
 
 

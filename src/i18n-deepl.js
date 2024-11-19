@@ -17,7 +17,6 @@
 import deepl from 'deepl-node';
 import axios from 'axios';
 import fst from 'async-file-tried';
-import fs from 'fs';
 import path from 'path';
 
 
@@ -269,15 +268,11 @@ async function translateToJSON(
   // check if source and target are identical either as string, or resolve in the same file
   if (JsonSrc === JsonTarget
     || (await __fileExists(JsonTarget) &&
-      fs.realpathSync(path.resolve(JsonSrc)) === fs.realpathSync(path.resolve(JsonTarget)))) {
+      fst.realpath(path.resolve(JsonSrc)) === fst.realpath(path.resolve(JsonTarget)))) {
 
     // if the content comes from a nested source
     if (typeof sourceNested === 'string' && sourceNested !== '') {
       // ... traverse in the object and insert or merge the translation
-      /*console.log(modifiedObj.data.translations.all);
-      console.log(sourceNested);
-      console.log(translObj);
-      console.log(targetLangCode);*/
       __setNestedValue(modifiedObj, sourceNested, translObj, targetLangCode);
     } else {
       // ... if not, see if the target node exists
@@ -313,7 +308,6 @@ async function translateToJSON(
 
 // Export the functions
 export {
-  __fileExists,
   setAuthKey,
   getSupportedLanguages,
   translateTexts,
