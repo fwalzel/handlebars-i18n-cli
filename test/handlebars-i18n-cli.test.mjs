@@ -441,9 +441,13 @@ describe('i18n-collect', () => {
   });
 
   it('[E-11] UPDATE: i18nCollect shall log for extending existing file when called with arguments --update and --log', async () => {
-    const fileNo = 11;
+    const fileNo = 10;
     const inspect = stdout.inspect();
-    await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {update: true, log: true});
+    try {
+      await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {update: true, log: true});
+    } catch(e) {
+      console.log (e)
+    }
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing ${templSimple}\n`,

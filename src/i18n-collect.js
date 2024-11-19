@@ -371,7 +371,6 @@ async function i18nCollect(source, target, options) {
       if (options.log || options.dryRun)
         console.log(fileOutputJson)
 
-
       let [write, e] = [undefined, undefined];
 
       //  write files only if no --dryRun option was set
@@ -399,11 +398,11 @@ async function i18nCollect(source, target, options) {
 
     //  if argument '--update' was given, an existing file is read in, parsed,
     //  and the new translation Object is merged onto the existing translations
-    if (options.update) {
-      let [res, err] = await fst.readJson(targetFileNameSeparated);
+    if (options.update) { //todo: update needs fix
+      let [res, err] = await fst.readJson(target);
       if (err)
         throw (err);
-      outputObj = mergeDeep(outputObj[lng], res)
+      outputObj = mergeDeep(translObj.translations, res)
     } else
       outputObj = translObj
 
