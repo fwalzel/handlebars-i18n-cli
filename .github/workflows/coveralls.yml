@@ -1,11 +1,13 @@
-on: ["push", "pull_request"]
+name: Test and Coverage
 
-name: Test Coveralls
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-
-  build:
-    name: Build
+  test:
     runs-on: ubuntu-latest
     steps:
 
@@ -19,12 +21,24 @@ jobs:
       - name: npm install, make test-coverage
         run: |
           npm install
-          npm test -- --coverage
+          npm run test:coverage
+          sleep 2
 
-      - name: Wait for coverage report
-        run: sleep 5
+      - name: Report Coveralls (Linux)
+        if: startsWith(runner.os, 'Linux')
+        run: curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
-      - name: Publish to coveralls.io
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      - name: Report Coveralls (Windows)
+        if: startsWith(runner.os, 'Windows')
+        run: curl -sL https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-windows.zip | zcat > ./coveralls.exe && ./coveralls.exe
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+      - name: Report Coveralls (macOS)
+        if: startsWith(runner.os, 'macOS')
+        run: |
+          brew tap coverallsapp/coveralls --quiet
+          brew install coveralls --quiet
+          coveralls

@@ -16,6 +16,7 @@
   },
   "scripts": {
     "test": "c8 mocha",
+    "test:coverage": "npm run test && c8 report --reporter=text-lcov > coverage/lcov.info",
     "test:istanbul": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec",
     "coveralls": "npm test && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "i18n-collect": "cd bin && node i18n-collect"
