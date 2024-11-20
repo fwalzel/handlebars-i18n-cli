@@ -36,7 +36,7 @@ This will generate a file `translations.json` holding the translations for `de`,
 names intended for i18next translation from all html files in your project:
 
 ```shell
-i18n-collect my-project/**/*.html my-project/translations.json --lng=de,en,fr
+i18n-collect my-project/**/*.html my-project/translations.json --lng de,en,fr
 ```
 
 From a very simple template like this …
@@ -136,13 +136,13 @@ Try the examples folder within this repo.
 For generating a single JSON file:
 
 ```bash
-$ i18n-collect examples/templates/*.html examples/generated/translations.json --lng=de,fr,en 
+$ i18n-collect examples/templates/*.html examples/generated/translations.json --lng de,fr,en 
 ```
 
 For one JSON file per language:
 
 ```bash
-$ i18n-collect examples/templates/*.html examples/generated/translations.json --separateLngFiles --lng=de,fr,en 
+$ i18n-collect examples/templates/*.html examples/generated/translations.json --separateLngFiles --lng de,fr,en 
 ```
 
 ## Source and Target
@@ -221,7 +221,7 @@ instead of
 
 ---
 
-`--lng=language1,language2,...languageN`
+`--lng language1,language2,...languageN`
 
 The list of language shortcodes you want to be generated with an own set in the json. Arguments are comma separated (no
 blank space between, no quotation marks around).
@@ -240,7 +240,7 @@ Logs the final result that is written to the json files(s) into the console as w
 Write each language in a separate json file instead of a single one.
 
 ```bash
-$ i18n-collect my-project/template.html my-project/translation.json --lng=de,en,fr --separateLngFiles
+$ i18n-collect my-project/template.html my-project/translation.json --lng de,en,fr --separateLngFiles
 ```
 
 Will generate three json files: **translation.de.json**, **translation.en.json**, and **translation.fn.json** each
@@ -278,7 +278,7 @@ will be added.
 Works also with the option --separateLngFiles:
 
 ```bash
-$ i18n-collect my-project/**/*.html my-project/translation --update --lng=de,en,fr --separateLngFiles
+$ i18n-collect my-project/**/*.html my-project/translation --update --lng de,en,fr --separateLngFiles
 ```
 
 Leave out the language ending and json file extension and give only the base name for <target>. In this example case

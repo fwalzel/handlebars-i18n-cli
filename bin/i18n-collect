@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
 import {program} from 'commander';
-import {i18nCollect} from "../src/i18n-collect.js";
+import {i18nCollect} from "../src/index.js";
 import fs from 'async-file-tried';
 
 const [packageJS, err] = await fs.readJson('./package.json');
 if (err) throw (err);
-
 
 program
   .name('i18n-deepl')
@@ -24,13 +23,9 @@ program
   .option('-u, --update', 'updates existing json files(s)')
   .action(async (source, target, options) => {
 
-    //console.log('Source:', source);
-    //console.log('Target:', target);
-    //console.log('Options:', options);
-
     if (await i18nCollect(source, target, options)) {
       return (options.separateLngFiles)
-        ? console.log('\x1b[32m%s\x1b[0m', 'You’re good. Your output was written to separate language files.')
+        ? console.log('\x1b[32m%s\x1b[0m', 'You’re good. The output was written to separate language files.')
         : console.log('\x1b[32m%s\x1b[0m', `Done and Ready. Your output was written to ${target}`);
     }
   });

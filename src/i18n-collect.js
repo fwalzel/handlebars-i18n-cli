@@ -386,32 +386,33 @@ async function i18nCollect(source, target, options) {
       console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No files witten.');
   }
 
-    //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
+  //  WRITE SINGLE FILE CONTAINING ALL LANGUAGES
   //  ------------------------------------------------
   else {
     //  create object to hold the translations and create a key for every language
     //  add all handlebars translation keys to each language key as nested objects
     translObj = {translations: {}}
+
     languages.forEach((lng) => {
       translObj.translations[lng] = objectify(hndlbrKeys, lng, options.empty)
     })
 
     //  if argument '--update' was given, an existing file is read in, parsed,
     //  and the new translation Object is merged onto the existing translations
-    if (options.update) { //todo: update needs fix
+    if (options.update) {
       let [res, err] = await fst.readJson(target);
       if (err)
         throw (err);
-      outputObj = mergeDeep(translObj.translations, res)
+      outputObj = mergeDeep(translObj, res)
     } else
-      outputObj = translObj
+      outputObj = translObj;
 
     //  convert output object to json with linebreaks and indenting of 2 spaces
     const fileOutputJson = JSON.stringify(outputObj, null, 2)
 
     //  log the final object to console if option '--log' or '--dryRun' was set
     if (options.log || options.dryRun)
-      console.log(fileOutputJson)
+      console.log(fileOutputJson);
 
     //  exit if option '--dryRun' was set
     if (options.dryRun) {

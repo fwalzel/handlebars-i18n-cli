@@ -451,7 +451,7 @@ describe('i18n-collect', () => {
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing ${templSimple}\n`,
-      "{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"en of myKey with variables {{myVar}}\",\n      \"hasAlreadyAKey\": \"WithSomeValue\"\n    }\n  }\n}\n"
+      "{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"en of myKey with variables {{myVar}}\",\n      \"myOtherKey\": \"en of myOtherKey\"\n    }\n  }\n}\n"
     ]);
   });
 
