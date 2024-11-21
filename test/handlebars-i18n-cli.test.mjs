@@ -354,7 +354,11 @@ describe('i18n-collect', () => {
 
   it('[E-4] WARN: i18nCollect shall log when a given file does not contain strings for translation', async () => {
     const inspect = stdout.inspect();
-    await i18nCollect('test/test-assets/empty.html', 'test/test-generated/empty.json');
+    try {
+      await i18nCollect('test/test-assets/empty.html', 'test/test-generated/empty.json');
+    } catch (e) {
+      console.log(e);
+    }
     inspect.restore();
     assert.deepEqual(inspect.output, [
       'Now processing test/test-assets/empty.html\n',
@@ -365,7 +369,11 @@ describe('i18n-collect', () => {
   it('[E-5] LOG: i18nCollect shall log myKey and myVar (with additional text) for language "en" when called with argument --log', async () => {
     const fileNo = 5; // we use the no. of the test here
     const inspect = stdout.inspect();
-    await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {log: true});
+    try {
+      await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {log: true});
+    } catch (e) {
+      console.log(e);
+    }
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing test/test-assets/simple.html\n`,
