@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 import {program} from 'commander';
-import {getSupportedLanguages, setAuthKey, translateToJSON} from '../src/i18n-deepl.js';
+import {getSupportedLanguages, setAuthKey, translateToJSON} from '../src/index.js';
 import fs from 'async-file-tried';
 
 const [packageJS, err] = await fs.readJson('./package.json');
@@ -49,14 +49,6 @@ program
   .option('--options, -o <options>', 'DeepL API options, given as object, i.E. --options="{formality: \'less\'}."')
   .action(
     async (source, target, targetLang, options) => {
-
-      /* console.log(`source: ${source}`)
-       console.log(`target: ${target}`)
-       console.log(`targetLang: ${targetLang}`)
-       console.log(`options:`)
-       console.log(options)*/
-
-      console.log(options.authKey || process.env.DEEPL_AUTH)
 
       await translateToJSON(options.authKey || process.env.DEEPL_AUTH,
         source,
