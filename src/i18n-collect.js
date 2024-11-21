@@ -324,11 +324,11 @@ async function i18nCollect(source, target, options) {
   //  remove all duplicate value entries in position 'keys' of array hndlbrKeys
   hndlbrKeys = arrRmvDuplicateValues(hndlbrKeys);
 
-  //  evaluate argument '--alphabetical' for sorting
+  //  evaluate argument 'alphabetical' for sorting
   if (options.alphabetical)
     hndlbrKeys = deepSort(hndlbrKeys)
 
-  //  form an array of languages from argument '--lng
+  //  form an array of languages from argument 'lng
   const languages = (Array.isArray(options.lng) && options.lng.length > 0)
     ? options.lng
     : ['en'];
@@ -337,7 +337,7 @@ async function i18nCollect(source, target, options) {
   //  WRITE TO ONE FILE PER LANGUAGE
   //  ------------------------------------------------
 
-  //  evaluate argument '--separateLngFiles' to output each language in a separate file
+  //  evaluate argument 'separateLngFiles' to output each language in a separate file
   if (options.separateLngFiles) {
 
     //  if user entered argument for target ending with .json, remove it
@@ -397,7 +397,7 @@ async function i18nCollect(source, target, options) {
       translObj.translations[lng] = objectify(hndlbrKeys, lng, options.empty)
     })
 
-    //  if argument '--update' was given, an existing file is read in, parsed,
+    //  if argument 'update' was given, an existing file is read in, parsed,
     //  and the new translation Object is merged onto the existing translations
     if (options.update) {
       let [res, err] = await fst.readJson(target);
@@ -410,11 +410,11 @@ async function i18nCollect(source, target, options) {
     //  convert output object to json with linebreaks and indenting of 2 spaces
     const fileOutputJson = JSON.stringify(outputObj, null, 2)
 
-    //  log the final object to console if option '--log' or '--dryRun' was set
+    //  log the final object to console if option 'log' or 'dryRun' was set
     if (options.log || options.dryRun)
       console.log(fileOutputJson);
 
-    //  exit if option '--dryRun' was set
+    //  exit if option 'dryRun' was set
     if (options.dryRun) {
       console.log('\x1b[36m%s\x1b[0m', 'This was a dry run. No file witten.')
       process.exit(0)

@@ -110,7 +110,6 @@ function __setNestedValue(obj, path, val, langCode) {
       iterate(ob[key], keys, insert, langCode, i);
     }
     else {
-      //console.log(ob[key])
       ob[key][langCode] = (typeof ob[key][langCode] === 'object')
         ? {...ob[key][langCode], ...insert}
         : ob[key][langCode] = insert;
