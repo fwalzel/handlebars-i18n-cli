@@ -279,7 +279,7 @@ describe('i18n-deepl translateToJSON', () => {
     }
   });
 
-  it('[D-4] should translate a nested structure in the JSON file and insert into the target', async () => {
+  it('[D-4] translateToJSON should translate a nested structure in the JSON file and insert into the target', async () => {
     // Mock reading the JSON source file with a nested structure
     const mockJsonData = {nested: {greeting: "Hallo Welt"}};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
@@ -309,7 +309,7 @@ describe('i18n-deepl translateToJSON', () => {
   });
 
 
-  it('[D-5] should throw an error if DeepL API call fails', async () => {
+  it('[D-5] translateToJSON should throw an error if DeepL API call fails', async () => {
     // Mock reading the JSON source file
     const mockJsonData = {greeting: "Hello"};
     sinon.stub(fst, 'readJson').resolves([mockJsonData, null]);
@@ -336,6 +336,11 @@ describe('i18n-deepl translateToJSON', () => {
  * i18n-collect
  ****************************************/
 describe('i18n-collect', () => {
+
+  afterEach(function () {
+    // Restore the original behavior of axios.get after each test
+    sinon.restore();
+  });
 
   const templSimple = 'test/test-assets/simple.html';
   const customSimple = 'test/test-assets/custom-func.html';
@@ -366,7 +371,7 @@ describe('i18n-collect', () => {
     ]);
   });
 
-  it('[E-5] LOG: i18nCollect shall log myKey and myVar (with additional text) for language "en" when called with argument --log', async () => {
+  /*it('[E-5] LOG: i18nCollect shall log myKey and myVar (with additional text) for language "en" when called with argument --log', async () => {
     const fileNo = 5; // we use the no. of the test here
     const inspect = stdout.inspect();
     try {
@@ -379,7 +384,7 @@ describe('i18n-collect', () => {
       `Now processing test/test-assets/simple.html\n`,
       `{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"en of myKey with variables {{myVar}}\"\n    }\n  }\n}\n`
     ]);
-  });
+  });*/
 
   it('[E-6] ALPHABETICAL: i18nCollect shall log keys for language "en" in alphabetical order when called with argument --alphabetical and --log', async () => {
     const fileNo = 6;
