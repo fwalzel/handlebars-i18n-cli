@@ -368,7 +368,8 @@ describe('i18n-collect', () => {
     assert.deepEqual(inspect.output, [
       'Now processing test/test-assets/empty.html\n',
       'No strings for translation found, no files written.\n'
-    ]);
+    ],
+      'The logged output did not match the expected result.');
   });
 
   it('[E-5] LOG: i18nCollect shall log myKey and myVar (with additional text) for language "en" when called with argument --log', async () => {
@@ -377,13 +378,14 @@ describe('i18n-collect', () => {
     try {
       await i18nCollect('test/test-assets/simple.html', `test/test-generated/test-${fileNo}.json`, {log: true});
     } catch (e) {
-      console.log(e);
+      throw e;
     }
     inspect.restore();
     assert.deepEqual(inspect.output, [
       `Now processing test/test-assets/simple.html\n`,
       `{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"en of myKey with variables {{myVar}}\"\n    }\n  }\n}\n`
-    ]);
+    ],
+      'The logged output did not match the expected result.');
   });
 
   it('[E-6] ALPHABETICAL: i18nCollect shall log keys for language "en" in alphabetical order when called with argument --alphabetical and --log', async () => {
@@ -397,7 +399,7 @@ describe('i18n-collect', () => {
     assert.deepEqual(inspect.output, [
       'Now processing test/test-assets/multiple.html\n',
       '{\n  \"translations\": {\n    \"en\": {\n      \"a\": {\n        \"a\": \"en of a.a\",\n        \"b\": \"en of a.b\"\n      },\n      \"b\": \"en of b\"\n    }\n  }\n}\n'
-    ]);
+    ],  'The logged output did not match the expected result.');
   });
 
   it('[E-7] EMPTY: i18nCollect shall log myKey and myVar (no text) for language "en" when called with argument --empty and --log', async () => {
@@ -408,7 +410,7 @@ describe('i18n-collect', () => {
     assert.deepEqual(inspect.output, [
       `Now processing ${templSimple}\n`,
       '{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"{{myVar}}\"\n    }\n  }\n}\n'
-    ]);
+    ],  'The logged output did not match the expected result.');
   });
 
   it('[E-8] LNG: i18nCollect shall log myKey and myVar for language "de", "fr", and "es" when called with arguments --lng=de,fr,es and --log', async () => {
@@ -419,7 +421,7 @@ describe('i18n-collect', () => {
     assert.deepEqual(inspect.output, [
       `Now processing ${templSimple}\n`,
       '{\n  \"translations\": {\n    \"de\": {\n      \"myKey\": \"de of myKey with variables {{myVar}}\"\n    },\n    \"fr\": {\n      \"myKey\": \"fr of myKey with variables {{myVar}}\"\n    },\n    \"es\": {\n      \"myKey\": \"es of myKey with variables {{myVar}}\"\n    }\n  }\n}\n'
-    ]);
+    ],  'The logged output did not match the expected result.');
   });
 
   it('[E-9] SEPARATE FILES: i18nCollect shall log for three single files when called with arguments --lng=de,fr,es -sf and --log', async () => {
@@ -439,7 +441,7 @@ describe('i18n-collect', () => {
       `\u001b[34mWrote language keys for 'fr' to test/test-generated/test-${fileNo}.fr.json\u001b[0m\n`,
       "{\n  \"es\": {\n    \"myKey\": \"es of myKey with variables {{myVar}}\"\n  }\n}\n",
       `\u001b[34mWrote language keys for 'es' to test/test-generated/test-${fileNo}.es.json\u001b[0m\n`
-    ]);
+    ],  'The logged output did not match the expected result.');
   });
 
   it('[E-10] CUSTOM TRANSLATION FUNC: i18nCollect shall log myOtherKey when called with arguments --translFunc=_t and --log', async () => {
@@ -450,7 +452,7 @@ describe('i18n-collect', () => {
     assert.deepEqual(inspect.output, [
       `Now processing ${customSimple}\n`,
       "{\n  \"translations\": {\n    \"en\": {\n      \"myOtherKey\": \"en of myOtherKey\"\n    }\n  }\n}\n",
-    ]);
+    ],  'The logged output did not match the expected result.');
   });
 
   it('[E-11] UPDATE: i18nCollect shall log for extending existing file when called with arguments --update and --log', async () => {
@@ -465,7 +467,7 @@ describe('i18n-collect', () => {
     assert.deepEqual(inspect.output, [
       `Now processing ${templSimple}\n`,
       "{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"en of myKey with variables {{myVar}}\",\n      \"myOtherKey\": \"en of myOtherKey\"\n    }\n  }\n}\n"
-    ]);
+    ],  'The logged output did not match the expected result.');
   });
 
 });
