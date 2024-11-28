@@ -22,6 +22,8 @@ npm link handlebars-i18n-cli
 
 If you do not link the package, you may run into the error `bash: i18n-collect: command not found`.
 
+<p>&nbsp;</p>
+
 ## General Use
 
 ### 1. Language Key Extraction 
@@ -284,6 +286,7 @@ Leave out the language ending and json file extension and give only the base nam
 handlebars-i18n-cli would look for *translation.de.json*, *translation.en.json*, and *translation.en.json* to update
 them. A language file that does not exist yet will be generated.
 
+<p>&nbsp;</p>
 
 ## Programmatical Use
 
@@ -334,8 +337,6 @@ existing keys, and generating separate files for each language.
 
 Returns a Promise that resolves to: `true`: Indicates successful completion of the operation.
 `void`: Indicates the function performed no action.
-
-#### Usage Example
 
 **Basic Usage**
 
