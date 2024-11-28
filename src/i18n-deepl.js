@@ -120,17 +120,6 @@ function __setNestedValue(obj, path, val, langCode) {
   return true
 }
 
-/** ceck if a file exists
- *
- * @param file
- * @returns {Promise<boolean>}
- * @private
- */
-async function __fileExists(file) {
-  let [res, err] = await fst.access(file);
-  return !err
-}
-
 
 /****************************************
  * PUBLIC INTERFACE
@@ -140,13 +129,14 @@ async function __fileExists(file) {
  * Write th DeepL auth key to .env file
  *
  * @param key
+ * @param path
  * @returns {Promise<boolean>}
  */
-async function setAuthKey(key) {
+async function setAuthKey(key, path='./') {
   if (typeof key !== 'string' || key === '')
     throw new Error('Provided argument is not a valid DeepL auth key.');
   const file = '.env';
-  let [res, err] = await fst.writeFile(file, `export DEEPL_AUTH=${key}`);
+  let [res, err] = await fst.writeFile([path, file], `export DEEPL_AUTH=${key}`);
   if (err) {
     throw new Error(`Failed to write file ${file}`);
   }
@@ -266,7 +256,7 @@ async function translateToJSON(
 
   // check if source and target are identical either as string, or resolve in the same file
   if (JsonSrc === JsonTarget
-    || (await __fileExists(JsonTarget) &&
+    || (await fst.exists(JsonTarget) &&
       fst.realpath(path.resolve(JsonSrc)) === fst.realpath(path.resolve(JsonTarget)))) {
 
     // if the content comes from a nested source
@@ -282,7 +272,7 @@ async function translateToJSON(
     resultObj = modifiedObj;
   } else {
     // error if the target file name exists
-    if (await __fileExists(JsonTarget))
+    if (await fst.exists(JsonTarget))
       throw new Error(`The target file "${JsonTarget}" already exists. 
       Please prompt a different file name or remove the existing file.`);
     // ... if ok, set the resulting object

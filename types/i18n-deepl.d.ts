@@ -1,23 +1,21 @@
 /****************************************
  * PUBLIC INTERFACE
  ****************************************/
-import {TextResult} from "deepl-node";
-
 /**
  * Write th DeepL auth key to .env file
  *
  * @param key
+ * @param path
  * @returns {Promise<boolean>}
  */
-export function setAuthKey(key: string): Promise<boolean>;
+export function setAuthKey(key: any, path?: string): Promise<boolean>;
 /**
  * Function to fetch supported languages from the DeepL API
  *
  * @param authKey
  * @returns {Promise<*>}
  */
-export function getSupportedLanguages(authKey: string): Promise<any>;
-
+export function getSupportedLanguages(authKey: any): Promise<any>;
 /**
  * Translate a string or an array of strings using the DeepL API
  *
@@ -28,19 +26,19 @@ export function getSupportedLanguages(authKey: string): Promise<any>;
  * @param options
  * @returns {Promise<TextResult|TextResult[]>}
  */
-export function translateTexts(authKey: string, texts: Array<string>, sourceLang: string, targetLang: string, options?: object): Promise<TextResult | TextResult[]>;
+export function translateTexts(authKey: any, texts: any, sourceLang: any, targetLang: any, options: any): Promise<TextResult | TextResult[]>;
 /** read a json file, translate it with the Deepl API, write the result as json file
  *
  * @param authKey
  * @param JsonSrc
  * @param JsonTarget
- * @param targetLang
- * @param sourceLang
- * @param deeplOpts
+ * @param targetLangCode
  * @param sourceNested
+ * @param sourceLangCode
  * @param log
  * @param dryRun
+ * @param deeplOpts
  * @returns {Promise<boolean>}
  */
-export function translateToJSON(authKey: string, JsonSrc: string, JsonTarget: string, sourceLang: string, targetLang: string, deeplOpts?: object, sourceNested?: string, log?: boolean, dryRun?: boolean): Promise<boolean>;
+export function translateToJSON(authKey: any, JsonSrc: any, JsonTarget: any, sourceLangCode: any, targetLangCode: any, deeplOpts: any, sourceNested: any, log: any, dryRun: any): Promise<boolean>;
 //# sourceMappingURL=i18n-deepl.d.ts.map

@@ -371,14 +371,15 @@ Writes the DeepL authentication key to a .env file.
 #### Function Signature
 
 ```typescript
-export function setAuthKey(key: string): Promise<boolean>;
+export function setAuthKey(key: string, path?: string): Promise<boolean>;
 ```
 
 #### Parameters
 
-| **Name** | **Type**  | **Description**                        | **Example**     |
-|----------|-----------|----------------------------------------|-----------------|
-| `key`    | `string`  | Your DeepL API authentication key.     | `"abcd1234xyz"` |
+| **Name**          | **Type**  | **Description**                                        | **Example**     |
+|-------------------|-----------|--------------------------------------------------------|-----------------|
+| `key`             | `string`  | Your DeepL API authentication key.                     | `"abcd1234xyz"` |
+| `path` (optional) | `string`  | The path where the `.env` file should go. Default: `./` | `"abcd1234xyz"` |
 
 #### Returns
 
@@ -388,6 +389,9 @@ export function setAuthKey(key: string): Promise<boolean>;
 import {setAuthKey} from 'handlebars-i18n-cli';
 await setAuthKey('abcd1234xyz');
 ```
+
+Fetch the authKey with `const key = process.env.DEEPL_AUTH;`.
+
 
 ### Function `getSupportedLanguages`
 

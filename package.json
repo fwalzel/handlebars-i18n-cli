@@ -40,8 +40,8 @@
   },
   "homepage": "https://github.com/fwalzel/handlebars-i18n-cli#readme",
   "dependencies": {
-    "async-file-tried": "^1.2.0",
-    "axios": "^1.7.8",
+    "async-file-tried": "^1.2.1",
+    "axios": "^1.7.2",
     "commander": "^12.1.0",
     "deepl-node": "^1.13.0",
     "dotenv": "^16.4.5",
@@ -56,6 +56,6 @@
     "sinon": "^18.0.0",
     "sinon-chai": "^4.0.0",
     "test-console": "^2.0.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   }
 }
