@@ -115,7 +115,7 @@ Will run the file en.json against DeepL API. From this file
 ```
 
 
-## Motivation
+## Purpose / Motivation
 
 Managing large volumes of translations can be a tedious and time-consuming task, for each change in the template needs
 to be mapped to all languages. Usually this comes along with a lot of redundant typing or copy/paste action. Moreover
