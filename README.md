@@ -5,7 +5,7 @@ for [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) and other 
 
 * programmatically extract/ update translation strings from handlebars templates and generate i18next conform
   JSON files from it
-* automatic translation of i18next JSON via [DeepL's](https://www.deepl.com/en/pro-api/) free API
+* automatic translation of i18next JSON via [DeepL’s](https://www.deepl.com/en/pro-api/) free API
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Node.js Version](https://img.shields.io/badge/Node.js-14.x-green)
