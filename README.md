@@ -20,11 +20,11 @@ npm i handlebars-i18n-cli --save-dev
 npm link handlebars-i18n-cli
 ```
 
-(If you do not link the package in your repo, you may run into the error `bash: i18n-collect: command not found`).
+If you do not link the package, you may run into the error `bash: i18n-collect: command not found`.
 
-## Basic Usage
+## General Use
 
-### 1. Extraction 
+### 1. Language Key Extraction 
 
 Abstract syntax is:
 
@@ -80,7 +80,7 @@ From a very simple template like this …
 }
 ```
 
-### 2. Automatic translation via DeepL API
+### 2. Automatic Translation via DeepL API
 
 Abstract syntax is:
 
@@ -116,7 +116,7 @@ Will run the file en.json against DeepL API. From this file
 ## Motivation
 
 Managing large volumes of translations can be a tedious and time-consuming task, for each change in the template needs
-to be mapped to all languages. Usually this comes along with a lot of redundant typing or copy/paste action. Furthermore
+to be mapped to all languages. Usually this comes along with a lot of redundant typing or copy/paste action. Moreover
 the chance of missing some translation strings increases with many translations in play.
 
 `handlebars-i18n-cli` automates the task of extracting and updating key names indicating translation strings and
@@ -126,7 +126,6 @@ In case a translation string expects variables for replacement, these variables 
 
 If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) for translation but a custom
 integration of i18next into handlebars.js, you might be able to appropriate this cli by using the option --translFunc (
-
 see below).
 
 ## Example
@@ -321,15 +320,15 @@ existing keys, and generating separate files for each language.
 
 **Optional `options` Object Properties**
 
-| **Name**          | **Type**        | **Description**                                                  | **Example**           |
-|--------------------|-----------------|------------------------------------------------------------------|-----------------------|
-| `alphabetical`     | `boolean`      | If `true`, sorts keys alphabetically.                           | `true`               |
-| `dryRun`           | `boolean`      | If `true`, performs a simulation without modifying files.       | `false`              |
-| `lng`              | `Array<string>`| List of language codes to process.                              | `["en", "de", "fr"]` |
-| `log`              | `boolean`      | If `true`, enables detailed logging to the console.             | `true`               |
-| `separateLngFiles` | `boolean`      | If `true`, creates separate files for each language.            | `true`               |
-| `translFunc`       | `string`       | Specifies the translation function name to look for in code.    | `"t"`                |
-| `update`           | `boolean`      | If `true`, updates existing translation keys in the target file.| `true`               |
+| **Name**          | **Type**        | **Description**                                                   | **Example**           |
+|--------------------|-----------------|-------------------------------------------------------------------|-----------------------|
+| `alphabetical`     | `boolean`      | If `true`, sorts keys alphabetically.                             | `true`               |
+| `dryRun`           | `boolean`      | If `true`, performs a simulation without modifying files.         | `false`              |
+| `lng`              | `Array<string>`| List of language codes to process.                                | `["en", "de", "fr"]` |
+| `log`              | `boolean`      | If `true`, enables detailed logging to the console.               | `true`               |
+| `separateLngFiles` | `boolean`      | If `true`, creates separate files for each language.              | `true`               |
+| `translFunc`       | `string`       | Specifies a custom translation function name to look for in code. | `"t"`                |
+| `update`           | `boolean`      | If `true`, updates existing translation keys in the target file.  | `true`               |
 
 #### Returns
 
@@ -376,16 +375,18 @@ export function setAuthKey(key: string): Promise<boolean>;
 
 #### Parameters
 
-```
 | **Name** | **Type**  | **Description**                        | **Example**     |
 |----------|-----------|----------------------------------------|-----------------|
 | `key`    | `string`  | Your DeepL API authentication key.     | `"abcd1234xyz"` |
-```
 
 #### Returns
 
 `Promise<boolean>`: Resolves to `true` if the key was successfully written; otherwise, `false`.
 
+```javascript
+import {setAuthKey} from 'handlebars-i18n-cli';
+await setAuthKey('abcd1234xyz');
+```
 
 ### Function `getSupportedLanguages`
 
@@ -399,27 +400,94 @@ export function getSupportedLanguages(authKey: string): Promise<any>;
 
 #### Parameters
 
-```
 | **Name**   | **Type**  | **Description**                                  | **Example**     |
 |------------|-----------|--------------------------------------------------|-----------------|
 | `authKey`  | `string`  | Your DeepL API authentication key.               | `"abcd1234xyz"` |
-```
 
 #### Returns
 
 `Promise<any>`: Resolves with an object containing the supported languages.
 
+#### Usage Example
 
+```javascript
+import {getSupportedLanguages} from 'handlebars-i18n-cli';
+let languages = await getSupportedLanguages('abcd1234xyz');
+```
 
+### Function `translateToJSON`
 
+Reads a JSON file, translates its content using the DeepL API, and writes the result as a JSON file.
+
+#### Function Signature
+
+```typescript
+export function translateToJSON(
+    authKey: string,
+    JsonSrc: string,
+    JsonTarget: string,
+    sourceLang: string,
+    targetLang: string,
+    deeplOpts?: object,
+    sourceNested?: string,
+    log?: boolean,
+    dryRun?: boolean
+): Promise<boolean>;
+
+```
+
+#### Parameters
+
+| **Name**        | **Type**         | **Description**                                                  | **Example**                  |
+|-----------------|------------------|------------------------------------------------------------------|------------------------------|
+| `authKey`       | `string`         | Your DeepL API authentication key.                               | `"abcd1234xyz"`             |
+| `JsonSrc`       | `string`         | Path to the source JSON file.                                     | `"./source.json"`           |
+| `JsonTarget`    | `string`         | Path to the target JSON file.                                     | `"./target.json"`           |
+| `sourceLang`    | `string`         | The source language code. Use `""` for auto-detection.           | `"en"`                      |
+| `targetLang`    | `string`         | The target language code.                                         | `"de"`                      |
+| `deeplOpts`     | `object` (optional)| Additional DeepL API options (e.g., formality).                  | `{formality: "formal"}`     |
+| `sourceNested`  | `string` (optional)| Nested object key to process within the JSON file.                | `"translations"`            |
+| `log`           | `boolean` (optional)| If `true`, enables logging of the process.                        | `true`                      |
+| `dryRun`        | `boolean` (optional)| If `true`, performs a simulation without modifying the file.      | `false`                     |
+
+#### Returns
+
+`Promise<boolean>`: Resolves to `true` if the operation succeeds; otherwise, `false`.
+
+#### Usage Example
+
+```javascript
+import {translateToJSON} from 'handlebars-i18n-cli';
+
+const authKey = "abcd1234xyz"; // Your DeepL API key
+const sourceFile = "./translations/source.json"; // Path to the source JSON file
+const targetFile = "./translations/translated.json"; // Path to the target JSON file
+const sourceLang = "en"; // Source language
+const targetLang = "de"; // Target language
+const deepLOptions = { formality: "formal" }; // Optional DeepL API options
+
+const res = await translateToJSON(
+  authKey,
+  sourceFile,
+  targetFile,
+  sourceLang,
+  targetLang,
+  deepLOptions,
+  "data.translations", // Key for nested translations, we expect source key "en" to be here 
+  true, // Enable logging
+  false // Not a dry run, so it will modify/create the target file
+);
+```
+
+---
 
 ## Run tests
 
 ```bash
-$ nyc npm test
+npm run test
 ```
 
 ## License
 
-Copyright (c) 2022 Florian Walzel,
+Copyright (c) 2022-24 Florian Walzel,
 MIT License
