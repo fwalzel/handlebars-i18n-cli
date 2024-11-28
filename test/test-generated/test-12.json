@@ -1,8 +1,0 @@
-{
-  "translations": {
-    "en": {
-      "myKey": "en of myKey with variables {{myVar}}",
-      "hasAlreadyAKey": "WithSomeValue"
-    }
-  }
-}

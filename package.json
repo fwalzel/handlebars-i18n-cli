@@ -1,17 +1,22 @@
 {
   "name": "handlebars-i18n-cli",
-  "version": "1.0.5",
-  "description": "A CLI tool to support node module handlebars-i18n",
-  "main": "./src/i18n-collect.js",
+  "version": "2.0.0",
+  "description": "Extracts translation keys from handlebars templates and forms JSON from it; generates automatic translations via DeepL.",
+  "main": "src/index.js",
+  "type": "module",
+  "types": "types/index.d.ts",
   "bin": {
     "@fwalzel/handlebars-i18n-cli": "./bin/i18n-collect",
-    "i18n-collect": "./bin/i18n-collect"
+    "i18n-collect": "./bin/i18n-collect",
+    "@fwalzel/i18n-deepl": "./bin/i18n-deepl",
+    "i18n-deepl": "./bin/i18n-deepl"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "nyc mocha",
+    "test": "c8 mocha",
+    "test:coverage": "npm run test && c8 report --reporter=text-lcov > coverage/lcov.info",
     "test:istanbul": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec",
     "coveralls": "npm test && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "i18n-collect": "cd bin && node i18n-collect"
@@ -23,10 +28,10 @@
   "keywords": [
     "cli helper",
     "handlebars-i18n",
-    "handlebars",
-    "i18n-next",
+    "handlebars translation",
     "extract translations from i18next templates",
-    "handlebars-i18next"
+    "deepL automatic translation",
+    "i18next JSON"
   ],
   "author": "Florian Walzel",
   "license": "MIT",
@@ -35,16 +40,22 @@
   },
   "homepage": "https://github.com/fwalzel/handlebars-i18n-cli#readme",
   "dependencies": {
-    "esm": "^3.2.25",
-    "util": "^0.12.5"
+    "async-file-tried": "^1.2.1",
+    "axios": "^1.7.2",
+    "commander": "^12.1.0",
+    "deepl-node": "^1.13.0",
+    "dotenv": "^16.4.5",
+    "glob": "^11.0.0"
   },
   "devDependencies": {
-    "chai": "^4.3.6",
-    "chai-as-promised": "^7.1.1",
-    "coveralls": "3.1.1",
-    "istanbul": "^0.4.5",
+    "c8": "^10.1.2",
+    "chai": "^5.1.1",
+    "chai-as-promised": "^8.0.0",
+    "coveralls-next": "^4.2.1",
     "mocha": "^10.1.0",
-    "nyc": "^15.1.0",
-    "test-console": "^2.0.0"
+    "sinon": "^18.0.0",
+    "sinon-chai": "^4.0.0",
+    "test-console": "^2.0.0",
+    "typescript": "^5.7.2"
   }
 }

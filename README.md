@@ -1,8 +1,11 @@
 # handlebars-i18n-cli
 
-`handlebars-i18n-cli` is an additional command line interface for [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git). 
-It will help to automatically extract translation strings from your handlebars templates and generate i18next conform 
-json files from it. It also helps to keep your translations up to date when changes are made in the templates.
+`handlebars-i18n-cli` is an additional command line interface
+for [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) and other implementations of i18next in handlebars.
+
+* programmatically extract/ update translation strings from handlebars templates and generate i18next conform
+  JSON files from it
+* automatic translation of i18next JSON via [DeepL’s](https://www.deepl.com/en/pro-api/) free API
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Node.js Version](https://img.shields.io/badge/Node.js-14.x-green)
@@ -10,15 +13,20 @@ json files from it. It also helps to keep your translations up to date when chan
 [![Coverage Status](https://coveralls.io/repos/github/fwalzel/handlebars-i18n-cli/badge.svg?branch=main)](https://coveralls.io/github/fwalzel/handlebars-i18n-cli?branch=main)
 [![Known Vulnerabilities](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)
 
-
 ## Install
 
-```bash
-$ npm i handlebars-i18n-cli --save-dev
+```shell
+npm i handlebars-i18n-cli --save-dev
+npm link handlebars-i18n-cli
 ```
 
+If you do not link the package, you may run into the error `bash: i18n-collect: command not found`.
 
-## Usage
+<p>&nbsp;</p>
+
+## General Use
+
+### 1. Language Key Extraction `i18n-collect` 
 
 Abstract syntax is:
 
@@ -26,10 +34,11 @@ Abstract syntax is:
 i18n-collect <source> <target> <options...>
 ```
 
-This will generate a file `translations.json` holding the translations for `de`, `fr`, and `en` by extracting all key names intended for i18next translation from all html files in your project:
+This will generate a file `translations.json` holding the translations for `de`, `fr`, and `en` by extracting all key
+names intended for i18next translation from all html files in your project:
 
-```bash
-$ i18n-collect my-project/**/*.html my-project/translations.json --lng=de,en,fr
+```shell
+i18n-collect my-project/**/*.html my-project/translations.json --lng de,en,fr
 ```
 
 From a very simple template like this …
@@ -38,15 +47,13 @@ From a very simple template like this …
 <!DOCTYPE html>
 <html lang="{{_locale}}">
 <head>
-   <title>{{__ title}}</title>
+    <title>{{__ title}}</title>
 </head>
 <body>
-   {{__ body.greeting textvar1="hello" textvar2="world"}}
+{{__ body.greeting textvar1="hello" textvar2="world"}}
 </body>
 </html>
 ```
-
-
 
 … the generated translations.json would be:
 
@@ -75,20 +82,56 @@ From a very simple template like this …
 }
 ```
 
-## Motivation
+### 2. Automatic Translation via DeepL API `i18n-deepl`
 
-Managing large volumes of translations can be a tedious and time-consuming task, for each change in the template needs 
-to be mapped to all languages. Usually this comes along with a lot of redundant typing or copy/paste action. Furthermore
+Abstract syntax is:
+
+```
+i18n-deepl translate <source> <target> <targetLang> <options...>
+```
+
+``` shell
+i18n-deepl translate en.json fi.json fi
+```
+
+Will run the file en.json against DeepL API. From this file
+
+```
+{
+  "header": {
+    "greet": "Hello World!"
+  }
+}
+```
+
+… will be generated the Finish translation fi.json:
+
+```
+{
+  "header": {
+    "greet": "Hei maailma!"
+  }
+}
+```
+
+
+## Purpose / Motivation
+
+Managing large volumes of translations can be a tedious and time-consuming task, for each change in the template needs
+to be mapped to all languages. Usually this comes along with a lot of redundant typing or copy/paste action. Moreover
 the chance of missing some translation strings increases with many translations in play.
 
-`handlebars-i18n-cli` automates the task of extracting and updating key names indicating translation strings and 
-generating template JSON files from them. The key names for the translations need to specified only once in the template, 
-the carry to the according language JSON is done by the CLI. You then only have to fill in according translations. 
-In case a translation string expects variables for replacement, these variables will be added to your json template. 
+`handlebars-i18n-cli` automates the task of extracting and updating key names indicating translation strings and
+generating template JSON files from them. The key names for the translations need to specified only once in the
+template, the carry to the according language JSON is done by the CLI. You then only have to fill in according translations.
+In case a translation string expects variables for replacement, these variables will be added to your json template.
 
-If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) for translation but a custom 
-integration of i18next into handlebars.js, you might be able to appropriate this cli by using the option --translFunc (see below).
+If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) for translation but a custom
+integration of i18next into handlebars.js, you might be able to appropriate this cli by using the option --translFunc (
+see below).
 
+Also `handlebars-i18n-cli` allows you to **auto-translate** a JSON file with an existing translation to another language  
+via the DeepL API, while the original key names and JSOn structure are kept.
 
 ## Example
 
@@ -97,26 +140,27 @@ Try the examples folder within this repo.
 For generating a single JSON file:
 
 ```bash
-$ i18n-collect examples/templates/*.html examples/generated/translations.json --lng=de,fr,en 
+i18n-collect examples/templates/*.html examples/generated/translations.json --lng de,fr,en 
 ```
 
 For one JSON file per language:
 
 ```bash
-$ i18n-collect examples/templates/*.html examples/generated/translations.json --separateLngFiles --lng=de,fr,en 
+i18n-collect examples/templates/*.html examples/generated/translations.json --separateLngFiles --lng de,fr,en 
 ```
 
-
-## Source and Target
+## Command `i18n-collect` 
 
 `<source>`
 
 * The source files can be passed in as [glob](https://www.npmjs.com/package/glob) pattern.
-* i18n-collect is agnostic against the data type of the template(s) you want to extract translations keys from. It works with `.html` as well as `.js` files.
+* i18n-collect is agnostic against the data type of the template(s) you want to extract translations keys from. It works
+  with `.html` as well as `.js` files.
 
 `<target>`
 
-* The output will always be in `.json` format. The file(s) can then be required for your i18next translation as [JSON v2](https://www.i18next.com/misc/json-format#i18next-json-v2)
+* The output will always be in `.json` format. The file(s) can then be required for your i18next translation
+  as [JSON v2](https://www.i18next.com/misc/json-format#i18next-json-v2)
 
 ```
 i18next.init({
@@ -124,12 +168,11 @@ i18next.init({
 });
 ```
 
-
-## Usage options
+### Usage options
 
 `--alphabetical` or `-a`
 
-This will order the keys to the translation strings alphabetically in the generated json file(s). When the flag 
+This will order the keys to the translation strings alphabetically in the generated json file(s). When the flag
 --alphabetical is not set the keys appear in order as within the template(s).
 
 ---
@@ -147,7 +190,7 @@ value strings contain current language and key name.
 
 Example:
 
-The template 
+The template
 
 ```html
 <h1>{{__ headline userName="Frank"}}</h1>
@@ -182,9 +225,10 @@ instead of
 
 ---
 
-`--lng=language1,language2,...languageN`
+`--lng language1,language2,...languageN`
 
-The list of language shortcodes you want to be generated with an own set in the json. Arguments are comma separated (no blank space between, no quotation marks around).
+The list of language shortcodes you want to be generated with an own set in the json. Arguments are comma separated (no
+blank space between, no quotation marks around).
 If no language is defined, "en" is the default.
 
 ---
@@ -195,15 +239,16 @@ Logs the final result that is written to the json files(s) into the console as w
 
 ---
 
-`--separateLngFiles` or `-sf`        
+`--separateLngFiles` or `-sf`
 
 Write each language in a separate json file instead of a single one.
 
 ```bash
-$ i18n-collect my-project/template.html my-project/translation.json --lng=de,en,fr --separateLngFiles
+i18n-collect my-project/template.html my-project/translation.json --lng de,en,fr --separateLngFiles
 ```
 
-Will generate three json files: **translation.de.json**, **translation.en.json**, and **translation.fn.json** each holding
+Will generate three json files: **translation.de.json**, **translation.en.json**, and **translation.fn.json** each
+holding
 only the translation for their respective language. By default all translations are written to a single json file.
 
 ---
@@ -211,7 +256,8 @@ only the translation for their respective language. By default all translations 
 `--translFunc=yourCustomFunctionName`
 
 If you are not using handlebars-i18n for translations but a custom handlebars helper, you might be able to use
-i18n-collect as well.Say your translation function has the name *t* instead of handlebars-i18n’s *__* (double underscore)
+i18n-collect as well.Say your translation function has the name *t* instead of handlebars-i18n’s *__* (double
+underscore)
 and your template usage would look like
 
 ```html
@@ -221,7 +267,7 @@ and your template usage would look like
 you can do
 
 ```bash
-$ i18n-collect my-project/template.html my-project/translation.json --translFunc=t
+i18n-collect my-project/template.html my-project/translation.json --translFunc=t
 ```
 
 --translFunc=t then substitutes the default *__* with a search for t.
@@ -236,36 +282,322 @@ will be added.
 Works also with the option --separateLngFiles:
 
 ```bash
-$ i18n-collect my-project/**/*.html my-project/translation --update --lng=de,en,fr --separateLngFiles
+i18n-collect my-project/**/*.html my-project/translation --update --lng de,en,fr --separateLngFiles
 ```
 
-Leave out the language ending and json file extension and give only the base name for <target>. In this example case handlebars-i18n-cli would look for *translation.de.json*, *translation.en.json*, and *translation.en.json* to update them. A language file that does not exist yet will be generated.
+Leave out the language ending and json file extension and give only the base name for <target>. In this example case
+handlebars-i18n-cli would look for *translation.de.json*, *translation.en.json*, and *translation.en.json* to update
+them. A language file that does not exist yet will be generated.
 
 
-## Fix for "Command not found"
+## Commands for `i18n-collect`
 
-In case you get an error trying to run `$ i18n-collect` like
+i18n-deepl is a command-line tool to translate i18next JSON files using the DeepL API. Below is a detailed guide to its 
+commands and usage. To use this tool, you need a valid DeepL API key. Set this key using the setAuth command or provide 
+it directly via the --auth-key option when running commands.
+
+### 1. `setAuth`
+
+Saves your DeepL Auth Key as an environment variable in a .env file for future use.
+
+#### Syntax
+
+```
+i18n-deepl setAuth <authKey>
+```
+
+#### Example
 
 ```bash
-bash: i18n-collect: command not found
+i18n-deepl setAuth abcdefghijklmnopqrstuvwxyz123456
 ```
 
-you might need to link i18n-collect first. Running the following commands should fix this: 
+#### Output
+
+```
+Success. DeepL Auth Key is now set.
+```
+
+### 2. `languages`
+   
+#### Description
+
+Lists all languages supported by the DeepL API.
+
+#### Syntax
+
+```
+i18n-deepl languages [--auth-key <authKey>]
+```
+
+#### Options
+
+```
+--auth-key <authKey>: (Optional) Provide the DeepL Auth Key directly. If not provided, the tool uses the key from the .env file.
+```
+
+#### Example
 
 ```bash
-cd node_modules/handlebars-i18n-cli
-sudo npm link
+i18n-deepl languages
 ```
 
+#### Output
+
+```
+DeepL’s Supported Languages:
+EN - English
+DE - German
+FR - French
+...
+```
+
+### 3. `translate`
+
+Translates the contents of a JSON file into the specified target language and saves the output in a new JSON file.
+
+#### Syntax
+
+```
+i18n-deepl translate <source> <target> <targetLang> [options]
+```
+
+#### Arguments
+
++ `<source>`: Path to the source JSON file (e.g., ./translations.json).
++ `<target>`: Path where the translated JSON file will be saved.
++ `<targetLang>`: Target language code (e.g., fr for French, es for Spanish).
+
+#### Options
+
++ `--auth-key, -ak <authKey>`: (Optional) Provide the DeepL Auth Key directly.
++ `--source-lang, -sl <sourceLang>`: (Optional) Specify the source language (e.g., en for English). Defaults to auto-detection.
++ `--source-nested, -sn <sourceNested>`: (Optional) Specify a nested key within the JSON for translation (e.g., data.translations).
++ `--log, -l`: (Optional) Log the translation process to the console.
++ `--dryRun, -dr`: (Optional) Perform a dry run, logging the process without modifying or saving data.
++ `--options, -o <options>`: (Optional) Pass additional DeepL API options as an object (e.g., --options="{formality: 'less'}").
+
+#### Example
+
+```bash
+i18n-deepl translate ./source.json ./output.json fr --source-lang en --log
+```
+
+#### Output
+
+```
+Translation complete. See ./output.json for your results.
+```
+
+---
+
+<p>&nbsp;</p>
+
+## Programmatical Use
+
+You can use the functions of `handlebars-i18n-cli` in a programatical way too, and make them part of your continuous integration.
+
+---
+
+### Specification for `i18nCollect` Function
+
+#### Function Signature
+
+```typescript
+export function i18nCollect(
+  source: string, 
+  target: string, 
+  options?: opts
+): Promise<true | void>;
+```
+
+#### Description
+
+This function scans the source location for internationalization keys, processes them according to the provided options, 
+and writes them to the specified target location. It supports features like sorting keys alphabetically, updating 
+existing keys, and generating separate files for each language.
+
+#### Parameters
+
+**Positional Arguments**
+
+| **Name**  | **Type**      | **Description**                         | **Example**               |
+|-----------|---------------|-----------------------------------------|---------------------------|
+| `source`  | `string`      | Path to the source files.               | `./src/template.html`     |
+| `target`  | `string`      | Path to the target files or directory.  | `./src/translations.json` |
+
+**Optional `options` Object Properties**
+
+| **Name**          | **Type**        | **Description**                                                   | **Example**           |
+|--------------------|-----------------|-------------------------------------------------------------------|-----------------------|
+| `alphabetical`     | `boolean`      | If `true`, sorts keys alphabetically.                             | `true`               |
+| `dryRun`           | `boolean`      | If `true`, performs a simulation without modifying files.         | `false`              |
+| `lng`              | `Array<string>`| List of language codes to process.                                | `["en", "de", "fr"]` |
+| `log`              | `boolean`      | If `true`, enables detailed logging to the console.               | `true`               |
+| `separateLngFiles` | `boolean`      | If `true`, creates separate files for each language.              | `true`               |
+| `translFunc`       | `string`       | Specifies a custom translation function name to look for in code. | `"t"`                |
+| `update`           | `boolean`      | If `true`, updates existing translation keys in the target file.  | `true`               |
+
+#### Returns
+
+Returns a Promise that resolves to: `true`: Indicates successful completion of the operation.
+`void`: Indicates the function performed no action.
+
+**Basic Usage**
+
+```javascript
+import {i18nCollect} from 'handlebars-i18n-cli';
+await i18nCollect('./src/template.html', './src/translations.json');
+```
+
+**With Parameters**
+
+```javascript
+await i18nCollect('./src/template.html', './src/translations.json', {
+  alphabetical: true,
+  dryRun: false,
+  lng: ['en', 'de', 'fr'],
+  log: true,
+  separateLngFiles: true,
+  translFunc: 't',
+  update: true,
+});
+```
+---
+
+### Specification for DeepL Utility Functions
+
+This module provides a set of functions to interact with the DeepL API for authentication, language retrieval, text translation, and JSON file translation.
+
+### Function `setAuthKey`
+
+Writes the DeepL authentication key to a .env file.
+
+#### Function Signature
+
+```typescript
+export function setAuthKey(key: string, path?: string): Promise<boolean>;
+```
+
+#### Parameters
+
+| **Name**          | **Type**  | **Description**                                        | **Example**     |
+|-------------------|-----------|--------------------------------------------------------|-----------------|
+| `key`             | `string`  | Your DeepL API authentication key.                     | `"abcd1234xyz"` |
+| `path` (optional) | `string`  | The path where the `.env` file should go. Default: `./` | `"abcd1234xyz"` |
+
+#### Returns
+
+`Promise<boolean>`: Resolves to `true` if the key was successfully written; otherwise, `false`.
+
+```javascript
+import {setAuthKey} from 'handlebars-i18n-cli';
+await setAuthKey('abcd1234xyz');
+```
+
+Fetch the authKey with `const key = process.env.DEEPL_AUTH;`.
+
+
+### Function `getSupportedLanguages`
+
+Fetches the list of languages supported by the DeepL API.
+
+#### Function Signature
+
+```typescript
+export function getSupportedLanguages(authKey: string): Promise<any>;
+```
+
+#### Parameters
+
+| **Name**   | **Type**  | **Description**                                  | **Example**     |
+|------------|-----------|--------------------------------------------------|-----------------|
+| `authKey`  | `string`  | Your DeepL API authentication key.               | `"abcd1234xyz"` |
+
+#### Returns
+
+`Promise<any>`: Resolves with an object containing the supported languages.
+
+#### Usage Example
+
+```javascript
+import {getSupportedLanguages} from 'handlebars-i18n-cli';
+let languages = await getSupportedLanguages('abcd1234xyz');
+```
+
+### Function `translateToJSON`
+
+Reads a JSON file, translates its content using the DeepL API, and writes the result as a JSON file.
+
+#### Function Signature
+
+```typescript
+export function translateToJSON(
+    authKey: string,
+    JsonSrc: string,
+    JsonTarget: string,
+    sourceLang: string,
+    targetLang: string,
+    deeplOpts?: object,
+    sourceNested?: string,
+    log?: boolean,
+    dryRun?: boolean
+): Promise<boolean>;
+
+```
+
+#### Parameters
+
+| **Name**        | **Type**         | **Description**                                                  | **Example**                  |
+|-----------------|------------------|------------------------------------------------------------------|------------------------------|
+| `authKey`       | `string`         | Your DeepL API authentication key.                               | `"abcd1234xyz"`             |
+| `JsonSrc`       | `string`         | Path to the source JSON file.                                     | `"./source.json"`           |
+| `JsonTarget`    | `string`         | Path to the target JSON file.                                     | `"./target.json"`           |
+| `sourceLang`    | `string`         | The source language code. Use `""` for auto-detection.           | `"en"`                      |
+| `targetLang`    | `string`         | The target language code.                                         | `"de"`                      |
+| `deeplOpts`     | `object` (optional)| Additional DeepL API options (e.g., formality).                  | `{formality: "formal"}`     |
+| `sourceNested`  | `string` (optional)| Nested object key to process within the JSON file.                | `"translations"`            |
+| `log`           | `boolean` (optional)| If `true`, enables logging of the process.                        | `true`                      |
+| `dryRun`        | `boolean` (optional)| If `true`, performs a simulation without modifying the file.      | `false`                     |
+
+#### Returns
+
+`Promise<boolean>`: Resolves to `true` if the operation succeeds; otherwise, `false`.
+
+#### Usage Example
+
+```javascript
+import {translateToJSON} from 'handlebars-i18n-cli';
+
+const authKey = "abcd1234xyz"; // Your DeepL API key
+const sourceFile = "./translations/source.json"; // Path to the source JSON file
+const targetFile = "./translations/translated.json"; // Path to the target JSON file
+const sourceLang = "en"; // Source language
+const targetLang = "de"; // Target language
+const deepLOptions = { formality: "formal" }; // Optional DeepL API options
+
+const res = await translateToJSON(
+  authKey,
+  sourceFile,
+  targetFile,
+  sourceLang,
+  targetLang,
+  deepLOptions,
+  "data.translations", // Key for nested translations, we expect source key "en" to be here 
+  true, // Enable logging
+  false // Not a dry run, so it will modify/create the target file
+);
+```
+
+---
 
 ## Run tests
 
 ```bash
-$ nyc npm test
+npm run test
 ```
-
 
 ## License
 
-Copyright (c) 2022 Florian Walzel,
+Copyright (c) 2022-24 Florian Walzel,
 MIT License

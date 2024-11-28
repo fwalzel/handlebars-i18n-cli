@@ -1,12 +1,5 @@
 # Node artifact files
 node_modules/
-dist/
-
-# Compiled Java class files
-*.class
-
-# Compiled Python bytecode
-*.py[cod]
 
 # Log files
 *.log
@@ -30,6 +23,10 @@ Thumbs.db
 .nyc_output
 coverage
 
+# ENV variables
+*.env
+
 # Custom
 test/test-generated/*.json
 !test/test-generated/test-12.json
+translate.js

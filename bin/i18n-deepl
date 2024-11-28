@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+
+import dotenv from 'dotenv';
+
+dotenv.config();
+import {program} from 'commander';
+import {getSupportedLanguages, setAuthKey, translateToJSON} from '../src/index.js';
+import fs from 'async-file-tried';
+
+const [packageJS, err] = await fs.readJson('./package.json');
+if (err) throw (err);
+
+program
+  .name('i18n-deepl')
+  .version(packageJS.version)
+  .description('Translate i18next JSON files via DeepL API.')
+
+program
+  .command('languages')
+  .description('List DeepL’s supported languages.')
+  .option('--auth-key <authKey>', 'The DeepL Auth Key.')
+  .action(async (options) => {
+    const authKey = options.authKey || process.env.DEEPL_AUTH;
+    const languages = await getSupportedLanguages(authKey);
+    console.log('DeepL’s Supported Languages:');
+    languages.forEach(lang =>
+      console.log(`${lang.language} - ${lang.name}`)
+    );
+  });
+
+program
+  .command('setAuth authKey')
+  .description('Sets the DeepL Auth Key as environmental variable (.env).')
+  .action(async (authKey) => {
+    await setAuthKey(authKey);
+    return console.log('Success. DeepL Auth Key is now set.');
+  });
+
+program
+  .command('translate')
+  .description('Translate texts from a JSON file to the target language.')
+  .arguments('<source> <target> <targetLang>')
+  .option('--auth-key, -ak <authKey>', 'The DeepL Auth Key.')
+  .option('--source-lang, -sl <sourceLang>', 'Source language for translation, such as "de".')
+  .option('-sn, --source-nested <sourceNested>', 'Send only a sub-entry of the source JSON to DeepL API. ' +
+    'I.E. --source-nested="translations.de]" will route to the nested entry \'translations\' and within it will send the entries of \'de\' to translation.')
+  .option('--log, -l', 'Log translation response to console.')
+  .option('--dryRun, -dr', 'Perform a dry run and log it without making any changes to actual data.')
+  .option('--options, -o <options>', 'DeepL API options, given as object, i.E. --options="{formality: \'less\'}."')
+  .action(
+    async (source, target, targetLang, options) => {
+
+      await translateToJSON(options.authKey || process.env.DEEPL_AUTH,
+        source,
+        target,
+        options.sourceLang || null,
+        targetLang,
+        options.options || {},
+        options.sourceNested || null,
+        options.L || false,
+        options.Dr || false,
+      );
+      console.log(`Translation complete. See ${target} for your results.`)
+    });
+
+program.parse(process.argv);
+
+// If no arguments are provided, display help
+if (!process.argv.slice(2).length) {
+  program.outputHelp();
+}

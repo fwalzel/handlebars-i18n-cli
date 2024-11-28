@@ -1,4 +1,38 @@
 #!/usr/bin/env node
 
-require = require('esm')(module);
-require('../src/i18n-collect').cli(process.argv);
+import {program} from 'commander';
+import {i18nCollect} from "../src/index.js";
+import fs from 'async-file-tried';
+
+const [packageJS, err] = await fs.readJson('./package.json');
+if (err) throw (err);
+
+program
+  .name('i18n-deepl')
+  .version(packageJS.version)
+  .description(`Automatically extract translation strings from your handlebars templates and generate i18next conform json files from it`)
+  .arguments('<source> <target>')
+  .option('-a, --alphabetical', 'sort keys alphabetically in the json output')
+  .option('-dr, --dryRun', 'perform a dry run without making any changes')
+  .option('-e, --empty', 'will create empty value strings for the translations in the json. Default: value strings contain current language and key name')
+  .option('--lng <languages>', 'the languages you want to be generated, e.g., de,fr,es. default: en',
+    (value) => value.split(','))
+  .option('-l, --log', 'enable logging')
+  .option('-sf, --separateLngFiles', 'create separate json files for each language')
+  .option('--translFunc <function>', 'specify your custom translation function name. Default: __ like handlebars-i18n notation: {{__ keyToTranslate}}')
+  .option('-u, --update', 'updates existing json files(s)')
+  .action(async (source, target, options) => {
+
+    if (await i18nCollect(source, target, options)) {
+      return (options.separateLngFiles)
+        ? console.log('\x1b[32m%s\x1b[0m', 'You’re good. The output was written to separate language files.')
+        : console.log('\x1b[32m%s\x1b[0m', `Done and Ready. Your output was written to ${target}`);
+    }
+  });
+
+program.parse(process.argv);
+
+// If no arguments are provided, display help
+if (!process.argv.slice(2).length) {
+  program.outputHelp();
+}

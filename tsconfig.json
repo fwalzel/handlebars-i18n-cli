@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "CommonJS",
+    "lib": ["ES2015", "DOM"],
+    "allowJs": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./types",
+    "strict": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "bin",
+    "coverage",
+    "types",
+    "node_modules",
+    "test"]      // Specifies folders or patterns to exclude
+}
