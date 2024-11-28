@@ -285,11 +285,14 @@ Leave out the language ending and json file extension and give only the base nam
 handlebars-i18n-cli would look for *translation.de.json*, *translation.en.json*, and *translation.en.json* to update
 them. A language file that does not exist yet will be generated.
 
-## Programatical Use
+
+## Programmatical Use
 
 You can use the functions of `handlebars-i18n-cli` in a programatical way too, and make them part of your continuous integration.
 
-### Specification for i18nCollect Function
+---
+
+### Specification for `i18nCollect` Function
 
 #### Function Signature
 
@@ -328,19 +331,24 @@ existing keys, and generating separate files for each language.
 | `translFunc`       | `string`       | Specifies the translation function name to look for in code.    | `"t"`                |
 | `update`           | `boolean`      | If `true`, updates existing translation keys in the target file.| `true`               |
 
+#### Returns
+
+Returns a Promise that resolves to: `true`: Indicates successful completion of the operation.
+`void`: Indicates the function performed no action.
+
 #### Usage Example
 
 **Basic Usage**
 
 ```javascript
 import {i18nCollect} from 'handlebars-i18n-cli';
-i18nCollect('./src/template.html', './src/translations.json');
+await i18nCollect('./src/template.html', './src/translations.json');
 ```
 
 **With Parameters**
 
 ```javascript
-i18nCollect('./src/template.html', './src/translations.json', {
+await i18nCollect('./src/template.html', './src/translations.json', {
   alphabetical: true,
   dryRun: false,
   lng: ['en', 'de', 'fr'],
@@ -350,10 +358,56 @@ i18nCollect('./src/template.html', './src/translations.json', {
   update: true,
 });
 ```
+---
+
+### Specification for DeepL Utility Functions
+
+This module provides a set of functions to interact with the DeepL API for authentication, language retrieval, text translation, and JSON file translation.
+
+### Function `setAuthKey`
+
+Writes the DeepL authentication key to a .env file.
+
+#### Function Signature
+
+```typescript
+export function setAuthKey(key: string): Promise<boolean>;
+```
+
+#### Parameters
+
+```
+| **Name** | **Type**  | **Description**                        | **Example**     |
+|----------|-----------|----------------------------------------|-----------------|
+| `key`    | `string`  | Your DeepL API authentication key.     | `"abcd1234xyz"` |
+```
+
+#### Returns
+
+`Promise<boolean>`: Resolves to `true` if the key was successfully written; otherwise, `false`.
 
 
+### Function `getSupportedLanguages`
 
+Fetches the list of languages supported by the DeepL API.
 
+#### Function Signature
+
+```typescript
+export function getSupportedLanguages(authKey: string): Promise<any>;
+```
+
+#### Parameters
+
+```
+| **Name**   | **Type**  | **Description**                                  | **Example**     |
+|------------|-----------|--------------------------------------------------|-----------------|
+| `authKey`  | `string`  | Your DeepL API authentication key.               | `"abcd1234xyz"` |
+```
+
+#### Returns
+
+`Promise<any>`: Resolves with an object containing the supported languages.
 
 
 
