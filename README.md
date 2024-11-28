@@ -26,7 +26,7 @@ If you do not link the package, you may run into the error `bash: i18n-collect: 
 
 ## General Use
 
-### 1. Language Key Extraction 
+### 1. Language Key Extraction `i18n-collect` 
 
 Abstract syntax is:
 
@@ -82,7 +82,7 @@ From a very simple template like this …
 }
 ```
 
-### 2. Automatic Translation via DeepL API
+### 2. Automatic Translation via DeepL API `i18n-deepl`
 
 Abstract syntax is:
 
@@ -130,6 +130,9 @@ If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18
 integration of i18next into handlebars.js, you might be able to appropriate this cli by using the option --translFunc (
 see below).
 
+Also `handlebars-i18n-cli` allows you to **auto-translate** a JSON file with an existing translation to another language  
+via the DeepL API, while the original key names and JSOn structure are kept.
+
 ## Example
 
 Try the examples folder within this repo.
@@ -137,16 +140,16 @@ Try the examples folder within this repo.
 For generating a single JSON file:
 
 ```bash
-$ i18n-collect examples/templates/*.html examples/generated/translations.json --lng de,fr,en 
+i18n-collect examples/templates/*.html examples/generated/translations.json --lng de,fr,en 
 ```
 
 For one JSON file per language:
 
 ```bash
-$ i18n-collect examples/templates/*.html examples/generated/translations.json --separateLngFiles --lng de,fr,en 
+i18n-collect examples/templates/*.html examples/generated/translations.json --separateLngFiles --lng de,fr,en 
 ```
 
-## Source and Target
+## Command `i18n-collect` 
 
 `<source>`
 
@@ -165,7 +168,7 @@ i18next.init({
 });
 ```
 
-## Usage options
+### Usage options
 
 `--alphabetical` or `-a`
 
@@ -241,7 +244,7 @@ Logs the final result that is written to the json files(s) into the console as w
 Write each language in a separate json file instead of a single one.
 
 ```bash
-$ i18n-collect my-project/template.html my-project/translation.json --lng de,en,fr --separateLngFiles
+i18n-collect my-project/template.html my-project/translation.json --lng de,en,fr --separateLngFiles
 ```
 
 Will generate three json files: **translation.de.json**, **translation.en.json**, and **translation.fn.json** each
@@ -264,7 +267,7 @@ and your template usage would look like
 you can do
 
 ```bash
-$ i18n-collect my-project/template.html my-project/translation.json --translFunc=t
+i18n-collect my-project/template.html my-project/translation.json --translFunc=t
 ```
 
 --translFunc=t then substitutes the default *__* with a search for t.
@@ -279,12 +282,114 @@ will be added.
 Works also with the option --separateLngFiles:
 
 ```bash
-$ i18n-collect my-project/**/*.html my-project/translation --update --lng de,en,fr --separateLngFiles
+i18n-collect my-project/**/*.html my-project/translation --update --lng de,en,fr --separateLngFiles
 ```
 
 Leave out the language ending and json file extension and give only the base name for <target>. In this example case
 handlebars-i18n-cli would look for *translation.de.json*, *translation.en.json*, and *translation.en.json* to update
 them. A language file that does not exist yet will be generated.
+
+
+## Commands for `i18n-collect`
+
+i18n-deepl is a command-line tool to translate i18next JSON files using the DeepL API. Below is a detailed guide to its 
+commands and usage. To use this tool, you need a valid DeepL API key. Set this key using the setAuth command or provide 
+it directly via the --auth-key option when running commands.
+
+### 1. `setAuth`
+
+Saves your DeepL Auth Key as an environment variable in a .env file for future use.
+
+#### Syntax
+
+```
+i18n-deepl setAuth <authKey>
+```
+
+#### Example
+
+```bash
+i18n-deepl setAuth abcdefghijklmnopqrstuvwxyz123456
+```
+
+#### Output
+
+```
+Success. DeepL Auth Key is now set.
+```
+
+### 2. `languages`
+   
+#### Description
+
+Lists all languages supported by the DeepL API.
+
+#### Syntax
+
+```
+i18n-deepl languages [--auth-key <authKey>]
+```
+
+#### Options
+
+```
+--auth-key <authKey>: (Optional) Provide the DeepL Auth Key directly. If not provided, the tool uses the key from the .env file.
+```
+
+#### Example
+
+```bash
+i18n-deepl languages
+```
+
+#### Output
+
+```
+DeepL’s Supported Languages:
+EN - English
+DE - German
+FR - French
+...
+```
+
+### 3. `translate`
+
+Translates the contents of a JSON file into the specified target language and saves the output in a new JSON file.
+
+#### Syntax
+
+```
+i18n-deepl translate <source> <target> <targetLang> [options]
+```
+
+#### Arguments
+
++ `<source>`: Path to the source JSON file (e.g., ./translations.json).
++ `<target>`: Path where the translated JSON file will be saved.
++ `<targetLang>`: Target language code (e.g., fr for French, es for Spanish).
+
+#### Options
+
++ `--auth-key, -ak <authKey>`: (Optional) Provide the DeepL Auth Key directly.
++ `--source-lang, -sl <sourceLang>`: (Optional) Specify the source language (e.g., en for English). Defaults to auto-detection.
++ `--source-nested, -sn <sourceNested>`: (Optional) Specify a nested key within the JSON for translation (e.g., data.translations).
++ `--log, -l`: (Optional) Log the translation process to the console.
++ `--dryRun, -dr`: (Optional) Perform a dry run, logging the process without modifying or saving data.
++ `--options, -o <options>`: (Optional) Pass additional DeepL API options as an object (e.g., --options="{formality: 'less'}").
+
+#### Example
+
+```bash
+i18n-deepl translate ./source.json ./output.json fr --source-lang en --log
+```
+
+#### Output
+
+```
+Translation complete. See ./output.json for your results.
+```
+
+---
 
 <p>&nbsp;</p>
 
