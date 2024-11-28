@@ -19,7 +19,7 @@ jobs:
           node-version: 22.x
 
       - name: Verify Test Assets
-        run: ls -R test
+        run: mkdir test/test-generated && ls -R test
 
       - name: npm install, make test-coverage on 22.x
         run: |
