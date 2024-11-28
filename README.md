@@ -285,20 +285,79 @@ Leave out the language ending and json file extension and give only the base nam
 handlebars-i18n-cli would look for *translation.de.json*, *translation.en.json*, and *translation.en.json* to update
 them. A language file that does not exist yet will be generated.
 
-## Fix for "Command not found"
+## Programatical Use
 
-In case you get an error trying to run `$ i18n-collect` like
+You can use the functions of `handlebars-i18n-cli` in a programatical way too, and make them part of your continuous integration.
 
-```bash
-bash: i18n-collect: command not found
+### Specification for i18nCollect Function
+
+#### Function Signature
+
+```typescript
+export function i18nCollect(
+  source: string, 
+  target: string, 
+  options?: opts
+): Promise<true | void>;
 ```
 
-you might need to link i18n-collect first. Running the following commands should fix this:
+#### Description
 
-```bash
-cd node_modules/handlebars-i18n-cli
-sudo npm link
+This function scans the source location for internationalization keys, processes them according to the provided options, 
+and writes them to the specified target location. It supports features like sorting keys alphabetically, updating 
+existing keys, and generating separate files for each language.
+
+#### Parameters
+
+**Positional Arguments**
+
+| **Name**  | **Type**      | **Description**                         | **Example**               |
+|-----------|---------------|-----------------------------------------|---------------------------|
+| `source`  | `string`      | Path to the source files.               | `./src/template.html`     |
+| `target`  | `string`      | Path to the target files or directory.  | `./src/translations.json` |
+
+**Optional `options` Object Properties**
+
+| **Name**          | **Type**        | **Description**                                                  | **Example**           |
+|--------------------|-----------------|------------------------------------------------------------------|-----------------------|
+| `alphabetical`     | `boolean`      | If `true`, sorts keys alphabetically.                           | `true`               |
+| `dryRun`           | `boolean`      | If `true`, performs a simulation without modifying files.       | `false`              |
+| `lng`              | `Array<string>`| List of language codes to process.                              | `["en", "de", "fr"]` |
+| `log`              | `boolean`      | If `true`, enables detailed logging to the console.             | `true`               |
+| `separateLngFiles` | `boolean`      | If `true`, creates separate files for each language.            | `true`               |
+| `translFunc`       | `string`       | Specifies the translation function name to look for in code.    | `"t"`                |
+| `update`           | `boolean`      | If `true`, updates existing translation keys in the target file.| `true`               |
+
+#### Usage Example
+
+**Basic Usage**
+
+```javascript
+import {i18nCollect} from 'handlebars-i18n-cli';
+i18nCollect('./src/template.html', './src/translations.json');
 ```
+
+**With Parameters**
+
+```javascript
+i18nCollect('./src/template.html', './src/translations.json', {
+  alphabetical: true,
+  dryRun: false,
+  lng: ['en', 'de', 'fr'],
+  log: true,
+  separateLngFiles: true,
+  translFunc: 't',
+  update: true,
+});
+```
+
+
+
+
+
+
+
+
 
 ## Run tests
 
