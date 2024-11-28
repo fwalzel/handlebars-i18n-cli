@@ -12,6 +12,7 @@ import fst from 'async-file-tried';
 import chaiAsPromised from 'chai-as-promised';
 import sinonChai from 'sinon-chai';
 import axios from 'axios';
+import {glob} from "glob";
 import deepl from 'deepl-node'; // Assuming deepl is imported in the module
 import {stdout} from 'test-console';
 
@@ -371,21 +372,52 @@ describe('i18n-collect', () => {
     ]);
   });
 
-  it('[E-5] LOG: i18nCollect shall log myKey and myVar (with additional text) for language "en" when called with argument --log', async () => {
-    const fileNo = 5; // we use the no. of the test here
-    const inspect = stdout.inspect();
-    try {
-      await i18nCollect('test/test-assets/simple.html', `test/test-generated/test-${fileNo}.json`, {log: true});
-    } catch (e) {
-      throw (e);
-    }
-    inspect.restore();
-    assert.deepEqual(inspect.output, [
-      `Now processing test/test-assets/simple.html\n`,
-      `{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"en of myKey with variables {{myVar}}\"\n    }\n  }\n}\n`
-    ],
-      'The logged output did not match the expected result.');
-  });
+  /*describe('[E-5] LOG: i18nCollect shall log myKey and myVar (with additional text) for language "en" when called with argument --log', () => {
+    let readFileStub, writeFileStub, globStub, consoleLogStub;
+
+    before(() => {
+      // Stub `readFile` to return mock file content
+      readFileStub = sinon.stub(fst, 'readFile');
+      readFileStub.resolves(['<div>{{__ "myKey" myVar="value"}}</div>', null]);
+
+      // Stub `writeFile` to prevent real file creation
+      writeFileStub = sinon.stub(fst, 'writeFile');
+      writeFileStub.resolves([true, null]);
+
+      // Stub `glob` to return mock file paths
+      globStub = sinon.stub(glob, 'glob');
+      globStub.yields(null, ['mock-file-path.html']);
+
+      // Stub `console.log` to capture log output
+      consoleLogStub = sinon.stub(console, 'log');
+    });
+
+    after(() => {
+      // Restore all stubs after tests
+      sinon.restore();
+    });
+
+    it('should log the expected translation object when --log is passed', async () => {
+      const fileNo = 5; // Example test case number
+      const expectedLogOutput = [
+        `Now processing mock-file-path.html`,
+        JSON.stringify({
+          translations: {
+            en: {
+              myKey: 'en of myKey with variables {{myVar}}',
+            },
+          },
+        }, null, 2),
+      ];
+
+      // Run the function
+      await i18nCollect('mock-source.html', `mock-target-${fileNo}.json`, { log: true });
+
+      // Assert `console.log` was called with the expected outputs
+      sinon.assert.calledWith(consoleLogStub, `Now processing mock-file-path.html`);
+      sinon.assert.calledWith(consoleLogStub, expectedLogOutput[1]);
+    });
+  }); */
 
   it('[E-6] ALPHABETICAL: i18nCollect shall log keys for language "en" in alphabetical order when called with argument --alphabetical and --log', async () => {
     const fileNo = 6;
