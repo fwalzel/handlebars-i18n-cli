@@ -1,6 +1,6 @@
 # handlebars-i18n-cli Programmatical Use
 
-You can use the functions of `handlebars-i18n-cli` in a programatical way to make them part of your continuous integration.
+You can use the functions of `handlebars-i18n-cli` in a programatical way, i.e. to make them part of your continuous integration.
 
 ---
 
