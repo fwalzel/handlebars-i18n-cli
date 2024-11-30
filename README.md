@@ -8,7 +8,7 @@ for [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) and other 
 * automatic translation of i18next JSON via [DeepL’s](https://www.deepl.com/en/pro-api/) free API
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-![Node.js Version](https://img.shields.io/badge/Node.js-14.x-green)
+![Node.js version](https://img.shields.io/badge/node-%3E%3D14-brightgreen)
 [![Build](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/fwalzel/handlebars-i18n-cli/badge.svg?branch=main)](https://coveralls.io/github/fwalzel/handlebars-i18n-cli?branch=main)
 [![Known Vulnerabilities](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)
@@ -26,7 +26,7 @@ If you do not link the package, you may run into the error `bash: i18n-collect: 
 
 ## General Use
 
-### 1. Language Key Extraction `i18n-collect` 
+### 1. Language Key Extraction: _i18n-collect_ 
 
 Abstract syntax is:
 
@@ -82,7 +82,7 @@ From a very simple template like this …
 }
 ```
 
-### 2. Automatic Translation via DeepL API `i18n-deepl`
+### 2. Automatic Translation via DeepL API: _i18n-deepl_
 
 Abstract syntax is:
 
