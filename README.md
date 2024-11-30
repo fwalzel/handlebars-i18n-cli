@@ -32,7 +32,9 @@ If you do not link the package, you may run into the error `bash: i18n-collect: 
 i18n-collect <source> <target> <options...>
 ```
 
-This will generate a file `translations.json` holding the translations for `de`, `fr`, and `en` by extracting all key
+#### Example:
+
+Generate a file `translations.json` holding the translations for `de`, `fr`, and `en` by extracting all key
 names intended for i18next translation from all html files in your project:
 
 ```shell
@@ -126,8 +128,8 @@ generating template JSON files from them. The key names for the translations nee
 template, the carry to the according language JSON is done by the CLI. You then only have to fill in according translations.
 In case a translation string expects variables for replacement, these variables will be added to your json template.
 
-If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) for translation but a custom
-integration of i18next into handlebars.js, you might be able to appropriate this cli by using the option --translFunc (
+If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) for translation but a custom integration of i18next into handlebars.js, you 
+might be able to appropriate this cli by using the option --translFunc (
 see below).
 
 Also `handlebars-i18n-cli` allows you to **auto-translate** a JSON file with an existing translation to another language  
