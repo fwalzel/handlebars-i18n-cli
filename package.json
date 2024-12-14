@@ -1,6 +1,6 @@
 {
   "name": "handlebars-i18n-cli",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Extracts translation keys from handlebars templates and forms JSON from it; generates automatic translations via DeepL.",
   "main": "src/index.js",
   "type": "module",
