@@ -12,6 +12,7 @@ for [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) and other 
 [![Build](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/fwalzel/handlebars-i18n-cli/badge.svg?branch=main)](https://coveralls.io/github/fwalzel/handlebars-i18n-cli?branch=main)
 [![Known Vulnerabilities](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)
+![npm](https://img.shields.io/npm/dt/handlebars-i18n-cli)
 
 ## Install
 
@@ -361,6 +362,7 @@ FR - French
 ### 3. `translate`
 
 Translates the contents of a JSON file into the specified target language and saves the output in a new JSON file.
+Prerequisite is a (free) API Key for DeepL’s translation service. Get the key [here](https://www.deepl.com/en/pro#developer).
 
 #### Syntax
 
@@ -370,9 +372,10 @@ i18n-deepl translate <source> <target> <targetLang> [options]
 
 #### Arguments
 
-+ `<source>`: Path to the source JSON file (e.g., ./translations.json).
++ `<source>`: Path to the source JSON file (e.g., ./translations.json). When target and source file are identical, the 
+  result will be added (merged) to the existing file. New translations will be added, existing ones are kept. 
 + `<target>`: Path where the translated JSON file will be saved.
-+ `<targetLang>`: Target language code (e.g., fr for French, es for Spanish).
++ `<targetLang>`: Target language code (e.g., **fr** for French, **es** for Spanish).
 
 #### Options
 
