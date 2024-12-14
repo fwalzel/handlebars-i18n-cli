@@ -12,6 +12,7 @@ for [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) and other 
 [![Build](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/fwalzel/handlebars-i18n-cli/badge.svg?branch=main)](https://coveralls.io/github/fwalzel/handlebars-i18n-cli?branch=main)
 [![Known Vulnerabilities](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)
+![npm](https://img.shields.io/npm/dt/handlebars-i18n-cli)
 
 ## Install
 
@@ -32,7 +33,9 @@ If you do not link the package, you may run into the error `bash: i18n-collect: 
 i18n-collect <source> <target> <options...>
 ```
 
-This will generate a file `translations.json` holding the translations for `de`, `fr`, and `en` by extracting all key
+#### Example:
+
+Generate a file `translations.json` holding the translations for `de`, `fr`, and `en` by extracting all key
 names intended for i18next translation from all html files in your project:
 
 ```shell
@@ -126,8 +129,8 @@ generating template JSON files from them. The key names for the translations nee
 template, the carry to the according language JSON is done by the CLI. You then only have to fill in according translations.
 In case a translation string expects variables for replacement, these variables will be added to your json template.
 
-If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) for translation but a custom
-integration of i18next into handlebars.js, you might be able to appropriate this cli by using the option --translFunc (
+If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) for translation but a custom integration of i18next into handlebars.js, you 
+might be able to appropriate this cli by using the option --translFunc (
 see below).
 
 Also `handlebars-i18n-cli` allows you to **auto-translate** a JSON file with an existing translation to another language  
@@ -359,6 +362,7 @@ FR - French
 ### 3. `translate`
 
 Translates the contents of a JSON file into the specified target language and saves the output in a new JSON file.
+Prerequisite is a (free) API Key for DeepL’s translation service. Get the key [here](https://www.deepl.com/en/pro#developer).
 
 #### Syntax
 
@@ -368,9 +372,10 @@ i18n-deepl translate <source> <target> <targetLang> [options]
 
 #### Arguments
 
-+ `<source>`: Path to the source JSON file (e.g., ./translations.json).
++ `<source>`: Path to the source JSON file (e.g., ./translations.json). When target and source file are identical, the 
+  result will be added (merged) to the existing file. New translations will be added, existing ones are kept. 
 + `<target>`: Path where the translated JSON file will be saved.
-+ `<targetLang>`: Target language code (e.g., fr for French, es for Spanish).
++ `<targetLang>`: Target language code (e.g., **fr** for French, **es** for Spanish).
 
 #### Options
 
