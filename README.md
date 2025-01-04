@@ -25,7 +25,7 @@ If you do not link the package, you may run into the error `bash: i18n-collect: 
 
 ## General Use
 
-### 1. Language Key Extraction: _i18n-collect_ 
+### 1. Language Key Extraction: i18n-collect 
 
 #### Syntax:
 
@@ -39,7 +39,7 @@ Generate a file `translations.json` holding the translations for `de`, `fr`, and
 names intended for i18next translation from all html files in your project:
 
 ```shell
-i18n-collect my-project/**/*.html my-project/translations.json --lng de,en,fr
+i18n-collect proj/**/*.hbs proj/translations.json --lng de,en,fr
 ```
 
 From a very simple template like this …
@@ -83,7 +83,7 @@ From a very simple template like this …
 }
 ```
 
-### 2. Automatic Translation via DeepL API: _i18n-deepl_
+### 2. Automatic Translation via DeepL API: i18n-deepl
 
 #### Syntax:
 
@@ -97,7 +97,7 @@ i18n-deepl translate <source> <target> <targetLang> <options...>
 i18n-deepl translate en.json fi.json fi
 ```
 
-Will run the file en.json against DeepL API. From this file
+Runs the file `en.json` against DeepL API. From this …
 
 ```
 {
@@ -107,7 +107,7 @@ Will run the file en.json against DeepL API. From this file
 }
 ```
 
-… will be generated the Finish translation fi.json:
+… the Finish translation `fi.json` will be generated:
 
 ```
 {
@@ -130,10 +130,9 @@ template, the carry to the according language JSON is done by the CLI. You then 
 In case a translation string expects variables for replacement, these variables will be added to your json template.
 
 If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) for translation but a custom integration of i18next into handlebars.js, you 
-might be able to appropriate this cli by using the option --translFunc (
-see below).
+might be able to appropriate this cli by using the option --translFunc (see below).
 
-Also `handlebars-i18n-cli` allows you to **auto-translate** a JSON file with an existing translation to another language  
+Also `handlebars-i18n-cli` allows you to **auto-translate** a JSON file with an existing translation to another language 
 via the DeepL API, while the original key names and JSOn structure are kept.
 
 ## Example
@@ -164,7 +163,7 @@ You can use `handlebars-i18n-cli` in a programmatical way too. For import and in
 
 * The source files can be passed in as [glob](https://www.npmjs.com/package/glob) pattern.
 * i18n-collect is agnostic against the data type of the template(s) you want to extract translations keys from. It works
-  with `.html` as well as `.js` files.
+  with `.hbs`, `.html` as well as `.js` files.
 
 `<target>`
 
@@ -177,36 +176,22 @@ i18next.init({
 });
 ```
 
-### Usage options
+### Options
 
-`--alphabetical` or `-a`
+* `--alphabetical` or `-a`: Order the keys to the translation strings alphabetically in the generated json file(s). When the flag
+is not set, the keys appear in order as within the template(s).
+* `--dryRun` or `-dr`: For simulation: Logs the result to console, but does not write out the file(s) to disk.
+* `--empty` or `-e`: Create empty value strings for the translations in the json files(s). When the flag is not set, the
+value strings contain current language and key name. Example:
 
-This will order the keys to the translation strings alphabetically in the generated json file(s). When the flag
---alphabetical is not set the keys appear in order as within the template(s).
-
----
-
-`--dryRun` or `-dr`
-
-For simulation: Logs the result to console, but does not write out the file(s) to disk.
-
----
-
-`--empty` or `-e`
-
-Create empty value strings for the translations in the json files(s). When the flag --empty is not set the
-value strings contain current language and key name.
-
-Example:
-
-The template
+The template …
 
 ```html
 <h1>{{__ headline userName="Frank"}}</h1>
 <p>{{__ paragraph}}</p>
 ```
 
-would become
+… would become …
 
 ```json
 {
@@ -219,7 +204,7 @@ would become
 }
 ```
 
-instead of
+… instead of:
 
 ```json
 {
@@ -232,70 +217,42 @@ instead of
 }
 ```
 
----
 
-`--lng language1,language2,...languageN`
-
-The list of language shortcodes you want to be generated with an own set in the json. Arguments are comma separated (no
-blank space between, no quotation marks around).
-If no language is defined, "en" is the default.
-
----
-
-`--log` or `-l`
-
-Logs the final result that is written to the json files(s) into the console as well.
-
----
-
-`--separateLngFiles` or `-sf`
-
-Write each language in a separate json file instead of a single one.
+* `--lng <languges>`: The list of language shortcodes you want to be generated with an own set in the json. Arguments are comma separated (no
+blank space between, no quotation marks around). Example: `--lng de,fi,en,es`. If no language is defined, `en` is the default.
+* `--log` or `-l`: Logs the final result that is written to the json files(s) into the console as well.
+* `--separateLngFiles` or `-sf`: Write each language in a separate json file instead of a single one. (By default, 
+  all translations are written to a single json file). This will generate three json files 
+  *translation.de.json*, *translation.en.json*, and *translation.fn.json*, each
+  holding only the translation for their respective language:
 
 ```bash
-i18n-collect my-project/template.html my-project/translation.json --lng de,en,fr --separateLngFiles
+i18n-collect template.hbs translation.json --lng de,en,fn --separateLngFiles
 ```
-
-Will generate three json files: **translation.de.json**, **translation.en.json**, and **translation.fn.json** each
-holding only the translation for their respective language. By default all translations are written to a single json file.
-
----
-
-`--translFunc=yourCustomFunctionName`
-
-If you are not using handlebars-i18n for translations but a custom handlebars helper, you might be able to use
-i18n-collect as well.Say your translation function has the name *t* instead of handlebars-i18n’s *__* (double
-underscore) and your template usage would look like
+* `--translFunc <yourCustomFunctionName>`: Substitutes the query name for the handlebars function, performing the translation. 
+  Say your translation function has the name *t* instead of handlebars-i18n’s *__* (double underscore) and your template 
+  usage would look like:
 
 ```html
-{{t myKeyNameToTranslation}}
+<p> {{t myKeyNameToTranslation}} </p>
 ```
 
-you can do
+You can then do …
 
 ```bash
-i18n-collect my-project/template.html my-project/translation.json --translFunc=t
+i18n-collect my-project/template.html my-project/translation.json --translFunc t
 ```
 
---translFunc=t then substitutes the default *__* with a search for t.
+… this substitutes the default *__* with a search for the handlebars function named *t*.
 
----
-
-`--update` or `-u`
-
-Update an existing .json file with new translations. All keys in the existing .json are kept, new ones from the template
-will be added.
-
-Works also with the option --separateLngFiles:
+* `--update` or `-u`: Update an existing .json file with new translations. All keys in the existing .json are kept, new ones from the template
+will be added. Works also with the option `--separateLngFiles`. Leave out the language ending and json file extension and give only the base name for <target>. In this example case
+  handlebars-i18n-cli would look for *translation.de.json*, *translation.en.json*, and *translation.en.json* to update
+  them. A language file that does not exist yet will be generated.
 
 ```bash
 i18n-collect my-project/**/*.html my-project/translation --update --lng de,en,fr --separateLngFiles
 ```
-
-Leave out the language ending and json file extension and give only the base name for <target>. In this example case
-handlebars-i18n-cli would look for *translation.de.json*, *translation.en.json*, and *translation.en.json* to update
-them. A language file that does not exist yet will be generated.
-
 
 ## Detailed Description for _i18n-deepl_ Commands
 
@@ -408,5 +365,5 @@ npm run test
 
 ## License
 
-Copyright (c) 2022-24 Florian Walzel,
-MIT License
+MIT License, Copyright (c) 2022–25 Florian Walzel
+
