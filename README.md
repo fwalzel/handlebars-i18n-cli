@@ -39,10 +39,10 @@ Generate a file `translations.json` holding the translations for `de`, `fr`, and
 names intended for i18next translation from all html files in your project:
 
 ```shell
-i18n-collect proj/**/*.hbs proj/translations.json --lng de,en,fr
+i18n-collect src/**/*.hbs src/translations.json --lng de,en,fr
 ```
 
-From a very simple template like this …
+From a very simple handlebars template like this …
 
 ```html
 <!DOCTYPE html>
@@ -56,7 +56,7 @@ From a very simple template like this …
 </html>
 ```
 
-… the generated translations.json would be:
+… the generated `translations.json` would be:
 
 ```json
 {
@@ -133,7 +133,7 @@ If you are not using [handlebars-i18n](https://github.com/fwalzel/handlebars-i18
 might be able to appropriate this cli by using the option --translFunc (see below).
 
 Also `handlebars-i18n-cli` allows you to **auto-translate** a JSON file with an existing translation to another language 
-via the DeepL API, while the original key names and JSOn structure are kept.
+via the DeepL API, while the original key names and JSON structure are kept.
 
 ## Example
 

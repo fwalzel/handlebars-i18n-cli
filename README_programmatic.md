@@ -26,10 +26,10 @@ existing keys, and generating separate files for each language.
 
 **Positional Arguments**
 
-| **Name**  | **Type**      | **Description**                         | **Example**               |
-|-----------|---------------|-----------------------------------------|---------------------------|
-| `source`  | `string`      | Path to the source files.               | `./src/template.html`     |
-| `target`  | `string`      | Path to the target files or directory.  | `./src/translations.json` |
+| **Name**  | **Type**      | **Description**                          | **Example**               |
+|-----------|---------------|------------------------------------------|---------------------------|
+| `source`  | `string`      | Path to the source file(s). Glob allowed | `./src/**/*.html`         |
+| `target`  | `string`      | Path to the target file(s) or directory. | `./src/translations.json` |
 
 **Optional `options` Object Properties**
 
