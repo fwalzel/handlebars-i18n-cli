@@ -45,7 +45,7 @@
     "commander": "^12.1.0",
     "deepl-node": "^1.13.0",
     "dotenv": "^16.4.5",
-    "glob": "^11.0.0"
+    "glob": "^11.0.1"
   },
   "devDependencies": {
     "c8": "^10.1.2",
