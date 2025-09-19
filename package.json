@@ -1,7 +1,7 @@
 {
   "name": "handlebars-i18n-cli",
-  "version": "2.0.2",
-  "description": "Extracts translation keys from handlebars templates and forms JSON from it; generates automatic translations via DeepL.",
+  "version": "2.0.3",
+  "description": "Extract translation keys from handlebars templates and form JSON from it, generate automatic translations via DeepL",
   "main": "src/index.js",
   "type": "module",
   "types": "types/index.d.ts",
@@ -41,10 +41,10 @@
   "homepage": "https://github.com/fwalzel/handlebars-i18n-cli#readme",
   "dependencies": {
     "async-file-tried": "^1.2.1",
-    "axios": "^1.7.2",
+    "axios": "^1.8.3",
     "commander": "^12.1.0",
     "deepl-node": "^1.13.0",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "glob": "^11.0.0"
   },
   "devDependencies": {
