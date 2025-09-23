@@ -360,7 +360,7 @@ Translation complete. See ./output.json for your results.
 ## Run tests
 
 ```bash
-npm run test
+npm test
 ```
 
 ## License
