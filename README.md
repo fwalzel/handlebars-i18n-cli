@@ -35,7 +35,7 @@ i18n-collect <source> <target> <options...>
 
 #### Example:
 
-Generate a file `translations.json` holding the translations for `de`, `fr`, and `en` by extracting all key
+Generate a file `translations.json` holding the translations for `de`, `en`, and `fr` by extracting all key
 names intended for i18next translation from all html files in your project:
 
 ```shell
