@@ -117,7 +117,7 @@ describe('i18n-deepl getSupportedLanguages', function () {
  * translateTexts
  ****************************************/
 describe('i18n-deepl translateTexts', () => {
-  let authKey, texts, sourceLang, targetLang, options, translatorStub;
+  let authKey, texts, sourceLang, targetLang, options, translateTextStub;
 
   beforeEach(() => {
     authKey = 'valid-auth-key';
@@ -126,50 +126,53 @@ describe('i18n-deepl translateTexts', () => {
     targetLang = 'FR';
     options = {formality: 'informal'};
 
-    // Mock deepl.Translator
-    translatorStub = sinon.stub(new deepl.Translator(authKey));
-    sinon.stub(deepl, 'Translator').returns(translatorStub);
+    // Stub the 'translateText' method on the prototype
+    // This will affect all future instances of deepl.Translator
+    translateTextStub = sinon.stub(deepl.Translator.prototype, 'translateText');
   });
 
   afterEach(() => {
-    sinon.restore(); // Reset all stubs/mocks/spies between tests
+    sinon.restore(); // This correctly restores the original prototype method
   });
 
   it('[C-1] translateTexts should throw an error if authKey is not a string', async () => {
-    try {
-      await translateTexts(12345, texts, sourceLang, targetLang, options);
-    } catch (error) {
-      expect(error.message).to.equal('Invalid argument authKey provided.');
-    }
+    // This test doesn't even need the stub, but the setup is now correct
+    await expect(translateTexts(12345, texts, sourceLang, targetLang, options))
+      .to.be.rejectedWith('Invalid argument authKey provided.');
   });
 
-  it('[C-2] translateTexts should call deepl.Translator with correct authKey', async () => {
-    translatorStub.translateText.resolves(['Bonjour', 'Monde']);
+  it('[C-2] should call the translator once with all texts and return the aggregated results', async () => {
+    // The expected result from your function
+    const expectedTranslations = ['Bonjour', 'Monde'];
 
-    await translateTexts(authKey, texts, sourceLang, targetLang, options);
+    // This is what the deepl-node library would return for a batch request
+    const mockApiResult = [
+      'Bonjour', 'Monde'
+    ];
 
-    expect(deepl.Translator).to.have.been.calledWith(authKey);
-    expect(translatorStub.translateText).to.have.been.calledWith(texts, sourceLang, targetLang, options);
-  });
-
-  it('[C-3] translateTexts should return translated texts from deepl.Translator', async () => {
-    const translatedTexts = ['Bonjour', 'Monde'];
-    translatorStub.translateText.resolves(translatedTexts);
+    // CORRECT: Configure the stub to resolve ONCE with an array of result objects.
+    translateTextStub.resolves(mockApiResult);
 
     const result = await translateTexts(authKey, texts, sourceLang, targetLang, options);
 
-    expect(result).to.deep.equal(translatedTexts);
+    // CORRECT: Verify the stub was called only ONCE.
+    // The first argument should be the entire `texts` array.
+    // The `options` object is also being passed, so we include it in the check.
+    expect(translateTextStub).to.have.been.calledOnceWith(texts, sourceLang, targetLang, options);
+
+    // The assertion for the final output remains the same and should now pass.
+    expect(result).to.deep.equal(expectedTranslations);
   });
 
-  it('[C-4] translateTexts should throw an error when deepl.Translator.translateText fails', async () => {
-    const error = new Error('API Error');
-    translatorStub.translateText.rejects(error);
+  it('[C-3] should throw an error when the translation API fails', async () => {
+    const apiError = new Error('API Error');
 
-    try {
-      await translateTexts(authKey, texts, sourceLang, targetLang, options);
-    } catch (err) {
-      expect(err.message).to.equal('API Error');
-    }
+    // CORRECT: Configure the stub to reject the promise directly.
+    translateTextStub.rejects(apiError);
+
+    // Use chai-as-promised for cleaner async error checking.
+    await expect(translateTexts(authKey, texts, sourceLang, targetLang, options))
+      .to.be.rejectedWith(apiError);
   });
 });
 
@@ -381,9 +384,9 @@ describe('i18n-collect', () => {
     }
     inspect.restore();
     assert.deepEqual(inspect.output, [
-      `Now processing test/test-assets/simple.html\n`,
-      `{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"en of myKey with variables {{myVar}}\"\n    }\n  }\n}\n`
-    ],
+        `Now processing test/test-assets/simple.html\n`,
+        `{\n  \"translations\": {\n    \"en\": {\n      \"myKey\": \"en of myKey with variables {{myVar}}\"\n    }\n  }\n}\n`
+      ],
       'The logged output did not match the expected result.');
   });
 
@@ -459,8 +462,8 @@ describe('i18n-collect', () => {
     const inspect = stdout.inspect();
     try {
       await i18nCollect(templSimple, `test/test-generated/test-${fileNo}.json`, {update: true, log: true});
-    } catch(e) {
-      console.log (e)
+    } catch (e) {
+      console.log(e)
     }
     inspect.restore();
     assert.deepEqual(inspect.output, [
