@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/fwalzel/handlebars-i18n-cli#readme",
   "dependencies": {
-    "async-file-tried": "^1.2.1",
+    "async-file-tried": "^1.2.2",
     "axios": "^1.12.2",
     "commander": "^14.0.1",
     "deepl-node": "^1.19.1",
