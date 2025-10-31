@@ -43,7 +43,7 @@
     "async-file-tried": "^1.2.1",
     "axios": "^1.12.2",
     "commander": "^14.0.1",
-    "deepl-node": "^1.19.1",
+    "deepl-node": "^1.20.0",
     "dotenv": "^17.2.2",
     "glob": "^11.0.3"
   },
