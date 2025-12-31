@@ -12,7 +12,7 @@ for [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) and other 
 [![Build](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)](https://github.com/fwalzel/handlebars-i18n-cli/actions/workflows/node.js.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/fwalzel/handlebars-i18n-cli/badge.svg?branch=main)](https://coveralls.io/github/fwalzel/handlebars-i18n-cli?branch=main)
 [![Known Vulnerabilities](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)](https://snyk.io/test/github/fwalzel/handlebars-i18n-cli/badge.svg)
-![npm](https://img.shields.io/npm/dt/handlebars-i18n-cli)
+![npm](https://img.shields.io/npm/dy/handlebars-i18n-cli)
 
 ## Install
 
@@ -44,7 +44,7 @@ i18n-collect src/**/*.hbs src/translations.json --lng de,en,fr
 
 From a very simple handlebars template like this …
 
-```html
+```hbs
 <!DOCTYPE html>
 <html lang="{{_locale}}">
 <head>
@@ -170,7 +170,7 @@ You can use `handlebars-i18n-cli` in a programmatical way too. For import and in
 * The output will always be in `.json` format. The file(s) can then be required for your i18next translation
   as [JSON v2](https://www.i18next.com/misc/json-format#i18next-json-v2)
 
-```
+```javascript
 i18next.init({
   compatibilityJSON: 'v2'
 });
@@ -186,7 +186,7 @@ value strings contain current language and key name. Example:
 
 The template …
 
-```html
+```hbs
 <h1>{{__ headline userName="Frank"}}</h1>
 <p>{{__ paragraph}}</p>
 ```
@@ -233,7 +233,7 @@ i18n-collect template.hbs translation.json --lng de,en,fn --separateLngFiles
   Say your translation function has the name *t* instead of handlebars-i18n’s *__* (double underscore) and your template 
   usage would look like:
 
-```html
+```hbs
 <p> {{t myKeyNameToTranslation}} </p>
 ```
 
@@ -365,5 +365,5 @@ npm test
 
 ## License
 
-MIT License, Copyright (c) 2022–25 Florian Walzel
+MIT License, Copyright (c) 2022–26 Florian Walzel
 
