@@ -16,12 +16,19 @@ for [handlebars-i18n](https://github.com/fwalzel/handlebars-i18n.git) and other 
 
 ## Install
 
+Install globally to use the CLI commands everywhere:
+
+```shell
+npm i handlebars-i18n-cli -g
+
+... or install locally in one specific project:
+
 ```shell
 npm i handlebars-i18n-cli --save-dev
 npm link handlebars-i18n-cli
 ```
 
-If you do not link the package, you may run into the error `bash: i18n-collect: command not found`.
+(If you do not link the package, you may run into the error `bash: i18n-collect: command not found`).
 
 ## General Use
 
@@ -156,6 +163,7 @@ i18n-collect examples/templates/*.html examples/generated/translations.json --se
 You can use `handlebars-i18n-cli` in a programmatical way too. For import and integration of the Javascript Functions see
 [handlebars-i18n-cli Programmatical Use](README_programmatic.md).
 
+[![What Was Design](https://florianwalzel.com/what-was-design-banner-2x.webp)](https://www.slanted.de/product/what-was-design/)
 
 ## Detailed Description for Command _i18n-collect_ 
 
