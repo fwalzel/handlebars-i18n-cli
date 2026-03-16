@@ -20,6 +20,7 @@ Install globally to use the CLI commands everywhere:
 
 ```shell
 npm i handlebars-i18n-cli -g
+```
 
 ... or install locally in one specific project:
 
