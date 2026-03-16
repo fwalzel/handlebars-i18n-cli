@@ -124,6 +124,8 @@ Runs the file `en.json` against DeepL API. From this …
 }
 ```
 
+[![What Was Design](https://florianwalzel.com/what-was-design-banner-2x.webp)](https://www.slanted.de/product/what-was-design/)
+
 
 ## Purpose / Motivation
 
@@ -162,8 +164,6 @@ i18n-collect examples/templates/*.html examples/generated/translations.json --se
 
 You can use `handlebars-i18n-cli` in a programmatical way too. For import and integration of the Javascript Functions see
 [handlebars-i18n-cli Programmatical Use](README_programmatic.md).
-
-[![What Was Design](https://florianwalzel.com/what-was-design-banner-2x.webp)](https://www.slanted.de/product/what-was-design/)
 
 ## Detailed Description for Command _i18n-collect_ 
 
