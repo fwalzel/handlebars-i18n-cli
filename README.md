@@ -20,6 +20,7 @@ Install globally to use the CLI commands everywhere:
 
 ```shell
 npm i handlebars-i18n-cli -g
+```
 
 ... or install locally in one specific project:
 
@@ -124,7 +125,7 @@ Runs the file `en.json` against DeepL API. From this …
 }
 ```
 
-[![What Was Design](https://florianwalzel.com/what-was-design-banner-2x.webp)](https://www.slanted.de/product/what-was-design/)
+[![Florian Walzel: What was design? Declarations and definitions from a century of creative quest](https://florianwalzel.com/wwd-hero-d.webp)](https://www.slanted.de/product/what-was-design/)
 
 
 ## Purpose / Motivation
